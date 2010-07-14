@@ -1,0 +1,4 @@
+// Allan CORNET - DIGITEO - 2010
+
+tbx_builder_src_lang(["c"],get_absolute_file_path("builder_src.sce"));
+clear tbx_builder_src_lang;
