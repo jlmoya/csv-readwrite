@@ -13,8 +13,12 @@
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
+#include "stringToDouble.h"
 /* ==================================================================== */
-/* csv_read(filename [, separator [,decimal]]) */
+#define CONVTOSTR "string"
+#define CONVTODOUBLE "double"
+/* ==================================================================== */
+/* csv_read(filename [, separator [,decimal [,conversion]]]) */
 /* ==================================================================== */
 int sci_csv_read(char *fname)
 {
@@ -27,13 +31,67 @@ int sci_csv_read(char *fname)
     char *filename = NULL;
     char *separator = NULL;
     char *decimal = NULL;
+    char *conversion = NULL;
 
     csvResult *result = NULL;
 
-    CheckRhs(1, 3);
+    CheckRhs(1, 4);
     CheckLhs(1, 1);
 
-    if (Rhs == 3)
+    if (Rhs == 4)
+    {
+        int *piAddressVarFour = NULL;
+        int m4 = 0, n4 = 0;
+        int iType4 = 0;
+
+        sciErr = getVarAddressFromPosition(pvApiCtx, 4, &piAddressVarFour);
+        if(sciErr.iErr)
+        {
+            printError(&sciErr, 0);
+            return 0;
+        }
+
+        sciErr = getVarType(pvApiCtx, piAddressVarThree, &iType4);
+        if(sciErr.iErr)
+        {
+            printError(&sciErr, 0);
+            return 0;
+        }
+
+        if (iType4 != sci_strings)
+        {
+            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 4);
+            return 0;
+        }
+
+        sciErr = getVarDimension(pvApiCtx, piAddressVarFour, &m4, &n4);
+
+        if ( (m4 != n4) && (n4 != 1) )
+        {
+            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 4);
+            return 0;
+        }
+
+        if (getAllocatedSingleString(pvApiCtx, piAddressVarFour, &conversion))
+        {
+            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            return 0;
+        }
+
+        if (strcmp(conversion, CONVTOSTR) || strcmp(conversion, CONVTODOUBLE) || strcmp(conversion, CONVTOAUTO))
+        {
+            FREE(conversion);
+            conversion = NULL;
+            Scierror(999,_("%s: Wrong value for input argument #%d: '%s' or '%s' string expected.\n"), fname, 4, "double", "string");
+            return 0;
+        }
+    }
+    else
+    {
+      conversion = strdup(CONVTOSTR);
+    }
+
+    if (Rhs >= 3)
     {
         int *piAddressVarThree = NULL;
         int m3 = 0, n3 = 0;
@@ -173,9 +231,51 @@ int sci_csv_read(char *fname)
 
             case CSV_READ_NO_ERROR:
             {
-                createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                if (strcmp(conversion, CONVTOSTR) == 0)
+                {
+                  sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                }
+                else /* to double */
+                {
+                  stringToDoubleError ierr = STRINGTODOUBLE_ERROR;
+                  double *dvals = stringToDouble(result->pstrValues, result->m * result->n, TRUE, &ierr);
+                  if (dvals == NULL)
+                  {
+                     freeCsvResult(result);
+                     if (filename) {FREE(filename); filename = NULL;}
+                     if (conversion) {FREE(conversion); conversion = NULL;}
+                     Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                     return 0;
+                  }
+
+                  switch(ierr)
+                  {
+                        case STRINGTODOUBLE_NOT_A_NUMBER:
+                        case STRINGTODOUBLE_NO_ERROR:
+                        {
+                          sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvals);
+                          FREE(dvals);
+                          dvals = NULL;
+                        }
+                        break;
+
+                        case STRINGTODOUBLE_MEMORY_ALLOCATION:
+                        {
+                          Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                        }
+                        default:
+                        case STRINGTODOUBLE_ERROR:
+                        {
+                          Scierror(999,_("%s: can not convert data.\n"), fname);
+                        }
+                  }
+                }
+
                 if(sciErr.iErr)
                 {
+                        freeCsvResult(result);
+                        if (filename) {FREE(filename); filename = NULL;}
+                        if (conversion) {FREE(conversion); conversion = NULL;}
                         printError(&sciErr, 0);
                         return 0;
                 }
@@ -215,6 +315,7 @@ int sci_csv_read(char *fname)
     }
     freeCsvResult(result);
     if (filename) {FREE(filename); filename = NULL;}
+    if (conversion) {FREE(conversion); conversion = NULL;}
 
     return 0;
 }
