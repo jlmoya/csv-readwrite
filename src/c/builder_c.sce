@@ -1,4 +1,4 @@
-// This file is released into the public domain
+// Allan CORNET - DIGITEO - 2010
 
 src_c_path = get_absolute_file_path("builder_c.sce");
 
@@ -17,8 +17,8 @@ end
 
 CFLAGS = "-I" + src_c_path + " -I" + fileio_includes + " -I" + fileio_src;
 
-tbx_build_src(["csv_read", "csv_write", "strsubst", "splitLine"],    ..
-              ["csv_read.c", "csv_write.c", "strsubst.c", "splitLine.c" ], ..
+tbx_build_src(["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble"],    ..
+              ["csv_read.c", "csv_write.c", "strsubst.c", "splitLine.c", "stringToDouble.c" ], ..
               "c", ..             ..
               src_c_path,         ..
               LIBS,                 ..
