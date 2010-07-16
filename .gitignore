@@ -16,3 +16,9 @@ sci_gateway/c/Release/
 sci_gateway/c/Debug/
 sci_gateway/cleaner_gateway.sce
 sci_gateway/loader_gateway.sce
+sci_gateway/c/csvreadwrite_c.c
+sci_gateway/c/csvreadwrite_c.def
+src/c/Debug/
+src/c/Makelib.mak
+src/c/Release/
+src/c/libcsv_readwrite.def

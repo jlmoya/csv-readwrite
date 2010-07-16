@@ -12,7 +12,7 @@ typedef enum {
     CSV_WRITE_SEPARATOR_DECIMAL_EQUAL = 3
 } csvWriteError;
 
-#define DEFAULT_CSV_WRITE_SEPARATOR " "
+#define DEFAULT_CSV_WRITE_SEPARATOR ","
 #define DEFAULT_CSV_WRITE_DECIMAL "."
 
 csvWriteError csv_write_double(char *filename,

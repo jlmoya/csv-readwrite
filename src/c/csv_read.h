@@ -16,7 +16,7 @@ typedef enum {
     CSV_READ_SEPARATOR_DECIMAL_EQUAL = 7
 } csvReadError;
 
-#define DEFAULT_CSV_READ_SEPARATOR " "
+#define DEFAULT_CSV_READ_SEPARATOR ","
 #define DEFAULT_CSV_READ_DECIMAL "."
 
 typedef struct {

@@ -11,42 +11,101 @@
           xmlns:ns3="http://www.w3.org/1999/xhtml"
           xmlns:mml="http://www.w3.org/1998/Math/MathML"
           xmlns:db="http://docbook.org/ns/docbook">
-  <info>
-    <pubdate>$LastChangedDate: 2008-03-26 09:50:39 +0100 (mer., 26 mars 2008)
-    $</pubdate>
-  </info>
 
   <refnamediv>
-    <refname>c_sum</refname>
+    <refname>csv_write</refname>
 
-    <refpurpose>sum from C</refpurpose>
+    <refpurpose>Read comma-separated value file</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>a = c_sum(b,c)</synopsis>
+    <synopsis>csv_write(M, filename[, separator, decimal]) </synopsis>
   </refsynopsisdiv>
+
+  <refsection>
+    <title>Parameters</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>filename</term>
+
+        <listitem>
+          <para>a character string. The file path.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>M</term>
+
+        <listitem>
+          <para>a matrix of strings or double (not complex).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>separator</term>
+
+        <listitem>
+          <para>column separator mark, by default a tabulation: ","</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>dec</term>
+
+        <listitem>
+          <para>decimal mark '.' or ',' by default a '.'</para>
+        </listitem>
+      </varlistentry>
+
+      
+    </variablelist>
+  </refsection>
 
   <refsection>
     <title>Description</title>
 
-    <para>Do a sum.</para>
-
-    <para>Add here a paragraph of the function description </para>
+    <para>csv_write(M, filename) writes matrix M into filename as
+    comma-separated values. The filename input is a string.</para>
+    <para>if the file 'filename' already exists, it is overwritten.</para>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">c_sum(3,4)</programlisting>
+    <programlisting role="example">// save a matrix as csv file format
+A = [1:10] * 0.1;
+csv_write(A, TMPDIR + '/datas.csv');
+
+// read as text
+mgetl(TMPDIR + '/datas.csv')
+
+r = csv_read(TMPDIR + '/datas.csv');
+
+r = csv_read(TMPDIR + '/datas.csv', ",", ".", "string")
+
+r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
+
+</programlisting>
+  </refsection>
+
+  <refsection>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member><link linkend="csv_read">csv_read</link></member>
+    </simplelist>
   </refsection>
 
   <refsection>
     <title>Authors</title>
 
-    <simplelist type="vert">
-      <member>Allan CORNET</member>
-    </simplelist>
+    <variablelist>
+      <varlistentry>
+        <term>Allan CORNET</term>
+      </varlistentry>
+    </variablelist>
   </refsection>
 </refentry>

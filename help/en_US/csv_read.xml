@@ -12,41 +12,113 @@
           xmlns:mml="http://www.w3.org/1998/Math/MathML"
           xmlns:db="http://docbook.org/ns/docbook">
   <info>
-    <pubdate>$LastChangedDate: 2008-03-26 09:50:39 +0100 (mer., 26 mars 2008)
-    $</pubdate>
+    <pubdate>$LastChangedDate$</pubdate>
   </info>
 
   <refnamediv>
-    <refname>c_sub</refname>
+    <refname>read_csv</refname>
 
-    <refpurpose>substraction from C</refpurpose>
+    <refpurpose>Read comma-separated value file</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>a = c_sub(b,c)</synopsis>
+    <synopsis>M = csv_read(filename [, separator [,decimal [,conversion]]])</synopsis>
   </refsynopsisdiv>
+
+  <refsection>
+    <title>Parameters</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>filename</term>
+
+        <listitem>
+          <para>a character string. The file path.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>separator</term>
+
+        <listitem>
+          <para>a character string. Field separator used, default value is ","</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>decimal</term>
+
+        <listitem>
+          <para>a character string. Field decimal used, default value is "."</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>conversion</term>
+
+        <listitem>
+          <para>a character string. Field conversion used ("string" or "double"), default value is "string"</para>
+        </listitem>
+      </varlistentry>
+
+
+      <varlistentry>
+        <term>M</term>
+
+        <listitem>
+          <para>a matrix of strings or double.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
 
   <refsection>
     <title>Description</title>
 
-    <para>Do a substraction.</para>
+    <para>Given an ascii file with delimited fields, for instance created by a
+    spreadsheet using "Text and comma" format, csv_read(filename) returns the
+    corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
+    another choice of separator.</para>
+    <para>with parameter "conversion" equals to "double" strings are converted as NaN.</para>
 
-    <para>Add here a paragraph of the function description </para>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">c_sub(3,4)</programlisting>
+    <programlisting role="example">// create a file with some data separated with tab    
+A = 1:50;
+csv_write(A, TMPDIR + '/foo.csv', ascii(9), '.')
+mgetl(TMPDIR + '/foo.csv')
+
+// read csv file
+B = csv_read(TMPDIR + '/foo.csv',ascii(9))
+
+// as double
+C = csv_read(TMPDIR + '/foo.csv',ascii(9), '.', 'double')
+
+// compares original data and result
+and(A == C)
+</programlisting>
+  </refsection>
+
+  <refsection>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member><link linkend="csv_write">csv_write</link></member>
+    </simplelist>
   </refsection>
 
   <refsection>
     <title>Authors</title>
 
-    <simplelist type="vert">
-      <member>Allan CORNET</member>
-    </simplelist>
+    <variablelist>
+      <varlistentry>
+        <term>Allan CORNET</term>
+      </varlistentry>
+    </variablelist>
   </refsection>
 </refentry>

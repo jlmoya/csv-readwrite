@@ -51,7 +51,7 @@ int sci_csv_read(char *fname)
             return 0;
         }
 
-        sciErr = getVarType(pvApiCtx, piAddressVarThree, &iType4);
+        sciErr = getVarType(pvApiCtx, piAddressVarFour, &iType4);
         if(sciErr.iErr)
         {
             printError(&sciErr, 0);
@@ -78,7 +78,7 @@ int sci_csv_read(char *fname)
             return 0;
         }
 
-        if (strcmp(conversion, CONVTOSTR) || strcmp(conversion, CONVTODOUBLE) || strcmp(conversion, CONVTOAUTO))
+        if (!((strcmp(conversion, CONVTOSTR) == 0) || (strcmp(conversion, CONVTODOUBLE) == 0)))
         {
             FREE(conversion);
             conversion = NULL;

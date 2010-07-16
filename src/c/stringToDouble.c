@@ -3,6 +3,7 @@
 /* DIGITEO 2010 */
 /* ========================================================================== */
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include "stringToDouble.h"
@@ -11,18 +12,19 @@
 #define NanString "Nan"
 #define InfString "Inf"
 #define NegInfString "-Inf"
-#ifndef _MSVCVER
+#ifndef _MSC_VER
   #ifndef stricmp
     #define stricmp strcasecmp
   #endif
+#else  
+    #define stricmp _stricmp
 #endif
 /* ========================================================================== */
 static double returnINF(BOOL bPositive);
-static double returnNAN(void)
+static double returnNAN(void);
 /* ========================================================================== */
-double *stringToDouble(char **pSTRs, int nbElements,
-                       BOOL bConvertByNAN,
-                       stringToDoubleError *ierr)
+double *stringToDouble(char **pSTRs, int nbElements, 
+                       BOOL bConvertByNAN, stringToDoubleError *ierr)
 {
   double *dValues = NULL;
 
@@ -35,7 +37,7 @@ double *stringToDouble(char **pSTRs, int nbElements,
   }
   else
   {
-    *dValues = (double*)MALLOC(sizeof(double) * nbElements);
+    dValues = (double*)MALLOC(sizeof(double) * nbElements);
     if (dValues)
     {
       int i = 0;
@@ -59,7 +61,7 @@ double *stringToDouble(char **pSTRs, int nbElements,
           {
             double v = 0.;
             int err = sscanf(pSTRs[i], "%lf", &v);
-            if (err != 0)
+            if (err == 0)
             {
               if (bConvertByNAN)
               {
@@ -98,7 +100,7 @@ double *stringToDouble(char **pSTRs, int nbElements,
 /* ========================================================================== */
 static double returnINF(BOOL bPositive)
 {
-    double v = 0;
+    double v = 0 - 0;
     double p = 10;
     if (!bPositive) p = -10;
     return (double) p / (double)v;
