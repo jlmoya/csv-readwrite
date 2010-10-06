@@ -60,7 +60,7 @@ double *stringToDouble(char **pSTRs, int nbElements,
           else
           {
             double v = 0.;
-            int err = sscanf(pSTRs[i], "%lf", &v);
+            int err = sscanf(pSTRs[i], "%lg", &v);
             if (err == 0)
             {
               if (bConvertByNAN)

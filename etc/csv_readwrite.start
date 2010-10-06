@@ -15,7 +15,7 @@ root_tlbx = strncpy( etc_tlbx, length(etc_tlbx)-length("\etc\") );
 // =============================================================================
 mprintf("\tLoad macros\n");
 pathmacros = pathconvert( root_tlbx ) + "macros" + filesep();
-toolbox_skeletonlib = lib(pathmacros);
+csv_readwritelib = lib(pathmacros);
 clear pathmacros;
 
 // load gateways

@@ -11,6 +11,7 @@ macros/names
 jar/
 help/en_US/master_help.xml
 help/en_US/scilab_en_US_help/
+help/en_US/scilab_fr_FR_help/
 sci_gateway/c/Makelib.mak
 sci_gateway/c/Release/
 sci_gateway/c/Debug/
@@ -22,3 +23,4 @@ src/c/Debug/
 src/c/Makelib.mak
 src/c/Release/
 src/c/libcsv_readwrite.def
+

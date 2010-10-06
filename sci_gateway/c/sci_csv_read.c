@@ -288,6 +288,11 @@ int sci_csv_read(char *fname)
             break;
 
             case CSV_READ_FILE_NOT_EXIST:
+            {
+                Scierror(999,_("%s: %s does not exist.\n"), fname, filename);
+            }
+            break;
+
             case CSV_READ_MOPEN_ERROR:
             {
                 Scierror(999,_("%s: can not open file %s.\n"), fname, filename);

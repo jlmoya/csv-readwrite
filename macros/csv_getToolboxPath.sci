@@ -2,6 +2,8 @@
 // Allan CORNET - DIGITEO - 2010
 // ====================================================================
 function p = csv_getToolboxPath()
-  p = '';
+  p = "";
+  [fs, p] = libraryinfo("csv_readwritelib");
+  p = fullpath(p + "../");
 endfunction
 // ====================================================================

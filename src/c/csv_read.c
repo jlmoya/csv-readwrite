@@ -2,7 +2,9 @@
 /* Allan CORNET */
 /* DIGITEO 2010 */
 /* ========================================================================== */
+#include <string.h>
 #include "csv_read.h"
+#include "MALLOC.h"
 #include "freeArrayOfString.h"
 #include "mgetl.h"
 #include "mopen.h"
@@ -11,6 +13,9 @@
 #include "strsubst.h"
 #include "FileExist.h"
 #include "expandPathVariable.h"
+#if _MSC_VER
+#include "strdup_windows.h"
+#endif
 /* ========================================================================== */
 #if _MSC_VER
 #define READ_ONLY_TEXT_MODE "rt"
@@ -24,6 +29,8 @@ static int getNumbersOfColumnsInLine(char *line, char *separator);
 static char **getStringsFromLines(char **lines, int sizelines,
                                   char *separator, char *decimal,
                                   int m, int n);
+static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines);
+static char *stripCharacters(char *line);
 /* ========================================================================== */
 csvResult* csv_read(char *filename, char *separator, char *decimal)
 {
@@ -91,6 +98,7 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
     }
 
     lines = mgetl(fd, -1, &nblines, &errMGETL);
+    
     C2F(mclose)(&fd, &dErrClose);
 
     if (errMGETL != MGETL_NO_ERROR)
@@ -105,6 +113,9 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
         }
         return result;
     }
+
+    /* remove last lines empty (bug 7003 in scilab */
+    lines = removeEmptyLinesAtTheEnd(lines, &nblines);
 
     nbColumns = getNumbersOfColumnsInLines(lines, nblines, separator);
     if (nbColumns == 0)
@@ -207,9 +218,25 @@ static int getNumbersOfColumnsInLine(char *line, char *separator)
         char **splittedStr = splitLine(line, separator, &nbTokens, 0);
         if (splittedStr)
         {
+            if (nbTokens > 0)
+            {
+                if ( (nbTokens > 1) && ((int)strlen(splittedStr[nbTokens - 1]) == 0) )
+                {
+                    nbTokens--;
+                }
+            }
             freeArrayOfString(splittedStr, nbTokens);
-            if (nbTokens > 0) nbTokens--;
+            
             return nbTokens;
+        }
+        else
+        {
+            int len = (int)strlen(line);
+            if (len > 0)
+            {
+                nbTokens = 1;
+                return nbTokens;
+            }
         }
     }
     return 0;
@@ -235,7 +262,24 @@ static char **getStringsFromLines(char **lines, int sizelines,
             int nbTokens = 0;
             char **lineStrings = splitLine(lines[i], separator, &nbTokens, 0);
             int j = 0;
-            if (nbTokens > 0) nbTokens--;
+
+            if (lineStrings)
+            {
+                if (nbTokens > 0) 
+                {
+                    if ((nbTokens > 1) && ((int)strlen(lineStrings[nbTokens - 1]) == 0))
+                    {
+                        nbTokens--;
+                    }
+                }
+            }
+            else
+            {
+                lineStrings = (char**)MALLOC(sizeof(char*) * 1);
+                lineStrings[0] = strdup(lines[i]);
+                nbTokens = 1;
+            }
+
             if (m != nbTokens)
             {
                 freeArrayOfString(results, m * n);
@@ -259,5 +303,95 @@ static char **getStringsFromLines(char **lines, int sizelines,
         }
     }
     return results;
+}
+/* ========================================================================== */
+static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines)
+{
+    char **returnedLines = lines;
+    int nbLinesToRemove = 0;
+    if (lines)
+    {
+        int i = 0;
+        if (*sizelines >= 1)
+        {
+            for(i = *sizelines - 1; i >= 0; i--)
+            {
+                char *cleanedLine = stripCharacters(lines[i]);
+                if (cleanedLine)
+                {
+                    int len = (int) strlen(cleanedLine);
+                    FREE(cleanedLine);
+                    cleanedLine = NULL;
+                    if (len == 0)
+                    {
+                        nbLinesToRemove++;
+                        FREE(lines[i]);
+                        lines[i] = NULL;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            if (nbLinesToRemove > 0)
+            {
+                returnedLines = (char **)REALLOC(lines, sizeof(char *) * (*sizelines - nbLinesToRemove));
+                if (returnedLines)
+                {
+                    *sizelines = *sizelines - nbLinesToRemove;
+                }
+                else
+                {
+                    returnedLines = lines;
+                }
+            }
+        }
+        else
+        {
+            returnedLines = lines;
+        }
+    }
+    return returnedLines;
+}
+/* ========================================================================== */
+static char *stripCharacters(char *line)
+{
+    char *returnedLine = NULL;
+    if (line)
+    {
+        char *tmpLineWithoutTab = strsubst(line, "\t", "");
+        if (tmpLineWithoutTab)
+        {
+            char *tmpLineWithoutLF = strsubst(tmpLineWithoutTab, "\r", "");
+            if (tmpLineWithoutLF)
+            {
+                char *tmpLineWithoutCR = strsubst(tmpLineWithoutTab, "\n", "");
+                if (tmpLineWithoutCR)
+                {
+                    returnedLine = strsubst(tmpLineWithoutCR, " ", "");
+                }
+                else
+                {
+                    returnedLine = strdup(line);
+                }
+                FREE(tmpLineWithoutLF);
+                tmpLineWithoutLF = NULL;
+            }
+            else
+            {
+                returnedLine = strdup(line);
+            }
+            FREE(tmpLineWithoutTab);
+            tmpLineWithoutTab = NULL;
+        }
+        else
+        {
+            returnedLine = strdup(line);
+        }
+    }
+
+    return returnedLine;
 }
 /* ========================================================================== */

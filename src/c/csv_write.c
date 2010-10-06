@@ -109,7 +109,7 @@ csvWriteError csv_write_double(char *filename,
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, InfString);
                 }
             }
-            fprintf(fd, separator);
+            if (j + 1 < n) fprintf(fd, separator);
         }
         fprintf(fd, EOL);
     }
@@ -160,7 +160,7 @@ csvWriteError csv_write_string(char *filename,
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, pStrValues[i + m*j]);
                 }
             }
-            fprintf(fd, separator);
+            if (j + 1 < n) fprintf(fd, separator);
         }
         fprintf(fd, EOL);
    }
