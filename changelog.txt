@@ -1,5 +1,9 @@
 changelog of the csv_readwrite
 
+csv_readwrite (0.3)
+    * csv_write can write complex matrix (fix bug 8349).
+    * csv_textscan added.
+
 csv_readwrite (0.2)
     * fix some bugs
     * fix memory leak

@@ -6,7 +6,7 @@
 #include "splitLine.h"
 #include "MALLOC.h"
 /* ==================================================================== */
-char **splitLine(char *str, char *sep, int *toks, char meta)
+char **splitLine(const char *str, const char *sep, int *toks, char meta)
 {
     char **retstr = NULL;
     char *idx = NULL;

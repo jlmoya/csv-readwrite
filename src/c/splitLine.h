@@ -8,7 +8,7 @@
 /**
 * split a line by separator
 */
-char **splitLine(char *str, char *sep, int *toks, char meta);
+char **splitLine(const char *str, const char *sep, int *toks, char meta);
 
 #endif /* __SPLITLINE_H__ */
 /* ==================================================================== */

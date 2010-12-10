@@ -23,79 +23,40 @@
 static double returnINF(BOOL bPositive);
 static double returnNAN(void);
 /* ========================================================================== */
-double *stringToDouble(char **pSTRs, int nbElements, 
-                       BOOL bConvertByNAN, stringToDoubleError *ierr)
+double *stringsToDoubles(const char **pSTRs, int nbElements, 
+                         BOOL bConvertByNAN, stringToDoubleError *ierr)
 {
-  double *dValues = NULL;
+    double *dValues = NULL;
 
-  *ierr = STRINGTODOUBLE_ERROR;
-  if (nbElements <= 0) return NULL;
+    *ierr = STRINGTODOUBLE_ERROR;
+    if (nbElements <= 0) return NULL;
 
-  if (pSTRs == NULL)
-  {
-    *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
-  }
-  else
-  {
-    dValues = (double*)MALLOC(sizeof(double) * nbElements);
-    if (dValues)
+    if (pSTRs == NULL)
     {
-      int i = 0;
-      for (i = 0; i < nbElements; i++)
-      {
-        if (pSTRs[i])
-        {
-          if (stricmp(pSTRs[i], NanString) == 0)
-          {
-            dValues[i] = returnNAN();
-          }
-          else if (stricmp(pSTRs[i], InfString) == 0)
-          {
-            dValues[i] = returnINF(TRUE);
-          }
-          else if (stricmp(pSTRs[i], NegInfString) == 0)
-          {
-            dValues[i] = returnINF(FALSE);
-          }
-          else
-          {
-            double v = 0.;
-            int err = sscanf(pSTRs[i], "%lg", &v);
-            if (err == 0)
-            {
-              if (bConvertByNAN)
-              {
-                dValues[i] = returnNAN();
-              }
-              else
-              {
-                FREE(dValues);
-                dValues = NULL;
-                *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
-                return NULL;
-              }
-            }
-            else
-            {
-              dValues[i] = v;
-            }
-          }
-        }
-        else
-        {
-          FREE(dValues);
-          dValues = NULL;
-        }
-      }
-      *ierr = STRINGTODOUBLE_NO_ERROR;
+        *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
     }
     else
     {
-      *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
+        dValues = (double*)MALLOC(sizeof(double) * nbElements);
+        if (dValues)
+        {
+            int i = 0;
+            for (i = 0; i < nbElements; i++)
+            {
+                dValues[i] = stringToDouble(pSTRs[i], bConvertByNAN, ierr);
+                if (*ierr != STRINGTODOUBLE_NO_ERROR)
+                {
+                    FREE(dValues);
+                    return (dValues = NULL);
+                }
+            }
+        }
+        else
+        {
+            *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
+        }
     }
-  }
-
-  return dValues;
+    return dValues;
 }
 /* ========================================================================== */
 static double returnINF(BOOL bPositive)
@@ -117,5 +78,55 @@ static double returnNAN(void)
         first = 0;
     }
     return (nan);
+}
+/* ========================================================================== */
+double stringToDouble(const char *pSTR,
+                      BOOL bConvertByNAN,
+                      stringToDoubleError *ierr)
+{
+    double dValue = 0.0;
+    *ierr = STRINGTODOUBLE_ERROR;
+    if (pSTR)
+    {
+        if (stricmp(pSTR, NanString) == 0)
+        {
+            dValue = returnNAN();
+        }
+        else if (stricmp(pSTR, InfString) == 0)
+        {
+            dValue = returnINF(TRUE);
+        }
+        else if (stricmp(pSTR, NegInfString) == 0)
+        {
+            dValue = returnINF(FALSE);
+        }
+        else
+        {
+            double v = 0.;
+            int err = sscanf(pSTR, "%lg", &v);
+            if (err == 0)
+            {
+                if (bConvertByNAN)
+                {
+                    dValue = returnNAN();
+                }
+                else
+                {
+                    *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
+                    return (dValue = 0.0);
+                }
+            }
+            else
+            {
+                dValue = v;
+            }
+        }
+        *ierr = STRINGTODOUBLE_NO_ERROR;
+    }
+    else
+    {
+        *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
+    }
+    return dValue;
 }
 /* ========================================================================== */

@@ -16,9 +16,6 @@ typedef enum {
     CSV_READ_SEPARATOR_DECIMAL_EQUAL = 7
 } csvReadError;
 
-#define DEFAULT_CSV_READ_SEPARATOR ","
-#define DEFAULT_CSV_READ_DECIMAL "."
-
 typedef struct {
     char **pstrValues;
     int m;
@@ -26,7 +23,9 @@ typedef struct {
     csvReadError err;
 } csvResult;
 
-csvResult* csv_read(char *filename, char *separator, char *decimal);
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal);
+
+csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separator, const char *decimal);
 
 void freeCsvResult(csvResult *result);
 

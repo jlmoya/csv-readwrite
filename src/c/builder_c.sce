@@ -17,8 +17,16 @@ end
 
 CFLAGS = "-I" + src_c_path + " -I" + fileio_includes + " -I" + fileio_src;
 
-tbx_build_src(["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble"],    ..
-              ["csv_read.c", "csv_write.c", "strsubst.c", "splitLine.c", "stringToDouble.c" ], ..
+files_src = ["csv_read.c", ..
+             "csv_write.c", ..
+             "strsubst.c", ..
+             "splitLine.c", ..
+             "stringToDouble.c", ..
+             "stringToComplex.c", ..
+             "csv_default.c"];
+
+tbx_build_src(["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble", "stringToComplex", "csv_default"], ..
+              files_src, ..
               "c", ..             ..
               src_c_path,         ..
               LIBS,                 ..

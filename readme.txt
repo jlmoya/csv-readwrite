@@ -2,7 +2,10 @@ readme.txt of the csv_readwrite module
 
 fast dedicated scilab functions to read and write csv files
 
-To compare speed:
+- csv_read
+- csv_write
+
+To compare speed (x100 faster):
 
 with default scilab functions:
 stacksize('max');

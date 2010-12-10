@@ -1,4 +1,4 @@
-// This file is released into the public domain
+// CORNET Allan - DIGITEO - 2010
 
 if getos() == "Windows" then
     // to manage long pathname
@@ -12,9 +12,19 @@ end
 // in gateway generated (default mode in scilab 4.x and 5.x)
 WITHOUT_AUTO_PUTLHSVAR = %t;
 
+table_functions = ["csv_read","sci_csv_read"; ..
+                   "csv_write","sci_csv_write"; ..
+                   "csv_textscan","sci_csv_textscan"; ..
+                   "csv_default","sci_csv_default"];
+                   
+src_functions = ["sci_csv_read.c", ..
+                 "sci_csv_write.c", ..
+                 "sci_csv_textscan.c", ..
+                 "sci_csv_default.c"];
+
 tbx_build_gateway("csvreadwrite_c", ..
-                  ["csv_read","sci_csv_read";"csv_write","sci_csv_write"], ..
-                  ["sci_csv_read.c","sci_csv_write.c"], ..
+                  table_functions, ..
+                  src_functions, ..
                   get_absolute_file_path("builder_gateway_c.sce"), ..
                   ["../../src/c/libcsv_readwrite"], ..
                   "", ..

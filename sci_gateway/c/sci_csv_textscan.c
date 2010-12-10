@@ -1,35 +1,39 @@
-/* ==================================================================== */
+/* ========================================================================== */
 /* Allan CORNET */
 /* DIGITEO 2010 */
-/* ==================================================================== */
+/* ========================================================================== */
 #include <string.h>
 #include "stack-c.h"
 #include "api_scilab.h"
+#include "sci_types.h"
+#include "Scierror.h"
+#include "MALLOC.h"
 #include "Scierror.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
-#include "MALLOC.h"
-#include "csv_read.h"
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
 #include "stringToComplex.h"
 #include "csv_default.h"
-/* ==================================================================== */
+#include "csv_read.h"
+/* ========================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
-/* ==================================================================== */
-/* csv_read(filename [, separator [,decimal [,conversion]]]) */
-/* ==================================================================== */
-int sci_csv_read(char *fname)
+/* ========================================================================== */
+int sci_csv_textscan(char *fname)
 {
     SciErr sciErr;
-
+    int i = 0;
+    
     int *piAddressVarOne = NULL;
     int m1 = 0, n1 = 0;
     int iType1 = 0;
-
-    char *filename = NULL;
+    
+    char **text = NULL;
+    int *lengthText = NULL;
+    int nbLines = 0;
+    
     char *separator = NULL;
     char *decimal = NULL;
     char *conversion = NULL;
@@ -198,28 +202,75 @@ int sci_csv_read(char *fname)
 
     if (iType1 != sci_strings)
     {
-        Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 1);
+        Scierror(999,_("%s: Wrong type for input argument #%d: string expected.\n"), fname, 1);
         return 0;
     }
 
     sciErr = getVarDimension(pvApiCtx, piAddressVarOne, &m1, &n1);
-
-    if ( (m1 != n1) && (n1 != 1) )
+    
+    if (!isRowVector(pvApiCtx, piAddressVarOne) && 
+        !isColumnVector(pvApiCtx, piAddressVarOne) &&
+        !isScalar(pvApiCtx, piAddressVarOne))
     {
-        Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 1);
+        Scierror(999,_("%s: Wrong size for input argument #%d: string expected.\n"), fname, 1);
         return 0;
     }
-
-    if (getAllocatedSingleString(pvApiCtx, piAddressVarOne, &filename))
+    
+    nbLines = m1 * n1;
+    
+    lengthText = (int*)MALLOC(sizeof(int) * nbLines);
+    if (lengthText == NULL)
     {
         Scierror(999,_("%s: Memory allocation error.\n"), fname);
         return 0;
     }
+    
+    text = (char**)MALLOC(sizeof(char*) * nbLines);
+    if (text == NULL)
+    {
+        Scierror(999,_("%s: Memory allocation error.\n"),fname);
+        return 0;
+    }
+    
+    // get lengthStrings value
+    sciErr = getMatrixOfString(pvApiCtx, piAddressVarOne, &m1, &n1, lengthText, NULL);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        return 0;
+    }
+    
+    for (i = 0; i < nbLines; i++)
+    {
+        text[i] = (char*)MALLOC(sizeof(char) * (lengthText[i] + 1));
+        if (text[i] == NULL)
+        {
+            freeArrayOfString(text, nbLines);
+            if (lengthText) {FREE(lengthText); lengthText = NULL;}
+            Scierror(999,_("%s: Memory allocation error.\n"),fname);
+            return 0;
+        }
+    }
+    
+    sciErr = getMatrixOfString(pvApiCtx, piAddressVarOne, &m1, &n1, lengthText, text);
+    if(sciErr.iErr)
+    {
+        freeArrayOfString(text, nbLines);
+        if (lengthText) {FREE(lengthText); lengthText = NULL;}
+        printError(&sciErr, 0);
+        return 0;
+    }
 
-    result = csv_read(filename, separator, decimal);
+    result = csv_textscan(text, nbLines, separator, decimal);
+    if (text)
+    {
+        freeArrayOfString(text, nbLines);
+        text = NULL;
+    }
+    
     if (separator) {FREE(separator); separator = NULL;}
     if (decimal) {FREE(decimal); decimal = NULL;}
-
+        
     if (result)
     {
         switch(result->err)
@@ -243,7 +294,6 @@ int sci_csv_read(char *fname)
                   if (dvalscomplex == NULL)
                   {
                      freeCsvResult(result);
-                     if (filename) {FREE(filename); filename = NULL;}
                      if (conversion) {FREE(conversion); conversion = NULL;}
                      if (ierr == STRINGTOCOMPLEX_ERROR)
                      {
@@ -281,29 +331,16 @@ int sci_csv_read(char *fname)
 
                 if(sciErr.iErr)
                 {
-                        freeCsvResult(result);
-                        if (filename) {FREE(filename); filename = NULL;}
-                        if (conversion) {FREE(conversion); conversion = NULL;}
-                        printError(&sciErr, 0);
-                        return 0;
+                    freeCsvResult(result);
+                    if (conversion) {FREE(conversion); conversion = NULL;}
+                    printError(&sciErr, 0);
+                    return 0;
                 }
                 else
                 {
                     LhsVar(1) = Rhs + 1;
                     C2F(putlhsvar)();
                 }
-            }
-            break;
-
-            case CSV_READ_FILE_NOT_EXIST:
-            {
-                Scierror(999,_("%s: %s does not exist.\n"), fname, filename);
-            }
-            break;
-
-            case CSV_READ_MOPEN_ERROR:
-            {
-                Scierror(999,_("%s: can not open file %s.\n"), fname, filename);
             }
             break;
 
@@ -317,7 +354,7 @@ int sci_csv_read(char *fname)
             case CSV_READ_COLUMNS_ERROR:
             case CSV_READ_ERROR:
             {
-                Scierror(999,_("%s: can not read file %s.\n"), fname, filename);
+                Scierror(999,_("%s: can not read text.\n"), fname);
             }
             break;
         }
@@ -327,9 +364,8 @@ int sci_csv_read(char *fname)
         Scierror(999,_("%s: Memory allocation error.\n"), fname);
     }
     freeCsvResult(result);
-    if (filename) {FREE(filename); filename = NULL;}
     if (conversion) {FREE(conversion); conversion = NULL;}
 
     return 0;
 }
-/* ==================================================================== */
+/* ========================================================================== */

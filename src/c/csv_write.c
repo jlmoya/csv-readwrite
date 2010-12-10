@@ -18,12 +18,16 @@
 #endif
 #include "strsubst.h"
 #include "expandPathVariable.h"
+#include "csv_default.h"
 /* ========================================================================== */
 #define DEFAULT_CSV_WRITE_STRING_FORMAT "%s"
 #define DEFAULT_CSV_WRITE_DOUBLE_FORMAT "%lg"
 #define NanString "Nan"
 #define InfString "Inf"
 #define NegInfString "-Inf"
+#define PlusStr "+"
+#define LessStr "+"
+#define ComplexStr "i"
 #define EMPTY_STRING ""
 #if _MSC_VER
     #define MODEFD "wt"
@@ -86,7 +90,7 @@ csvWriteError csv_write_double(char *filename,
                 char buffer[65535];
                 char *result = NULL;
                 sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, pdValues[i + m*j]);
-                result = strsubst(buffer, DEFAULT_CSV_WRITE_DECIMAL, decimal);
+                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
@@ -118,6 +122,133 @@ csvWriteError csv_write_double(char *filename,
     return CSV_WRITE_NO_ERROR;
 }
 /* ========================================================================== */
+csvWriteError csv_write_complex(char *filename,
+                               double *pdValuesReal,
+                               double *pdValuesImag,
+                               int m, int n,
+                               char *separator,
+                               char *decimal)
+{
+    FILE  *fd = NULL;
+    int i = 0, j = 0;
+    char *expandedFilename = NULL;
+
+    if (filename == NULL) return CSV_WRITE_ERROR;
+    if (pdValuesReal == NULL) return CSV_WRITE_ERROR;
+    if (pdValuesImag == NULL) return CSV_WRITE_ERROR;
+    if (m < 0 || n < 0) return CSV_WRITE_ERROR;
+    if (separator == NULL) return CSV_WRITE_ERROR;
+    if (decimal == NULL) return CSV_WRITE_ERROR;
+
+    if (strcmp(separator, decimal) == 0) return CSV_WRITE_SEPARATOR_DECIMAL_EQUAL;
+
+    expandedFilename = expandPathVariable(filename);
+    wcfopen(fd , filename, MODEFD);
+    if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
+    if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
+
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            char StringValue[65535];
+            if (ISNAN(pdValuesReal[i + m*j]))
+            {
+                strcpy(StringValue, NanString);
+            }
+            else if (finite(pdValuesReal[i + m*j]))
+            {
+                char buffer[65535];
+                char *result = NULL;
+                sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, pdValuesReal[i + m*j]);
+                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
+                if (result)
+                {
+                    strcpy(StringValue, result);
+                    FREE(result);
+                    result = NULL;
+                }
+                else
+                {
+                    sprintf(StringValue, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, pdValuesReal[i + m*j]);
+                }
+            }
+            else
+            {
+                if ( signbit(pdValuesReal[i + m*j]) )
+                {
+                    // NegInfString
+                    strcpy(StringValue, NegInfString);
+                }
+                else
+                {
+                    // InfString
+                    strcpy(StringValue, InfString);
+                }
+            }
+            
+            if (ISNAN(pdValuesImag[i + m*j]))
+            {
+                strcat(StringValue, PlusStr);
+                strcat(StringValue, NanString);
+                strcat(StringValue, ComplexStr);
+            }
+            else if (finite(pdValuesImag[i + m*j]))
+            {
+                char buffer[65535];
+                char *result = NULL;
+
+                if (pdValuesImag[i + m*j] >= 0)
+                {
+                    strcat(StringValue, PlusStr);
+                }
+                else
+                {
+                    strcat(StringValue, LessStr);
+                }
+                
+                sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, fabs(pdValuesImag[i + m*j]));
+                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
+                
+                if (result)
+                {
+                    strcat(StringValue, result);
+                    FREE(result);
+                    result = NULL;
+                }
+                else
+                {
+                    
+                    sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, fabs(pdValuesImag[i + m*j]));
+                    strcat(StringValue, buffer);
+                }
+                strcat(StringValue, ComplexStr);
+            }
+            else
+            {
+                if ( signbit(pdValuesImag[i + m*j]) )
+                {
+                    // NegInfString
+                    strcat(StringValue, LessStr);
+                }
+                else
+                {
+                    // InfString
+                    strcat(StringValue, PlusStr);
+                }
+                strcat(StringValue, InfString);
+                strcat(StringValue, ComplexStr);
+            }
+            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, StringValue);
+            if (j + 1 < n) fprintf(fd, separator);
+        }
+        fprintf(fd, EOL);
+    }
+
+    fclose(fd);
+    return CSV_WRITE_NO_ERROR;
+}
+/* ========================================================================== */
 csvWriteError csv_write_string(char *filename,
                                char **pStrValues, int m, int n,
                                char *separator,
@@ -136,9 +267,8 @@ csvWriteError csv_write_string(char *filename,
     wcfopen(fd , filename, MODEFD);
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
 
-
-   for (i = 0 ; i < m ; i++ )
-   {
+    for (i = 0 ; i < m ; i++ )
+    {
         for ( j = 0 ; j < n ; j++)
         {
             if (decimal == NULL)
@@ -148,7 +278,7 @@ csvWriteError csv_write_string(char *filename,
             else
             {
                 char *result = NULL;
-                result = strsubst(pStrValues[i + m*j], DEFAULT_CSV_WRITE_DECIMAL, decimal);
+                result = strsubst(pStrValues[i + m*j], getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
@@ -163,9 +293,9 @@ csvWriteError csv_write_string(char *filename,
             if (j + 1 < n) fprintf(fd, separator);
         }
         fprintf(fd, EOL);
-   }
+    }
 
-   fclose(fd);
-   return CSV_WRITE_NO_ERROR;
+    fclose(fd);
+    return CSV_WRITE_NO_ERROR;
 }
 /* ========================================================================== */

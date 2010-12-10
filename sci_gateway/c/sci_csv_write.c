@@ -15,6 +15,7 @@
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
+#include "csv_default.h"
 /* ========================================================================== */
 /* csv_write(M, filename[, separator, decimal]) */
 /* with M string or double (not complex)
@@ -27,7 +28,9 @@ int sci_csv_write(char *fname)
     char *decimal = NULL;
     char *filename = NULL;
     char **pStringValues = NULL;
-    double *pDoubleValues = NULL;
+    double *pDoubleValuesReal = NULL;
+    double *pDoubleValuesImag = NULL;
+    int bIsComplex = 0;
     int mValues = 0;
     int nValues = 0;
 
@@ -83,7 +86,7 @@ int sci_csv_write(char *fname)
     }
     else
     {
-        decimal = strdup(DEFAULT_CSV_WRITE_DECIMAL);
+        decimal = strdup(getCsvDefaultDecimal());
     }
 
     if (Rhs > 2)
@@ -133,7 +136,7 @@ int sci_csv_write(char *fname)
     }
     else
     {
-        separator = strdup(DEFAULT_CSV_WRITE_SEPARATOR);
+        separator = strdup(getCsvDefaultSeparator);
     }
 
     sciErr = getVarAddressFromPosition(pvApiCtx, 2, &piAddressVarTwo);
@@ -204,14 +207,15 @@ int sci_csv_write(char *fname)
         {
             if (isVarComplex(pvApiCtx, piAddressVarOne))
             {
-                if (filename) {FREE(filename); filename = NULL;}
-                if (decimal) {FREE(decimal); decimal = NULL;}
-                if (separator) {FREE(separator); separator = NULL;}
-                Scierror(999,_("%s: Wrong type for input argument #%d: A matrix of string or a matrix of real expected.\n"), fname, 1);
-                return 0;
+                bIsComplex = 1;
+                sciErr = getComplexMatrixOfDouble(pvApiCtx, piAddressVarOne, &m1, &n1, &pDoubleValuesReal, &pDoubleValuesImag);
             }
+            else
+            {
+                sciErr = getMatrixOfDouble(pvApiCtx, piAddressVarOne, &m1, &n1, &pDoubleValuesReal);
 
-            sciErr = getMatrixOfDouble(pvApiCtx, piAddressVarOne, &m1, &n1, &pDoubleValues);
+            }
+            
             if(sciErr.iErr)
             {
                 if (filename) {FREE(filename); filename = NULL;}
@@ -315,10 +319,22 @@ int sci_csv_write(char *fname)
     }
     else
     {
-        csvError = csv_write_double(filename,
-                                    pDoubleValues, m1, n1,
+        if (bIsComplex)
+        {
+            csvError = csv_write_complex(filename,
+                                    pDoubleValuesReal,
+                                    pDoubleValuesImag,
+                                    m1, n1,
                                     separator,
                                     decimal);
+        }
+        else
+        {
+            csvError = csv_write_double(filename,
+                                    pDoubleValuesReal, m1, n1,
+                                    separator,
+                                    decimal);
+        }
     }
 
     switch(csvError)

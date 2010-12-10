@@ -40,7 +40,7 @@
         <term>M</term>
 
         <listitem>
-          <para>a matrix of strings or double (not complex).</para>
+          <para>a matrix of strings or double.</para>
         </listitem>
       </varlistentry>
 

@@ -16,6 +16,7 @@
 #if _MSC_VER
 #include "strdup_windows.h"
 #endif
+#include "csv_default.h"
 /* ========================================================================== */
 #if _MSC_VER
 #define READ_ONLY_TEXT_MODE "rt"
@@ -23,16 +24,16 @@
 #define READ_ONLY_TEXT_MODE "r"
 #endif
 /* ========================================================================== */
-static int getNumbersOfColumnsInLines(char **lines, int sizelines,
-                                      char *separator);
-static int getNumbersOfColumnsInLine(char *line, char *separator);
-static char **getStringsFromLines(char **lines, int sizelines,
-                                  char *separator, char *decimal,
+static int getNumbersOfColumnsInLines(const char **lines, int sizelines,
+                                      const char *separator);
+static int getNumbersOfColumnsInLine(const char *line, const char *separator);
+static char **getStringsFromLines(const char **lines, int sizelines,
+                                  const char *separator, const char *decimal,
                                   int m, int n);
 static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines);
-static char *stripCharacters(char *line);
+static char *stripCharacters(const char *line);
 /* ========================================================================== */
-csvResult* csv_read(char *filename, char *separator, char *decimal)
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal)
 {
     char *expandedFilename = NULL;
     csvResult *result = NULL;
@@ -45,26 +46,9 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
     char **lines = NULL;
     int nblines = 0;
 
-    int nbRows = 0;
-    int nbColumns = 0;
-    char **cellsStrings = NULL;
-
     if ((filename == NULL) || (separator == NULL) || (decimal == NULL))
     {
         return NULL;
-    }
-
-    if (strcmp(separator, decimal) == 0)
-    {
-        result = (csvResult*)(MALLOC(sizeof(csvResult)));
-        if (result)
-        {
-            result->err = CSV_READ_SEPARATOR_DECIMAL_EQUAL;
-            result->m = 0;
-            result->n = 0;
-            result->pstrValues = NULL;
-        }
-        return result;
     }
 
     expandedFilename = expandPathVariable(filename);
@@ -103,6 +87,12 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
 
     if (errMGETL != MGETL_NO_ERROR)
     {
+        if (lines)
+        {
+            freeArrayOfString(lines, nblines);
+            lines = NULL;
+        }
+
         result = (csvResult*)(MALLOC(sizeof(csvResult)));
         if (result)
         {
@@ -114,10 +104,42 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
         return result;
     }
 
-    /* remove last lines empty (bug 7003 in scilab */
-    lines = removeEmptyLinesAtTheEnd(lines, &nblines);
+    result = csv_textscan(lines, nblines, separator, decimal);
+    if (lines)
+    {
+        freeArrayOfString(lines, nblines);
+        lines = NULL;
+    }
 
-    nbColumns = getNumbersOfColumnsInLines(lines, nblines, separator);
+    return result;
+}
+/* ========================================================================== */
+csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separator, const char *decimal)
+{
+    csvResult *result = NULL;
+    int nbRows = 0;
+    int nbColumns = 0;
+    char **cellsStrings = NULL;
+    char **cleanedLines = NULL;
+    int nbLines = numberOfLines;
+
+    if (strcmp(separator, decimal) == 0)
+    {
+        result = (csvResult*)(MALLOC(sizeof(csvResult)));
+        if (result)
+        {
+            result->err = CSV_READ_SEPARATOR_DECIMAL_EQUAL;
+            result->m = 0;
+            result->n = 0;
+            result->pstrValues = NULL;
+        }
+        return result;
+    }
+
+    /* remove last lines empty (bug 7003 in scilab)*/
+    cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
+
+    nbColumns = getNumbersOfColumnsInLines(cleanedLines, nbLines, separator);
     if (nbColumns == 0)
     {
         result = (csvResult*)(MALLOC(sizeof(csvResult)));
@@ -132,11 +154,10 @@ csvResult* csv_read(char *filename, char *separator, char *decimal)
     }
     else
     {
-        nbRows = nblines;
+        nbRows = nbLines;
     }
 
-    cellsStrings = getStringsFromLines(lines, nblines, separator, decimal, nbColumns, nbRows);
-    freeArrayOfString(lines, nblines);
+    cellsStrings = getStringsFromLines(cleanedLines, nbLines, separator, decimal, nbColumns, nbRows);
 
     if (cellsStrings)
     {
@@ -180,8 +201,8 @@ void freeCsvResult(csvResult *result)
     }
 }
 /* ========================================================================== */
-static int getNumbersOfColumnsInLines(char **lines, int sizelines,
-                                      char *separator)
+static int getNumbersOfColumnsInLines(const char **lines, int sizelines,
+                                      const char *separator)
 {
     int previousNbColumns = 0;
     int NbColumns = 0;
@@ -209,7 +230,7 @@ static int getNumbersOfColumnsInLines(char **lines, int sizelines,
     return NbColumns;
 }
 /* ========================================================================== */
-static int getNumbersOfColumnsInLine(char *line, char *separator)
+static int getNumbersOfColumnsInLine(const char *line, const char *separator)
 {
     if (line && separator)
     {
@@ -242,9 +263,9 @@ static int getNumbersOfColumnsInLine(char *line, char *separator)
     return 0;
 }
 /* ========================================================================== */
-static char **getStringsFromLines(char **lines, int sizelines,
-                                  char *separator,
-                                  char *decimal,
+static char **getStringsFromLines(const char **lines, int sizelines,
+                                  const char *separator,
+                                  const char *decimal,
                                   int m, int n)
 {
     char **results = NULL;
@@ -295,7 +316,7 @@ static char **getStringsFromLines(char **lines, int sizelines,
                 }
                 else
                 {
-                    results[i + n * j] = strsubst(lineStrings[j], decimal, DEFAULT_CSV_READ_DECIMAL);
+                    results[i + n * j] = strsubst(lineStrings[j], decimal, getCsvDefaultDecimal());
                     FREE(lineStrings[j]);
                     lineStrings[j] = NULL;
                 }
@@ -305,7 +326,7 @@ static char **getStringsFromLines(char **lines, int sizelines,
     return results;
 }
 /* ========================================================================== */
-static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines)
+static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
 {
     char **returnedLines = lines;
     int nbLinesToRemove = 0;
@@ -356,7 +377,7 @@ static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines)
     return returnedLines;
 }
 /* ========================================================================== */
-static char *stripCharacters(char *line)
+static char *stripCharacters(const char *line)
 {
     char *returnedLine = NULL;
     if (line)
