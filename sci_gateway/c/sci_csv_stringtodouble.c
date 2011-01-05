@@ -1,0 +1,106 @@
+/* ========================================================================== */
+/* Allan CORNET */
+/* DIGITEO 2010 - 2011 */
+/* ========================================================================== */
+#include <string.h>
+#include "stack-c.h"
+#include "api_scilab.h"
+#include "sci_types.h"
+#include "Scierror.h"
+#include "MALLOC.h"
+#include "Scierror.h"
+#include "localization.h"
+#include "freeArrayOfString.h"
+#ifdef _MSC_VER
+#include "strdup_windows.h"
+#endif
+#include "stringToComplex.h"
+#include "csv_default.h"
+#include "gw_csv_helpers.h"
+/* ========================================================================== */
+int sci_csv_stringtodouble(char *fname)
+{
+    SciErr sciErr;
+    int iErr = 0;
+    int m1 = 0, n1 = 0;
+    char **pStringValues = NULL;
+
+    BOOL bConvertToNan = TRUE;
+
+    int i = 0;
+
+    doublecomplex *dvalscomplex = NULL;
+    stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
+
+    CheckRhs(1, 2);
+    CheckLhs(1, 1);
+
+    if (Rhs == 1)
+    {
+        bConvertToNan = TRUE;
+    }
+    else /* Rhs == 2 */
+    {
+        bConvertToNan = csv_getArgumentAsScalarBoolean(pvApiCtx, 2, fname, &iErr);
+        if (iErr) return 0;
+    }
+
+    pStringValues = csv_getArgumentAsMatrixOfString(pvApiCtx, 1, fname, &m1, &n1, &iErr);
+    if (iErr) return 0;
+
+    dvalscomplex = stringsToComplexs(pStringValues, m1 * n1, bConvertToNan, &ierr);
+
+    freeArrayOfString(pStringValues, m1 * n1);
+    pStringValues = NULL;
+
+    if (dvalscomplex == NULL)
+    {
+        switch(ierr)
+        {
+            case STRINGTOCOMPLEX_NOT_A_NUMBER:
+            case STRINGTOCOMPLEX_ERROR:
+                Scierror(999,_("%s: can not convert data.\n"), fname);
+            return 0;
+
+            default:
+                Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            return 0;
+        }
+    }
+
+    switch(ierr)
+    {
+        case STRINGTOCOMPLEX_NOT_A_NUMBER:
+        case STRINGTOCOMPLEX_NO_ERROR:
+        {
+            sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dvalscomplex);
+            FREE(dvalscomplex);
+            dvalscomplex = NULL;
+        }
+        break;
+
+        case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
+        {
+            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        }
+
+        default:
+        case STRINGTOCOMPLEX_ERROR:
+        {
+            Scierror(999,_("%s: can not convert data.\n"), fname);
+        }
+    }
+
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+    }
+    else
+    {
+        LhsVar(1) = Rhs + 1;
+        C2F(putlhsvar)();
+    }
+
+    return 0;
+}
+/* ========================================================================== */

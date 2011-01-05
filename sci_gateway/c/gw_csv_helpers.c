@@ -1,0 +1,387 @@
+/* ========================================================================== */
+/* Allan CORNET */
+/* DIGITEO 2011 */
+/* ========================================================================== */
+#include <string.h>
+#include "api_scilab.h"
+#include "stack-c.h"
+#include "sci_types.h"
+#include "Scierror.h"
+#include "MALLOC.h"
+#include "localization.h"
+#include "gw_csv_helpers.h"
+#ifdef _MSC_VER
+#include "strdup_windows.h"
+#endif
+#include "freeArrayOfString.h"
+/* ========================================================================== */
+char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const char *fname,
+                                                 const char *defaultValue,
+                                                 int *iErr)
+{
+    SciErr sciErr;
+    char *returnedValue = NULL;
+    int *piAddressVar = NULL;
+    int iType = 0;
+    int m = 0, n = 0;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return NULL;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return NULL;
+    }
+
+    if (iType != sci_strings)
+    {
+        if (isEmptyMatrix(pvApiCtx, piAddressVar))
+        {
+            /* [] equals default value */
+            if (defaultValue)
+            {
+                *iErr = 0;
+                returnedValue = strdup(defaultValue);
+            }
+            else
+            {
+                *iErr = 0;
+                returnedValue = NULL;
+            }
+        }
+        else
+        {
+            *iErr = API_ERROR_INVALID_TYPE;
+            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, _iVar);
+            return NULL;
+        }
+    }
+    else
+    {
+        *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+
+        if (*iErr == 0 )
+        {
+            *iErr = API_ERROR_CHECK_VAR_DIMENSION;
+            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, _iVar);
+            return NULL;
+        }
+
+        *iErr = getAllocatedSingleString(pvApiCtx, piAddressVar, &returnedValue);
+        if (*iErr)
+        {
+            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            return NULL;
+        }
+    }
+    return returnedValue;
+}
+/* ========================================================================== */
+char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
+                              const char *fname, int *iErr)
+{
+    SciErr sciErr;
+
+    int *piAddressVar = NULL;
+    int m = 0, n = 0;
+    int iType = 0;
+
+    char *returnedValue = NULL;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    if (iType != sci_strings)
+    {
+        *iErr = API_ERROR_INVALID_TYPE;
+        Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 1);
+        return NULL;
+    }
+
+    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+
+    if (*iErr == 0 )
+    {
+        *iErr = API_ERROR_CHECK_VAR_DIMENSION;
+        Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, _iVar);
+        return NULL;
+    }
+
+    *iErr = getAllocatedSingleString(pvApiCtx, piAddressVar, &returnedValue);
+    if (*iErr)
+    {
+        Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        return NULL;
+    }
+    return returnedValue;
+}
+/* ========================================================================== */
+int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
+                              const char *fname, int *iErr)
+{
+    SciErr sciErr;
+    int bValue = 0;
+    int *piAddressVar = NULL;
+    int m = 0, n = 0;
+    int iType = 0;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return 0;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return 0;
+    }
+
+    if (iType != sci_boolean)
+    {
+        Scierror(999,_("%s: Wrong type for input argument #%d: A boolean expected.\n"), fname, _iVar);
+        *iErr =  API_ERROR_INVALID_TYPE;
+        return 0;
+    }
+
+    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+
+    if (*iErr == 0 )
+    {
+        *iErr = API_ERROR_CHECK_VAR_DIMENSION;
+        Scierror(999,_("%s: Wrong size for input argument #%d: A boolean expected.\n"), fname, _iVar);
+        return 0;
+    }
+
+    *iErr = getScalarBoolean(pvApiCtx, piAddressVar, &bValue);
+    return bValue;
+}
+/* ========================================================================== */
+char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
+                                       const char *fname,
+                                       int *m, int *n, int *iErr)
+{
+    SciErr sciErr;
+    char **pStringValues = NULL;
+    int *piAddressVar = NULL;
+    int m_ = 0, n_ = 0;
+    int iType = 0;
+    int *lengthStringValues = NULL;
+    int i = 0;
+
+    *m = 0;
+    *n = 0;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    if (iType != sci_strings)
+    {
+        *iErr =  API_ERROR_INVALID_TYPE;
+        Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, _iVar);
+        return NULL;
+    }
+
+    sciErr = getVarDimension(pvApiCtx, piAddressVar, &m_, &n_);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    lengthStringValues = (int*)MALLOC(sizeof(int) * (m_ * n_));
+    if (lengthStringValues == NULL)
+    {
+        *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
+        Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        return NULL;
+    }
+
+    sciErr = getMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, lengthStringValues, NULL);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    pStringValues = (char**)MALLOC(sizeof(char*) * (m_ * n_));
+    if (pStringValues == NULL)
+    {
+        *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
+        if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
+        Scierror(999,_("%s: Memory allocation error.\n"),fname);
+        return NULL;
+    }
+
+    for (i = 0; i < (m_ * n_); i++)
+    {
+        pStringValues[i] = (char*)MALLOC(sizeof(char) * (lengthStringValues[i] + 1));
+        if (pStringValues[i] == NULL)
+        {
+            *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
+            if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
+            freeArrayOfString(pStringValues, m_ * n_);
+            Scierror(999,_("%s: Memory allocation error.\n"),fname);
+            return NULL;
+        }
+    }
+
+    sciErr = getMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, lengthStringValues, pStringValues);
+    if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        freeArrayOfString(pStringValues, m_ * n_);
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    *iErr = 0;
+    *m = m_;
+    *n = n_;
+
+    return pStringValues;
+}
+/* ========================================================================== */
+int csv_isRowVector(void* _pvCtx, int _iVar)
+{
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr) return 0;
+    return isRowVector(pvApiCtx, piAddressVar);
+}
+/* ========================================================================== */
+int csv_isColumnVector(void* _pvCtx, int _iVar)
+{
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr) return 0;
+    return isColumnVector(pvApiCtx, piAddressVar);
+}
+/* ========================================================================== */
+int csv_isScalar(void* _pvCtx, int _iVar)
+{
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr) return 0;
+    return isScalar(pvApiCtx, piAddressVar);
+}
+/* ========================================================================== */
+int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
+                                       const char *fname,
+                                       int *m, int *n, int *iErr)
+{
+    int *iReturnedArray = NULL;
+    double *dArray = NULL;
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    int iType = 0;
+    int m_ = 0; int n_ = 0;
+    int i = 0;  int j = 0;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    if (iType != sci_matrix)
+    {
+        *iErr =  API_ERROR_INVALID_TYPE;
+        Scierror(999,_("%s: Wrong type for input argument #%d: A matrix of double expected.\n"), fname, _iVar);
+        return NULL;
+    }
+
+    sciErr = getMatrixOfDouble(pvApiCtx, piAddressVar, &m_, &n_, &dArray);
+    if(sciErr.iErr)
+    {
+        *iErr = sciErr.iErr;
+        printError(&sciErr, 0);
+        return NULL;
+    }
+
+    for (j = 0; j < m_ * n_; j++)
+    {
+        int iVal = (int)dArray[j];
+        if ((double)iVal != dArray[j])
+        {
+            *iErr = API_ERROR_GET_DOUBLE;
+            Scierror(999,_("%s: Wrong value for input argument #%d: A matrix of double expected.\n"), fname, _iVar);
+            return NULL;
+        }
+    }
+
+    iReturnedArray = (int*)MALLOC(sizeof(int) * (m_ * n_));
+    if (iReturnedArray == NULL)
+    {
+        *iErr = API_ERROR_ALLOC_DOUBLE;
+        Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        return NULL;
+    }
+
+    for (j = 0; j < m_ * n_; j++)
+    {
+        iReturnedArray[j] = (int)dArray[j];
+    }
+
+    *iErr = 0;
+    *m = m_;
+    *n = n_;
+
+    return iReturnedArray;
+}
+/* ========================================================================== */
