@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ========================================================================== */
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,10 +8,11 @@
 #include <math.h>
 #include "stringToDouble.h"
 #include "MALLOC.h"
+#include "csv_default.h"
+#ifdef  _MSC_VER
+#include "strdup_windows.h"
+#endif
 /* ========================================================================== */
-#define NanString "Nan"
-#define InfString "Inf"
-#define NegInfString "-Inf"
 #ifndef _MSC_VER
   #ifndef stricmp
     #define stricmp strcasecmp
@@ -19,6 +20,8 @@
 #else  
     #define stricmp _stricmp
 #endif
+/* ========================================================================== */
+#define DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT "%lg"
 /* ========================================================================== */
 static double returnINF(BOOL bPositive);
 static double returnNAN(void);
@@ -88,11 +91,12 @@ double stringToDouble(const char *pSTR,
     *ierr = STRINGTODOUBLE_ERROR;
     if (pSTR)
     {
-        if (stricmp(pSTR, NanString) == 0)
+        if ((stricmp(pSTR, NanString) == 0) || (stricmp(pSTR, NegNanString) == 0) ||
+            (stricmp(pSTR, PosNanString) == 0))
         {
             dValue = returnNAN();
         }
-        else if (stricmp(pSTR, InfString) == 0)
+        else if ((stricmp(pSTR, InfString) == 0) || (stricmp(pSTR, PosInfString) == 0))
         {
             dValue = returnINF(TRUE);
         }
@@ -103,8 +107,32 @@ double stringToDouble(const char *pSTR,
         else
         {
             double v = 0.;
-            int err = sscanf(pSTR, "%lg", &v);
-            if (err == 0)
+            
+            int err = sscanf(pSTR, DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT, &v);
+            
+            if (err == 1)
+            {
+                    double v2 = 0.;
+                    char * pEnd = NULL;
+                    v2 = strtod(pSTR, &pEnd);
+                    if (strcmp(pEnd, "") == 0)
+                    {
+                        dValue = v2;
+                    }
+                    else
+                    {
+                        if (bConvertByNAN)
+                        {
+                            dValue = returnNAN();
+                        }
+                        else
+                        {
+                            *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
+                            return (dValue = 0.0);
+                        }
+                    }
+            }
+            else
             {
                 if (bConvertByNAN)
                 {
@@ -115,10 +143,6 @@ double stringToDouble(const char *pSTR,
                     *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
                     return (dValue = 0.0);
                 }
-            }
-            else
-            {
-                dValue = v;
             }
         }
         *ierr = STRINGTODOUBLE_NO_ERROR;

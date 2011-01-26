@@ -17,6 +17,8 @@
 #include "stringToComplex.h"
 #include "csv_default.h"
 #include "csv_read.h"
+#include "getRange.h"
+#include "gw_csv_helpers.h"
 /* ========================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
@@ -24,69 +26,70 @@
 int sci_csv_textscan(char *fname)
 {
     SciErr sciErr;
+    int iErr = 0;
     int i = 0;
-    
+
     int *piAddressVarOne = NULL;
     int m1 = 0, n1 = 0;
     int iType1 = 0;
-    
+
     char **text = NULL;
     int *lengthText = NULL;
     int nbLines = 0;
-    
+
     char *separator = NULL;
     char *decimal = NULL;
     char *conversion = NULL;
 
+    int *iRange = NULL;
+    int haveRange = 0;
+
     csvResult *result = NULL;
 
-    CheckRhs(1, 4);
+    CheckRhs(1, 5);
     CheckLhs(1, 1);
 
-    if (Rhs == 4)
+    if (Rhs == 5)
     {
-        int *piAddressVarFour = NULL;
-        int m4 = 0, n4 = 0;
-        int iType4 = 0;
+        #define SIZE_RANGE_SUPPORTED 4
+        int m5 = 0, n5 = 0;
 
-        sciErr = getVarAddressFromPosition(pvApiCtx, 4, &piAddressVarFour);
-        if(sciErr.iErr)
+        iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 5, fname, &m5, &n5, &iErr);
+        if (iErr) return 0;
+
+        if ((m5 * n5 != SIZE_RANGE_SUPPORTED) || (n5 != 1))
         {
-            printError(&sciErr, 0);
+            if (iRange) {FREE(iRange); iRange = NULL;}
+            Scierror(999,_("%s: Wrong size for input argument #%d: A column vector expected.\n"), fname, 5);
             return 0;
         }
 
-        sciErr = getVarType(pvApiCtx, piAddressVarFour, &iType4);
-        if(sciErr.iErr)
+        if (isValidRange(iRange, m5 * n5))
         {
-            printError(&sciErr, 0);
+            haveRange = 1;
+        }
+        else
+        {
+            if (iRange) {FREE(iRange); iRange = NULL;}
+            Scierror(999,_("%s: Wrong value for input argument #%d: A column vector expected.\n"), fname, 5);
             return 0;
         }
+    }
 
-        if (iType4 != sci_strings)
+    if (Rhs >= 4)
+    {
+        conversion = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 4, fname, getCsvDefaultConversion(), &iErr);
+        if (iErr)
         {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 4);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarFour, &m4, &n4);
-
-        if ( (m4 != n4) && (n4 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 4);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarFour, &conversion))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            if (iRange) { FREE(iRange); iRange = NULL;}
             return 0;
         }
 
         if (!((strcmp(conversion, CONVTOSTR) == 0) || (strcmp(conversion, CONVTODOUBLE) == 0)))
         {
-            FREE(conversion);
-            conversion = NULL;
+            if (iRange) { FREE(iRange); iRange = NULL;}
+            if (conversion) { FREE(conversion); conversion = NULL;}
+
             Scierror(999,_("%s: Wrong value for input argument #%d: '%s' or '%s' string expected.\n"), fname, 4, "double", "string");
             return 0;
         }
@@ -98,41 +101,11 @@ int sci_csv_textscan(char *fname)
 
     if (Rhs >= 3)
     {
-        int *piAddressVarThree = NULL;
-        int m3 = 0, n3 = 0;
-        int iType3 = 0;
-
-        sciErr = getVarAddressFromPosition(pvApiCtx, 3, &piAddressVarThree);
-        if(sciErr.iErr)
+        decimal = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 3, fname, getCsvDefaultDecimal(), &iErr);
+        if (iErr)
         {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        sciErr = getVarType(pvApiCtx, piAddressVarThree, &iType3);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        if (iType3 != sci_strings)
-        {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 3);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarThree, &m3, &n3);
-
-        if ( (m3 != n3) && (n3 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 3);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarThree, &decimal))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            if (iRange) { FREE(iRange); iRange = NULL;}
+            if (conversion) {FREE(conversion); conversion = NULL;}
             return 0;
         }
     }
@@ -143,41 +116,12 @@ int sci_csv_textscan(char *fname)
 
     if (Rhs >= 2)
     {
-        int *piAddressVarTwo = NULL;
-        int m2 = 0, n2 = 0;
-        int iType2 = 0;
-
-        sciErr = getVarAddressFromPosition(pvApiCtx, 2, &piAddressVarTwo);
-        if(sciErr.iErr)
+        separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 3, fname, getCsvDefaultSeparator(), &iErr);
+        if (iErr)
         {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        sciErr = getVarType(pvApiCtx, piAddressVarTwo, &iType2);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        if (iType2 != sci_strings)
-        {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 2);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarTwo, &m2, &n2);
-
-        if ( (m2 != n2) && (n2 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 2);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarTwo, &separator))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            if (iRange) { FREE(iRange); iRange = NULL;}
+            if (decimal) {FREE(decimal); decimal = NULL;}
+            if (conversion) {FREE(conversion); conversion = NULL;}
             return 0;
         }
     }
@@ -186,91 +130,40 @@ int sci_csv_textscan(char *fname)
         separator = strdup(getCsvDefaultSeparator());
     }
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, 1, &piAddressVarOne);
-    if(sciErr.iErr)
+    if (!csv_isRowVector(pvApiCtx, 1) &&
+        !csv_isColumnVector(pvApiCtx, 1) &&
+        !csv_isScalar(pvApiCtx, 1))
     {
-        printError(&sciErr, 0);
-        return 0;
-    }
-
-    sciErr = getVarType(pvApiCtx, piAddressVarOne, &iType1);
-    if(sciErr.iErr)
-    {
-        printError(&sciErr, 0);
-        return 0;
-    }
-
-    if (iType1 != sci_strings)
-    {
-        Scierror(999,_("%s: Wrong type for input argument #%d: string expected.\n"), fname, 1);
-        return 0;
-    }
-
-    sciErr = getVarDimension(pvApiCtx, piAddressVarOne, &m1, &n1);
-    
-    if (!isRowVector(pvApiCtx, piAddressVarOne) && 
-        !isColumnVector(pvApiCtx, piAddressVarOne) &&
-        !isScalar(pvApiCtx, piAddressVarOne))
-    {
+        if (iRange) { FREE(iRange); iRange = NULL;}
+        if (separator) {FREE(separator); separator = NULL;}
+        if (decimal) {FREE(decimal); decimal = NULL;}
+        if (conversion) {FREE(conversion); conversion = NULL;}
         Scierror(999,_("%s: Wrong size for input argument #%d: string expected.\n"), fname, 1);
         return 0;
     }
-    
-    nbLines = m1 * n1;
-    
-    lengthText = (int*)MALLOC(sizeof(int) * nbLines);
-    if (lengthText == NULL)
+
+    text = csv_getArgumentAsMatrixOfString(pvApiCtx, 1, fname, &m1, &n1, &iErr);
+    if (iErr)
     {
-        Scierror(999,_("%s: Memory allocation error.\n"), fname);
-        return 0;
-    }
-    
-    text = (char**)MALLOC(sizeof(char*) * nbLines);
-    if (text == NULL)
-    {
-        Scierror(999,_("%s: Memory allocation error.\n"),fname);
-        return 0;
-    }
-    
-    // get lengthStrings value
-    sciErr = getMatrixOfString(pvApiCtx, piAddressVarOne, &m1, &n1, lengthText, NULL);
-    if(sciErr.iErr)
-    {
-        printError(&sciErr, 0);
-        return 0;
-    }
-    
-    for (i = 0; i < nbLines; i++)
-    {
-        text[i] = (char*)MALLOC(sizeof(char) * (lengthText[i] + 1));
-        if (text[i] == NULL)
-        {
-            freeArrayOfString(text, nbLines);
-            if (lengthText) {FREE(lengthText); lengthText = NULL;}
-            Scierror(999,_("%s: Memory allocation error.\n"),fname);
-            return 0;
-        }
-    }
-    
-    sciErr = getMatrixOfString(pvApiCtx, piAddressVarOne, &m1, &n1, lengthText, text);
-    if(sciErr.iErr)
-    {
-        freeArrayOfString(text, nbLines);
-        if (lengthText) {FREE(lengthText); lengthText = NULL;}
-        printError(&sciErr, 0);
+        if (iRange) { FREE(iRange); iRange = NULL;}
+        if (separator) {FREE(separator); separator = NULL;}
+        if (decimal) {FREE(decimal); decimal = NULL;}
+        if (conversion) {FREE(conversion); conversion = NULL;}
         return 0;
     }
 
     result = csv_textscan(text, nbLines, separator, decimal);
     if (text)
     {
+        if (separator) {FREE(separator); separator = NULL;}
+        if (decimal) {FREE(decimal); decimal = NULL;}
         freeArrayOfString(text, nbLines);
         text = NULL;
     }
-    
+
     if (separator) {FREE(separator); separator = NULL;}
     if (decimal) {FREE(decimal); decimal = NULL;}
-        
+
     if (result)
     {
         switch(result->err)
@@ -285,7 +178,27 @@ int sci_csv_textscan(char *fname)
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
-                  sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                    if (haveRange)
+                    {
+                        int newM = 0;
+                        int newN = 0;
+
+                        char **pStrRange = getRangeAsString(result->pstrValues, result->m, result->n, iRange, &newM, &newN);
+                        if (pStrRange)
+                        {
+                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
+                            freeArrayOfString(pStrRange, newM * newN);
+                        }
+                        else
+                        {
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                        }
+
+                    }
+                    else
+                    {
+                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                    }
                 }
                 else /* to double */
                 {
@@ -295,6 +208,7 @@ int sci_csv_textscan(char *fname)
                   {
                      freeCsvResult(result);
                      if (conversion) {FREE(conversion); conversion = NULL;}
+                     if (iRange) { FREE(iRange); iRange = NULL;}
                      if (ierr == STRINGTOCOMPLEX_ERROR)
                      {
                         Scierror(999,_("%s: can not convert data.\n"), fname);
@@ -311,9 +225,29 @@ int sci_csv_textscan(char *fname)
                         case STRINGTOCOMPLEX_NOT_A_NUMBER:
                         case STRINGTOCOMPLEX_NO_ERROR:
                         {
-                          sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
-                          FREE(dvalscomplex);
-                          dvalscomplex = NULL;
+                            if (haveRange)
+                            {
+                                int newM = 0;
+                                int newN = 0;
+
+                                doublecomplex *complexRange = getRangeAsComplex(dvalscomplex, result->m, result->n, iRange, &newM, &newN);
+                                if (complexRange)
+                                {
+                                    sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, newM, newN, complexRange);
+                                    FREE(complexRange);
+                                    complexRange = NULL;
+                                }
+                                else
+                                {
+                                    Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                                }
+                            }
+                            else
+                            {
+                                sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+                            }
+                            FREE(dvalscomplex);
+                            dvalscomplex = NULL;
                         }
                         break;
 
@@ -333,6 +267,7 @@ int sci_csv_textscan(char *fname)
                 {
                     freeCsvResult(result);
                     if (conversion) {FREE(conversion); conversion = NULL;}
+                    if (iRange) { FREE(iRange); iRange = NULL;}
                     printError(&sciErr, 0);
                     return 0;
                 }
@@ -365,6 +300,7 @@ int sci_csv_textscan(char *fname)
     }
     freeCsvResult(result);
     if (conversion) {FREE(conversion); conversion = NULL;}
+    if (iRange) { FREE(iRange); iRange = NULL;}
 
     return 0;
 }

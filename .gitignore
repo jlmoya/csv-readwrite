@@ -8,6 +8,8 @@ macros/names
 *.so
 *.dll
 *.exp
+*.ilk
+Edit?
 jar/
 help/en_US/master_help.xml
 help/en_US/scilab_en_US_help/

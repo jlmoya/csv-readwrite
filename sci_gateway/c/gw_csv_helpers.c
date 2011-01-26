@@ -220,60 +220,9 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    sciErr = getVarDimension(pvApiCtx, piAddressVar, &m_, &n_);
-    if(sciErr.iErr)
+    *iErr = getAllocatedMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, &pStringValues);
+    if (*iErr != 0)
     {
-        *iErr = sciErr.iErr;
-        printError(&sciErr, 0);
-        return NULL;
-    }
-
-    lengthStringValues = (int*)MALLOC(sizeof(int) * (m_ * n_));
-    if (lengthStringValues == NULL)
-    {
-        *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
-        Scierror(999,_("%s: Memory allocation error.\n"), fname);
-        return NULL;
-    }
-
-    sciErr = getMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, lengthStringValues, NULL);
-    if(sciErr.iErr)
-    {
-        *iErr = sciErr.iErr;
-        if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
-        printError(&sciErr, 0);
-        return NULL;
-    }
-
-    pStringValues = (char**)MALLOC(sizeof(char*) * (m_ * n_));
-    if (pStringValues == NULL)
-    {
-        *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
-        if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
-        Scierror(999,_("%s: Memory allocation error.\n"),fname);
-        return NULL;
-    }
-
-    for (i = 0; i < (m_ * n_); i++)
-    {
-        pStringValues[i] = (char*)MALLOC(sizeof(char) * (lengthStringValues[i] + 1));
-        if (pStringValues[i] == NULL)
-        {
-            *iErr = API_ERROR_GET_ALLOC_STRING_MATRIX;
-            if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
-            freeArrayOfString(pStringValues, m_ * n_);
-            Scierror(999,_("%s: Memory allocation error.\n"),fname);
-            return NULL;
-        }
-    }
-
-    sciErr = getMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, lengthStringValues, pStringValues);
-    if (lengthStringValues) {FREE(lengthStringValues); lengthStringValues = NULL;}
-    if(sciErr.iErr)
-    {
-        *iErr = sciErr.iErr;
-        freeArrayOfString(pStringValues, m_ * n_);
-        printError(&sciErr, 0);
         return NULL;
     }
 

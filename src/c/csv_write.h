@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ========================================================================== */
 #ifndef __CSV_WRITE_H__
 #define __CSV_WRITE_H__
@@ -13,24 +13,30 @@ typedef enum {
 } csvWriteError;
 
 
-csvWriteError csv_write_double(char *filename,
-                               double *pdValues, int m, int n,
-                               char *separator,
-                               char *decimal);
+csvWriteError csv_write_double(const char *filename,
+                               const double *pdValues, int m, int n,
+                               const char *separator,
+                               const char *decimal,
+                               const char *precisionFormat,
+                               const char **headersLines,
+                               int nbHeadersLines);
                                
-csvWriteError csv_write_complex(char *filename,
-                               double *pdValuesReal,
-                               double *pdValuesImag,
+csvWriteError csv_write_complex(const char *filename,
+                               const double *pdValuesReal,
+                               const double *pdValuesImag,
                                int m, int n,
-                               char *separator,
-                               char *decimal);
-                               
+                               const char *separator,
+                               const char *decimal,
+                               const char *precisionFormat,
+                               const char **headersLines,
+                               int nbHeadersLines);
 
-csvWriteError csv_write_string(char *filename,
-                               char **pStrValues, int m, int n,
-                               char *separator,
-                               char *decimal);
-
+csvWriteError csv_write_string(const char *filename,
+                               const char **pStrValues, int m, int n,
+                               const char *separator,
+                               const char *decimal,
+                               const char **headersLines,
+                               int nbHeadersLines);
 #endif /* __CSV_WRITE_H__ */
 /* ========================================================================== */
 

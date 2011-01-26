@@ -1,4 +1,4 @@
-// Allan CORNET - DIGITEO - 2010
+// Allan CORNET - DIGITEO - 2010 - 2011
 
 src_c_path = get_absolute_file_path("builder_c.sce");
 
@@ -23,9 +23,14 @@ files_src = ["csv_read.c", ..
              "splitLine.c", ..
              "stringToDouble.c", ..
              "stringToComplex.c", ..
+             "checkCsvWriteFormat.c", ..
+             "getRange.c", ..
              "csv_default.c"];
 
-tbx_build_src(["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble", "stringToComplex", "csv_default"], ..
+functions_c = ["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble", ..
+               "stringToComplex", "csv_default", "checkCsvWriteFormat", "getRange"];
+
+tbx_build_src(functions_c, ..
               files_src, ..
               "c", ..             ..
               src_c_path,         ..

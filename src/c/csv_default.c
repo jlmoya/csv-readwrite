@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ========================================================================== */
 #include <string.h>
 #include "csv_default.h"
@@ -8,9 +8,11 @@
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
+#include "checkCsvWriteFormat.h"
 /* ========================================================================== */
 #define DEFAULT_CSV_SEPARATOR ","
 #define DEFAULT_CSV_DECIMAL "."
+#define DEFAULT_CSV_PRECISION "%.16lg"
 #define CSV_DECIMAL_MODE_1 DEFAULT_CSV_DECIMAL
 #define CSV_DECIMAL_MODE_2 ","
 #define DEFAULT_CSV_CONVERSION "string"
@@ -20,6 +22,7 @@
 static char *defaultCsvSeparator = NULL;
 static char *defaultCsvDecimal = NULL;
 static char *defaultCsvConversion = NULL;
+static char *defaultCsvPrecision = NULL;
 /* ========================================================================== */
 static int initializeCsvDefaultValues(void);
 /* ========================================================================== */
@@ -39,6 +42,12 @@ const char *getCsvDefaultConversion(void)
 {
     initializeCsvDefaultValues();
     return defaultCsvConversion;
+}
+/* ========================================================================== */
+const char *getCsvDefaultPrecision(void)
+{
+    initializeCsvDefaultValues();
+    return defaultCsvPrecision;
 }
 /* ========================================================================== */
 int setCsvDefaultSeparator(const char *separator)
@@ -87,6 +96,19 @@ int setCsvDefaultConversion(const char *conversion)
     return 1;
 }
 /* ========================================================================== */
+int setCsvDefaultPrecision(const char *precision)
+{
+    if (initializeCsvDefaultValues()) return 1;
+    if (precision == NULL) return 1;
+    if (checkCsvWriteFormat(precision) == 0)
+    {
+        if (defaultCsvPrecision) FREE(defaultCsvPrecision);
+        defaultCsvPrecision = strdup(precision);
+        if (defaultCsvPrecision) return 0;
+    }
+    return 1;
+}
+/* ========================================================================== */
 static int initializeCsvDefaultValues(void)
 {
     if (defaultCsvSeparator == NULL)
@@ -103,10 +125,16 @@ static int initializeCsvDefaultValues(void)
     {
         defaultCsvConversion = strdup(DEFAULT_CSV_CONVERSION);
     }
+    
+    if (defaultCsvPrecision == NULL)
+    {
+        defaultCsvPrecision = strdup(DEFAULT_CSV_PRECISION);
+    }
 
     if ((defaultCsvSeparator == NULL) ||
         (defaultCsvDecimal == NULL) ||
-        (defaultCsvConversion == NULL))
+        (defaultCsvConversion == NULL) ||
+        (defaultCsvPrecision == NULL))
     {
         return 1;
     }
@@ -119,6 +147,7 @@ int setCsvDefaultReset(void)
     if (defaultCsvSeparator) {FREE(defaultCsvSeparator); defaultCsvSeparator = NULL;}
     if (defaultCsvDecimal) {FREE(defaultCsvDecimal); defaultCsvDecimal = NULL;}
     if (defaultCsvConversion) {FREE(defaultCsvConversion); defaultCsvConversion = NULL;}
-    return initializeCsvDefaultValues;
+    if (defaultCsvPrecision) {FREE(defaultCsvPrecision); defaultCsvPrecision = NULL;}
+    return initializeCsvDefaultValues();
 }
 /* ========================================================================== */

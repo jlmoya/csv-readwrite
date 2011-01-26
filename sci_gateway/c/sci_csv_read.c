@@ -1,6 +1,6 @@
 /* ==================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ==================================================================== */
 #include <string.h>
 #include "stack-c.h"
@@ -15,6 +15,7 @@
 #endif
 #include "stringToComplex.h"
 #include "csv_default.h"
+#include "gw_csv_helpers.h"
 /* ==================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
@@ -24,10 +25,7 @@
 int sci_csv_read(char *fname)
 {
     SciErr sciErr;
-
-    int *piAddressVarOne = NULL;
-    int m1 = 0, n1 = 0;
-    int iType1 = 0;
+    int iErr = 0;
 
     char *filename = NULL;
     char *separator = NULL;
@@ -41,48 +39,12 @@ int sci_csv_read(char *fname)
 
     if (Rhs == 4)
     {
-        int *piAddressVarFour = NULL;
-        int m4 = 0, n4 = 0;
-        int iType4 = 0;
-
-        sciErr = getVarAddressFromPosition(pvApiCtx, 4, &piAddressVarFour);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        sciErr = getVarType(pvApiCtx, piAddressVarFour, &iType4);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        if (iType4 != sci_strings)
-        {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 4);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarFour, &m4, &n4);
-
-        if ( (m4 != n4) && (n4 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 4);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarFour, &conversion))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
-            return 0;
-        }
-
+        int iErr = 0;
+        conversion = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 4, fname, getCsvDefaultConversion(), &iErr);
+        if (iErr) return 0;
         if (!((strcmp(conversion, CONVTOSTR) == 0) || (strcmp(conversion, CONVTODOUBLE) == 0)))
         {
-            FREE(conversion);
-            conversion = NULL;
+            if (conversion) {FREE(conversion); conversion = NULL;}
             Scierror(999,_("%s: Wrong value for input argument #%d: '%s' or '%s' string expected.\n"), fname, 4, "double", "string");
             return 0;
         }
@@ -94,41 +56,11 @@ int sci_csv_read(char *fname)
 
     if (Rhs >= 3)
     {
-        int *piAddressVarThree = NULL;
-        int m3 = 0, n3 = 0;
-        int iType3 = 0;
-
-        sciErr = getVarAddressFromPosition(pvApiCtx, 3, &piAddressVarThree);
-        if(sciErr.iErr)
+        int iErr = 0;
+        decimal = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 3, fname, getCsvDefaultDecimal(), &iErr);
+        if (iErr)
         {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        sciErr = getVarType(pvApiCtx, piAddressVarThree, &iType3);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        if (iType3 != sci_strings)
-        {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 3);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarThree, &m3, &n3);
-
-        if ( (m3 != n3) && (n3 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 3);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarThree, &decimal))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            if (conversion) {FREE(conversion); conversion = NULL;}
             return 0;
         }
     }
@@ -139,41 +71,12 @@ int sci_csv_read(char *fname)
 
     if (Rhs >= 2)
     {
-        int *piAddressVarTwo = NULL;
-        int m2 = 0, n2 = 0;
-        int iType2 = 0;
-
-        sciErr = getVarAddressFromPosition(pvApiCtx, 2, &piAddressVarTwo);
-        if(sciErr.iErr)
+        int iErr = 0;
+        separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 2, fname, getCsvDefaultSeparator(), &iErr);
+        if (iErr)
         {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        sciErr = getVarType(pvApiCtx, piAddressVarTwo, &iType2);
-        if(sciErr.iErr)
-        {
-            printError(&sciErr, 0);
-            return 0;
-        }
-
-        if (iType2 != sci_strings)
-        {
-            Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 2);
-            return 0;
-        }
-
-        sciErr = getVarDimension(pvApiCtx, piAddressVarTwo, &m2, &n2);
-
-        if ( (m2 != n2) && (n2 != 1) )
-        {
-            Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 2);
-            return 0;
-        }
-
-        if (getAllocatedSingleString(pvApiCtx, piAddressVarTwo, &separator))
-        {
-            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+            if (conversion) {FREE(conversion); conversion = NULL;}
+            if (decimal) {FREE(decimal); decimal = NULL;}
             return 0;
         }
     }
@@ -182,37 +85,13 @@ int sci_csv_read(char *fname)
         separator = strdup(getCsvDefaultSeparator());
     }
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, 1, &piAddressVarOne);
-    if(sciErr.iErr)
-    {
-        printError(&sciErr, 0);
-        return 0;
-    }
 
-    sciErr = getVarType(pvApiCtx, piAddressVarOne, &iType1);
-    if(sciErr.iErr)
+    filename = csv_getArgumentAsString(pvApiCtx, 1, fname, &iErr);
+    if (iErr)
     {
-        printError(&sciErr, 0);
-        return 0;
-    }
-
-    if (iType1 != sci_strings)
-    {
-        Scierror(999,_("%s: Wrong type for input argument #%d: A string expected.\n"), fname, 1);
-        return 0;
-    }
-
-    sciErr = getVarDimension(pvApiCtx, piAddressVarOne, &m1, &n1);
-
-    if ( (m1 != n1) && (n1 != 1) )
-    {
-        Scierror(999,_("%s: Wrong size for input argument #%d: A string expected.\n"), fname, 1);
-        return 0;
-    }
-
-    if (getAllocatedSingleString(pvApiCtx, piAddressVarOne, &filename))
-    {
-        Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        if (separator) {FREE(separator); separator = NULL;}
+        if (conversion) {FREE(conversion); conversion = NULL;}
+        if (decimal) {FREE(decimal); decimal = NULL;}
         return 0;
     }
 

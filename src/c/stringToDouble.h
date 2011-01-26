@@ -7,6 +7,13 @@
 
 #include "BOOL.h"
 
+#define NanString "Nan"
+#define InfString "Inf"
+#define NegInfString "-Inf"
+#define PosInfString "+Inf"
+#define NegNanString "-Nan" /* no sense but used by some users */
+#define PosNanString "+Nan" /* no sense but used by some users */
+
 typedef enum {
     STRINGTODOUBLE_NO_ERROR = 0,
     STRINGTODOUBLE_MEMORY_ALLOCATION = 1,

@@ -1,6 +1,6 @@
 /* ==================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ==================================================================== */
 #include <string.h>
 #include "splitLine.h"
@@ -9,10 +9,10 @@
 char **splitLine(const char *str, const char *sep, int *toks, char meta)
 {
     char **retstr = NULL;
-    char *idx = NULL;
-    char *end = NULL;
-    char *sep_end = NULL;
-    char *sep_idx = NULL;
+    const char *idx = NULL;
+    const char *end = NULL;
+    const char *sep_end = NULL;
+    const char *sep_idx = NULL;
     int len = 0;
     int curr_str = 0;
     char last_char = 0xFF;

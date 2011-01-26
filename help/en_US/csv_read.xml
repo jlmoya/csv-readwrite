@@ -24,7 +24,7 @@
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>M = csv_read(filename [, separator [,decimal [,conversion]]])</synopsis>
+    <synopsis>M = csv_read(filename [, separator [,decimal [,conversion [, range]]]])</synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -43,7 +43,7 @@
         <term>separator</term>
 
         <listitem>
-          <para>a character string. Field separator used, default value is ","</para>
+          <para>a character string. Field separator used, default value is "," or [] uses current default</para>
         </listitem>
       </varlistentry>
 
@@ -51,7 +51,7 @@
         <term>decimal</term>
 
         <listitem>
-          <para>a character string. Field decimal used, default value is "."</para>
+          <para>a character string. Field decimal used, default value is "." or [] uses current default</para>
         </listitem>
       </varlistentry>
 
@@ -59,10 +59,18 @@
         <term>conversion</term>
 
         <listitem>
-          <para>a character string. Field conversion used ("string" or "double"), default value is "string"</para>
+          <para>a character string. Field conversion used ("string" or "double"), default value is "string" or [] uses current default</para>
         </listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term>range</term>
+
+        <listitem>
+          <para>a character string. reads only the range specified.
+Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left corner of the data to be read and (R2,C2) is the lower right corner.</para>
+        </listitem>
+      </varlistentry>
 
       <varlistentry>
         <term>M</term>

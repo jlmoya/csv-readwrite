@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Scilab ( http://www.scilab.org/ ) - This file is part of Scilab
+ * Copyright (C) DIGITEO - 2010 - Allan CORNET
+ *
+ -->
+<refentry version="5.0-subset Scilab" xml:id="csv_stringtodouble" xml:lang="en"
+          xmlns="http://docbook.org/ns/docbook"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          xmlns:svg="http://www.w3.org/2000/svg"
+          xmlns:ns3="http://www.w3.org/1999/xhtml"
+          xmlns:mml="http://www.w3.org/1998/Math/MathML"
+          xmlns:db="http://docbook.org/ns/docbook">
+
+  <refnamediv>
+    <refname>csv_stringtodouble</refname>
+
+    <refpurpose>convert a matrix of strings to a matrix of double</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <title>Calling Sequence</title>
+
+    <synopsis>r = csv_stringtodouble(strs[,convertStrToNan]) </synopsis>
+  </refsynopsisdiv>
+
+  <refsection>
+    <title>Parameters</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>strs</term>
+
+        <listitem>
+          <para>a matrix of strings.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>convertStrToNan</term>
+
+        <listitem>
+          <para>a boolean. if %t it converts non valid string to Nan. if %f a non valid string returns a error</para>
+          <para>%t is default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>r</term>
+
+        <listitem>
+          <para>a matrix of double</para>
+        </listitem>
+      </varlistentry>
+
+      
+    </variablelist>
+  </refsection>
+
+  <refsection>
+    <title>Description</title>
+
+    <para>convert a matrix of strings to a matrix of double.</para>
+    <para>This function is faster than evstr to convert a matrix convert a matrix of strings to a matrix of double.</para>
+    <para>tic();evstr(string(1:10000));toc()</para>
+    <para>tic();csv_stringtodouble(string(1:10000));toc()</para>
+  </refsection>
+
+  <refsection>
+    <title>Examples</title>
+
+    <programlisting role="example">// save a matrix as csv file format
+mA = string(1:100);
+r = csv_stringtodouble(mA)
+
+csv_stringtodouble("not a number")
+csv_stringtodouble("not a number", %t)
+csv_stringtodouble("not a number", %f)
+
+</programlisting>
+  </refsection>
+
+  <refsection>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member><link linkend="evstr">evstr</link></member>
+    </simplelist>
+  </refsection>
+
+  <refsection>
+    <title>Authors</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>Allan CORNET</term>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+</refentry>

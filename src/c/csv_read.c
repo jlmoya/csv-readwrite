@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ========================================================================== */
 #include <string.h>
 #include "csv_read.h"
@@ -51,7 +51,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
         return NULL;
     }
 
-    expandedFilename = expandPathVariable(filename);
+    expandedFilename = expandPathVariable((char*)filename);
     if (!FileExist(expandedFilename))
     {
         result = (csvResult*)(MALLOC(sizeof(csvResult)));
@@ -137,7 +137,7 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
     }
 
     /* remove last lines empty (bug 7003 in scilab)*/
-    cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
+    cleanedLines = removeEmptyLinesAtTheEnd((char**)lines, &nbLines);
 
     nbColumns = getNumbersOfColumnsInLines(cleanedLines, nbLines, separator);
     if (nbColumns == 0)
@@ -326,7 +326,7 @@ static char **getStringsFromLines(const char **lines, int sizelines,
     return results;
 }
 /* ========================================================================== */
-static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
+static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines)
 {
     char **returnedLines = lines;
     int nbLinesToRemove = 0;
@@ -382,7 +382,7 @@ static char *stripCharacters(const char *line)
     char *returnedLine = NULL;
     if (line)
     {
-        char *tmpLineWithoutTab = strsubst(line, "\t", "");
+        char *tmpLineWithoutTab = strsubst((char*)line, "\t", "");
         if (tmpLineWithoutTab)
         {
             char *tmpLineWithoutLF = strsubst(tmpLineWithoutTab, "\r", "");

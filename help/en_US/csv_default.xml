@@ -4,7 +4,7 @@
  * Copyright (C) DIGITEO - 2010 - Allan CORNET
  *
  -->
-<refentry version="5.0-subset Scilab" xml:id="csv_write" xml:lang="en"
+<refentry version="5.0-subset Scilab" xml:id="csv_default" xml:lang="en"
           xmlns="http://docbook.org/ns/docbook"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           xmlns:svg="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@
           xmlns:db="http://docbook.org/ns/docbook">
 
   <refnamediv>
-    <refname>csv_write</refname>
+    <refname>csv_default</refname>
 
     <refpurpose>Read comma-separated value file</refpurpose>
   </refnamediv>
@@ -21,7 +21,9 @@
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>csv_write(M, filename[, separator[, decimal[, format[, comments]]]]) </synopsis>
+    <synopsis>csv_default() </synopsis>
+    <synopsis>valuename = csv_default(fieldname) </synopsis>
+    <synopsis>bRes = csv_default(fieldname, valuename) </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -40,7 +42,7 @@
         <term>M</term>
 
         <listitem>
-          <para>a matrix of strings or double (complex supported).</para>
+          <para>a matrix of strings or double.</para>
         </listitem>
       </varlistentry>
 
@@ -48,7 +50,7 @@
         <term>separator</term>
 
         <listitem>
-          <para>column separator mark, by default a tabulation: "," or [] to use current defaut value.</para>
+          <para>column separator mark, by default a tabulation: ","</para>
         </listitem>
       </varlistentry>
 
@@ -56,30 +58,9 @@
         <term>dec</term>
 
         <listitem>
-          <para>decimal mark '.' or ',' by default a '.' or [] to use current default value.</para>
+          <para>decimal mark '.' or ',' by default a '.'</para>
         </listitem>
       </varlistentry>
-
-      <varlistentry>
-        <term>format</term>
-
-        <listitem>
-          <para>a character string giving the format. This is an optional parameter, the default value is "%.16lg".
-supported format: %[width].[precision]type or %type
-width: Optional number that specifies the minimum number of characters output.
-precision: Optional number that specifies the maximum number of characters printed for all or part of the output field, or the minimum number of digits printed for integer values.
-type: lf, lg, d, i, e, f, g</para>
-        </listitem>
-      </varlistentry>
-      
-      <varlistentry>
-        <term>comments</term>
-
-        <listitem>
-          <para>a string matrix giving non numerical comments stored at the beginning of the file.</para>
-        </listitem>
-      </varlistentry>
-      
 
       
     </variablelist>
@@ -121,7 +102,7 @@ r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
   </refsection>
 
   <refsection>
-    <title>Author</title>
+    <title>Authors</title>
 
     <variablelist>
       <varlistentry>

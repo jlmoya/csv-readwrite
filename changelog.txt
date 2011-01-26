@@ -3,6 +3,15 @@ changelog of the csv_readwrite
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
     * csv_textscan added.
+    * csv_default added.
+    * csv_stringtodouble added.
+      csv_stringtodouble used to replace evstr for double conversion (faster)
+      compare :
+        tic();evstr(string(1:100000));toc()
+      and
+        tic();csv_stringtodouble(string(1:100000));toc()
+    * increase precision of csv_write (16 digits)
+    * some part of code factorized
 
 csv_readwrite (0.2)
     * fix some bugs
@@ -10,6 +19,6 @@ csv_readwrite (0.2)
     * increase compatibility with some exotic csv format
 
 csv_readwrite (0.1)
-    * csv_read, csv_write builtin 
+    * csv_read, csv_write builtin
 
  -- Author Allan CORNET - DIGITEO - 2010

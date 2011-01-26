@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /* Allan CORNET */
-/* DIGITEO 2010 */
+/* DIGITEO 2010 - 2011 */
 /* ========================================================================== */
 #if defined(__linux__)
 #define _GNU_SOURCE /* Bug 5673 fix: avoid dependency on GLIBC_2.7 */
@@ -21,7 +21,7 @@
 #include "csv_default.h"
 /* ========================================================================== */
 #define DEFAULT_CSV_WRITE_STRING_FORMAT "%s"
-#define DEFAULT_CSV_WRITE_DOUBLE_FORMAT "%lg"
+#define DEFAULT_CSV_WRITE_DOUBLE_FORMAT "%.lg"
 #define NanString "Nan"
 #define InfString "Inf"
 #define NegInfString "-Inf"
@@ -30,9 +30,9 @@
 #define ComplexStr "i"
 #define EMPTY_STRING ""
 #if _MSC_VER
-    #define MODEFD "wt"
+    #define MODEWFD "wt"
 #else
-    #define MODEFD "w"
+    #define MODEWFD "w"
 #endif
 #define EOL "\n"
 /* ========================================================================== */
@@ -55,10 +55,13 @@ static int signbit(double x)
 }
 #endif /* signbit */
 /* ========================================================================== */
-csvWriteError csv_write_double(char *filename,
-                               double *pdValues, int m, int n,
-                               char *separator,
-                               char *decimal)
+csvWriteError csv_write_double(const char *filename,
+                               const double *pdValues, int m, int n,
+                               const char *separator,
+                               const char *decimal,
+                               const char *precisionFormat,
+                               const char **headersLines,
+                               int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
@@ -69,13 +72,23 @@ csvWriteError csv_write_double(char *filename,
     if (m < 0 || n < 0) return CSV_WRITE_ERROR;
     if (separator == NULL) return CSV_WRITE_ERROR;
     if (decimal == NULL) return CSV_WRITE_ERROR;
+    if (precisionFormat == NULL) return CSV_WRITE_ERROR;
 
     if (strcmp(separator, decimal) == 0) return CSV_WRITE_SEPARATOR_DECIMAL_EQUAL;
 
-    expandedFilename = expandPathVariable(filename);
-    wcfopen(fd , filename, MODEFD);
+    expandedFilename = expandPathVariable((char*)filename);
+    wcfopen(fd , filename, MODEWFD);
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
+        
+    if ((headersLines) && (nbHeadersLines > 0))
+    {
+        for (i = 0; i < nbHeadersLines; i++)
+        {
+            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            fprintf(fd, EOL);
+        }
+    }
 
     for (i = 0; i < m; i++)
     {
@@ -89,7 +102,7 @@ csvWriteError csv_write_double(char *filename,
             {
                 char buffer[65535];
                 char *result = NULL;
-                sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, pdValues[i + m*j]);
+                sprintf(buffer, precisionFormat, pdValues[i + m*j]);
                 result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
@@ -122,12 +135,15 @@ csvWriteError csv_write_double(char *filename,
     return CSV_WRITE_NO_ERROR;
 }
 /* ========================================================================== */
-csvWriteError csv_write_complex(char *filename,
-                               double *pdValuesReal,
-                               double *pdValuesImag,
+csvWriteError csv_write_complex(const char *filename,
+                               const double *pdValuesReal,
+                               const double *pdValuesImag,
                                int m, int n,
-                               char *separator,
-                               char *decimal)
+                               const char *separator,
+                               const char *decimal,
+                               const char *precisionFormat,
+                               const char **headersLines,
+                               int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
@@ -139,13 +155,23 @@ csvWriteError csv_write_complex(char *filename,
     if (m < 0 || n < 0) return CSV_WRITE_ERROR;
     if (separator == NULL) return CSV_WRITE_ERROR;
     if (decimal == NULL) return CSV_WRITE_ERROR;
+    if (precisionFormat == NULL) return CSV_WRITE_ERROR;
 
     if (strcmp(separator, decimal) == 0) return CSV_WRITE_SEPARATOR_DECIMAL_EQUAL;
 
-    expandedFilename = expandPathVariable(filename);
-    wcfopen(fd , filename, MODEFD);
+    expandedFilename = expandPathVariable((char*)filename);
+    wcfopen(fd , filename, MODEWFD);
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
+
+    if ((headersLines) && (nbHeadersLines > 0))
+    {
+        for (i = 0; i < nbHeadersLines; i++)
+        {
+            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            fprintf(fd, EOL);
+        }
+    }
 
     for (i = 0; i < m; i++)
     {
@@ -160,7 +186,7 @@ csvWriteError csv_write_complex(char *filename,
             {
                 char buffer[65535];
                 char *result = NULL;
-                sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, pdValuesReal[i + m*j]);
+                sprintf(buffer, precisionFormat, pdValuesReal[i + m*j]);
                 result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
@@ -207,7 +233,7 @@ csvWriteError csv_write_complex(char *filename,
                     strcat(StringValue, LessStr);
                 }
                 
-                sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, fabs(pdValuesImag[i + m*j]));
+                sprintf(buffer, precisionFormat, fabs(pdValuesImag[i + m*j]));
                 result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 
                 if (result)
@@ -249,13 +275,16 @@ csvWriteError csv_write_complex(char *filename,
     return CSV_WRITE_NO_ERROR;
 }
 /* ========================================================================== */
-csvWriteError csv_write_string(char *filename,
-                               char **pStrValues, int m, int n,
-                               char *separator,
-                               char *decimal)
+csvWriteError csv_write_string(const char *filename,
+                               const char **pStrValues, int m, int n,
+                               const char *separator,
+                               const char *decimal,
+                               const char **headersLines,
+                               int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
+    char *expandedFilename = NULL;
 
     if (filename == NULL) return CSV_WRITE_ERROR;
     if (pStrValues == NULL) return CSV_WRITE_ERROR;
@@ -263,9 +292,20 @@ csvWriteError csv_write_string(char *filename,
     if (separator == NULL) return CSV_WRITE_ERROR;
 
     if (strcmp(separator, decimal) == 0) return CSV_WRITE_SEPARATOR_DECIMAL_EQUAL;
-
-    wcfopen(fd , filename, MODEFD);
+        
+    expandedFilename = expandPathVariable((char*)filename);
+    wcfopen(fd , filename, MODEWFD);
+    if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
+        
+    if ((headersLines) && (nbHeadersLines > 0))
+    {
+        for (i = 0; i < nbHeadersLines; i++)
+        {
+            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            fprintf(fd, EOL);
+        }
+    }
 
     for (i = 0 ; i < m ; i++ )
     {
@@ -278,7 +318,7 @@ csvWriteError csv_write_string(char *filename,
             else
             {
                 char *result = NULL;
-                result = strsubst(pStrValues[i + m*j], getCsvDefaultDecimal(), decimal);
+                result = strsubst((char*)(pStrValues[i + m*j]), getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
