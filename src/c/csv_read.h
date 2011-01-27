@@ -23,7 +23,7 @@ typedef struct {
     csvReadError err;
 } csvResult;
 
-csvResult* csv_read(const char *filename, const char *separator, const char *decimal);
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal, const char **toreplace, int sizetoreplace);
 
 csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separator, const char *decimal);
 

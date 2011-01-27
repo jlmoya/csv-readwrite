@@ -13,7 +13,7 @@
           xmlns:db="http://docbook.org/ns/docbook">
 
   <refnamediv>
-    <refname>csv_write</refname>
+    <refname>csv_textscan</refname>
 
     <refpurpose>Read comma-separated value in a matrix of strings</refpurpose>
   </refnamediv>
@@ -21,7 +21,10 @@
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>csv_textscan(M[, separator[, decimal[, range]]]) </synopsis>
+    <synopsis>csv_textscan(M) </synopsis>
+    <synopsis>csv_textscan(M, separator) </synopsis>
+    <synopsis>csv_textscan(M, separator, decimal) </synopsis>
+    <synopsis>csv_textscan(M, separator, decimal, conversion, range) </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -46,13 +49,38 @@
       </varlistentry>
 
       <varlistentry>
-        <term>dec</term>
+        <term>decimal</term>
 
         <listitem>
           <para>decimal mark '.' or ',' by default a '.'</para>
         </listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term>conversion</term>
+
+        <listitem>
+          <para>"string" or "double"</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>conversion</term>
+
+        <listitem>
+          <para>"string" or "double"</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>range</term>
+
+        <listitem>
+          <para>a character string. reads only the range specified.
+Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left corner of the data to be read and (R2,C2) is the lower right corner.</para>
+<para>[]: all range </para>
+        </listitem>
+      </varlistentry>
       
     </variablelist>
   </refsection>
@@ -60,27 +88,16 @@
   <refsection>
     <title>Description</title>
 
-    <para>csv_write(M, filename) writes matrix M into filename as
-    comma-separated values. The filename input is a string.</para>
-    <para>if the file 'filename' already exists, it is overwritten.</para>
+    <para>csv_textscan</para>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">// save a matrix as csv file format
-A = [1:10] * 0.1;
-csv_write(A, TMPDIR + '/datas.csv');
-
-// read as text
-mgetl(TMPDIR + '/datas.csv')
-
-r = csv_read(TMPDIR + '/datas.csv');
-
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "string")
-
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
-
+    <programlisting role="example">// convert a csv string matrix to splitted string or double matrix
+A = ["1;3 + i"; "Nan;-Inf"]
+B = csv_textscan(A,';')
+C = csv_textscan(A,';',[],'double')
 </programlisting>
   </refsection>
 

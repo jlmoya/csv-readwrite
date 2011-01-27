@@ -24,7 +24,12 @@
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>M = csv_read(filename [, separator [,decimal [,conversion [, range]]]])</synopsis>
+    <synopsis>M = csv_read(filename)</synopsis>
+    <synopsis>M = csv_read(filename, separator)</synopsis>
+    <synopsis>M = csv_read(filename, separator, decimal)</synopsis>
+    <synopsis>M = csv_read(filename, separator, decimal, conversion)</synopsis>
+    <synopsis>M = csv_read(filename, separator, decimal, conversion, substitute)</synopsis>
+    <synopsis>M = csv_read(filename, separator, decimal, conversion, substitute, range)</synopsis>    
   </refsynopsisdiv>
 
   <refsection>
@@ -64,13 +69,25 @@
       </varlistentry>
 
       <varlistentry>
+        <term>substitute</term>
+
+        <listitem>
+          <para>a matrix of  string. ["searched" , "replaced"] to replace a field by another.</para>
+        </listitem>
+      </varlistentry>
+
+
+      <varlistentry>
         <term>range</term>
 
         <listitem>
           <para>a character string. reads only the range specified.
 Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left corner of the data to be read and (R2,C2) is the lower right corner.</para>
+<para>[]: all range </para>
         </listitem>
       </varlistentry>
+
+      
 
       <varlistentry>
         <term>M</term>
@@ -109,6 +126,13 @@ C = csv_read(TMPDIR + '/foo.csv',ascii(9), '.', 'double')
 
 // compares original data and result
 and(A == C)
+
+M = [%inf,%nan];
+filename = fullfile(TMPDIR,'datas.csv');
+csv_write(M, filename);
+mgetl(filename)
+N = csv_read(filename,",",".","double",["Nan", "0"])
+
 </programlisting>
   </refsection>
 

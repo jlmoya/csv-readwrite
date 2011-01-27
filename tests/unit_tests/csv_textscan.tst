@@ -1,0 +1,32 @@
+// =============================================================================
+// Allan CORNET - DIGITEO - 2011
+// =============================================================================
+tlbxs = atomsGetInstalled();
+if grep(tlbxs, 'csv_readwrite') <> [] then
+  atomsLoad("csv_readwrite");
+else
+  root_path = getenv('CSV_READWRITE_PATH', '');
+  if root_path <> '' then 
+    exec(root_path + 'loader.sce'); 
+  end 
+end
+// =============================================================================
+A = "        1;        2;     3";
+B = "        4;        5;     6";
+C = [A;B];
+bbSTR = csv_textscan(C, ';');
+if bbSTR(1, 1) <> "        1" then pause, end
+if bbSTR(1, 2) <> "        2" then pause, end
+if bbSTR(1, 3) <> "     3" then pause, end
+if bbSTR(2, 3) <> "     6" then pause, end
+if bbSTR(2, 2) <> "        5" then pause, end
+if bbSTR(2, 1) <> "        4" then pause, end
+// =============================================================================
+bbDouble = csv_textscan(C, ';', [], 'double');
+if bbDouble(1, 1) <> 1 then pause, end
+if bbDouble(1, 2) <> 2 then pause, end
+if bbDouble(1, 3) <> 3 then pause, end
+if bbDouble(2, 3) <> 6 then pause, end
+if bbDouble(2, 2) <> 5 then pause, end
+if bbDouble(2, 1) <> 4 then pause, end
+// =============================================================================

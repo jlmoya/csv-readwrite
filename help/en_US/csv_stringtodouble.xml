@@ -4,14 +4,13 @@
  * Copyright (C) DIGITEO - 2010 - Allan CORNET
  *
  -->
-<refentry version="5.0-subset Scilab" xml:id="csv_stringtodouble" xml:lang="en"
-          xmlns="http://docbook.org/ns/docbook"
+<refentry version="5.0-subset Scilab" xml:id="csv_stringtodouble"
+          xml:lang="en" xmlns="http://docbook.org/ns/docbook"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           xmlns:svg="http://www.w3.org/2000/svg"
           xmlns:ns3="http://www.w3.org/1999/xhtml"
           xmlns:mml="http://www.w3.org/1998/Math/MathML"
           xmlns:db="http://docbook.org/ns/docbook">
-
   <refnamediv>
     <refname>csv_stringtodouble</refname>
 
@@ -40,7 +39,9 @@
         <term>convertStrToNan</term>
 
         <listitem>
-          <para>a boolean. if %t it converts non valid string to Nan. if %f a non valid string returns a error</para>
+          <para>a boolean. if %t it converts no valid string to Nan. if %f a
+          no valid string returns a error</para>
+
           <para>%t is default value.</para>
         </listitem>
       </varlistentry>
@@ -52,8 +53,6 @@
           <para>a matrix of double</para>
         </listitem>
       </varlistentry>
-
-      
     </variablelist>
   </refsection>
 
@@ -61,23 +60,57 @@
     <title>Description</title>
 
     <para>convert a matrix of strings to a matrix of double.</para>
-    <para>This function is faster than evstr to convert a matrix convert a matrix of strings to a matrix of double.</para>
+
+    <para>This function is faster than evstr to convert a matrix convert a
+    matrix of strings to a matrix of double.</para>
+
     <para>tic();evstr(string(1:10000));toc()</para>
+
     <para>tic();csv_stringtodouble(string(1:10000));toc()</para>
+
+    <para>csv_stringtodouble converts any complex number as a whole into a
+    complex numeric field, converting the real and imaginary parts to the
+    specified numeric type.</para>
+
+    <para>Valid forms for a complex number are :</para>
+
+    <informaltable border="1">
+      <tr>
+        <td>Form</td>
+
+        <td>Example</td>
+      </tr>
+
+      <tr>
+        <td>±&lt;real&gt;±&lt;imag&gt;i|j</td>
+
+        <td>5.7-3.1i</td>
+      </tr>
+
+      <tr>
+        <td>±&lt;imag&gt;i|j</td>
+
+        <td>-7j</td>
+      </tr>
+    </informaltable>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">// save a matrix as csv file format
+    <programlisting role="example">csv_stringtodouble("123.45e7")
+csv_stringtodouble("123 + 45i")
+csv_stringtodouble("3.14159")
+csv_stringtodouble(["2.71" "3.1415"])
+
 mA = string(1:100);
 r = csv_stringtodouble(mA)
 
+r = csv_stringtodouble("2.6 + 3j")
+
 csv_stringtodouble("not a number")
 csv_stringtodouble("not a number", %t)
-csv_stringtodouble("not a number", %f)
-
-</programlisting>
+csv_stringtodouble("not a number", %f)</programlisting>
   </refsection>
 
   <refsection>
@@ -89,7 +122,7 @@ csv_stringtodouble("not a number", %f)
   </refsection>
 
   <refsection>
-    <title>Authors</title>
+    <title>Author</title>
 
     <variablelist>
       <varlistentry>

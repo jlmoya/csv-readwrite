@@ -32,8 +32,9 @@ static char **getStringsFromLines(const char **lines, int sizelines,
                                   int m, int n);
 static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines);
 static char *stripCharacters(const char *line);
+static char **replaceStrings(const char **lines, int nbLines, const char **toreplace, int sizetoreplace);
 /* ========================================================================== */
-csvResult* csv_read(const char *filename, const char *separator, const char *decimal)
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal, const char **toreplace, int sizetoreplace)
 {
     char *expandedFilename = NULL;
     csvResult *result = NULL;
@@ -45,6 +46,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
     double dErrClose = 0.;
     char **lines = NULL;
     int nblines = 0;
+    char **replacedInLines = NULL;
 
     if ((filename == NULL) || (separator == NULL) || (decimal == NULL))
     {
@@ -102,6 +104,16 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
             result->pstrValues = NULL;
         }
         return result;
+    }
+
+    if (toreplace && (sizetoreplace > 0))
+    {
+        replacedInLines = replaceStrings(lines, nblines, toreplace, sizetoreplace);
+        if (replacedInLines)
+        {
+            freeArrayOfString(lines, nblines);
+            lines = replacedInLines;
+        }
     }
 
     result = csv_textscan(lines, nblines, separator, decimal);
@@ -414,5 +426,28 @@ static char *stripCharacters(const char *line)
     }
 
     return returnedLine;
+}
+/* ========================================================================== */
+static char **replaceStrings(const char **lines, int nbLines, const char **toreplace, int sizetoreplace)
+{
+    char **replacedStrings = NULL;
+    if (lines)
+    {
+        int i = 0;
+
+        replacedStrings = (char**)MALLOC(sizeof(char*) * nbLines);
+        if (replacedStrings)
+        {
+            for (i = 0; i < sizetoreplace; i = i + 2)
+            {
+                int j = 0;
+                for (j = 0; j < nbLines; j++)
+                {
+                    replacedStrings[j] = strsubst(lines[j], toreplace[i], toreplace[i + 1]);
+                }
+            }
+        }
+    }
+    return replacedStrings;
 }
 /* ========================================================================== */

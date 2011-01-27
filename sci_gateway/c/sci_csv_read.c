@@ -20,7 +20,7 @@
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
 /* ==================================================================== */
-/* csv_read(filename [, separator [,decimal [,conversion]]]) */
+/* csv_read(filename, separator, decimal, conversion, substitute, range)*/
 /* ==================================================================== */
 int sci_csv_read(char *fname)
 {
@@ -32,18 +32,42 @@ int sci_csv_read(char *fname)
     char *decimal = NULL;
     char *conversion = NULL;
 
+    char **toreplace = NULL;
+    int nbElementsToReplace = 0;
+
     csvResult *result = NULL;
 
-    CheckRhs(1, 4);
+    CheckRhs(1, 5);
     CheckLhs(1, 1);
 
-    if (Rhs == 4)
+    if (Rhs == 5)
+    {
+        int m5 = 0, n5 = 0;
+        toreplace = csv_getArgumentAsMatrixOfString(pvApiCtx, 5, fname, &m5, &n5, &iErr);
+        if (iErr) return 0;
+        if (n5 != 2) 
+        {
+             freeArrayOfString(toreplace, m5 * n5);
+             toreplace = NULL;
+             Scierror(999,_("%s: Wrong size for input argument #%d.\n"), fname, 5);
+             return 0;
+        }
+        nbElementsToReplace = m5;
+    }
+    else
+    {
+        toreplace = NULL;
+        nbElementsToReplace = 0;
+    }
+
+    if (Rhs >= 4)
     {
         int iErr = 0;
         conversion = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 4, fname, getCsvDefaultConversion(), &iErr);
         if (iErr) return 0;
         if (!((strcmp(conversion, CONVTOSTR) == 0) || (strcmp(conversion, CONVTODOUBLE) == 0)))
         {
+            if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             if (conversion) {FREE(conversion); conversion = NULL;}
             Scierror(999,_("%s: Wrong value for input argument #%d: '%s' or '%s' string expected.\n"), fname, 4, "double", "string");
             return 0;
@@ -61,6 +85,7 @@ int sci_csv_read(char *fname)
         if (iErr)
         {
             if (conversion) {FREE(conversion); conversion = NULL;}
+            if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             return 0;
         }
     }
@@ -75,6 +100,7 @@ int sci_csv_read(char *fname)
         separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 2, fname, getCsvDefaultSeparator(), &iErr);
         if (iErr)
         {
+            if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             if (conversion) {FREE(conversion); conversion = NULL;}
             if (decimal) {FREE(decimal); decimal = NULL;}
             return 0;
@@ -89,13 +115,15 @@ int sci_csv_read(char *fname)
     filename = csv_getArgumentAsString(pvApiCtx, 1, fname, &iErr);
     if (iErr)
     {
+        if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
         if (separator) {FREE(separator); separator = NULL;}
         if (conversion) {FREE(conversion); conversion = NULL;}
         if (decimal) {FREE(decimal); decimal = NULL;}
         return 0;
     }
 
-    result = csv_read(filename, separator, decimal);
+    result = csv_read(filename, separator, decimal, toreplace, nbElementsToReplace * 2);
+    if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
     if (separator) {FREE(separator); separator = NULL;}
     if (decimal) {FREE(decimal); decimal = NULL;}
 

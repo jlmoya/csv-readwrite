@@ -51,7 +51,7 @@ int sci_csv_textscan(char *fname)
 
     if (Rhs == 5)
     {
-        #define SIZE_RANGE_SUPPORTED 4
+#define SIZE_RANGE_SUPPORTED 4
         int m5 = 0, n5 = 0;
 
         iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 5, fname, &m5, &n5, &iErr);
@@ -96,7 +96,7 @@ int sci_csv_textscan(char *fname)
     }
     else
     {
-      conversion = strdup(getCsvDefaultConversion());
+        conversion = strdup(getCsvDefaultConversion());
     }
 
     if (Rhs >= 3)
@@ -116,7 +116,7 @@ int sci_csv_textscan(char *fname)
 
     if (Rhs >= 2)
     {
-        separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 3, fname, getCsvDefaultSeparator(), &iErr);
+        separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 2, fname, getCsvDefaultSeparator(), &iErr);
         if (iErr)
         {
             if (iRange) { FREE(iRange); iRange = NULL;}
@@ -151,8 +151,11 @@ int sci_csv_textscan(char *fname)
         if (conversion) {FREE(conversion); conversion = NULL;}
         return 0;
     }
+    
+    nbLines = m1 * n1;
 
     result = csv_textscan(text, nbLines, separator, decimal);
+
     if (text)
     {
         if (separator) {FREE(separator); separator = NULL;}
@@ -168,13 +171,13 @@ int sci_csv_textscan(char *fname)
     {
         switch(result->err)
         {
-            case CSV_READ_SEPARATOR_DECIMAL_EQUAL:
+        case CSV_READ_SEPARATOR_DECIMAL_EQUAL:
             {
                 Scierror(999,_("%s: separator and decimal must have different values.\n"), fname);
             }
             break;
 
-            case CSV_READ_NO_ERROR:
+        case CSV_READ_NO_ERROR:
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
@@ -202,28 +205,28 @@ int sci_csv_textscan(char *fname)
                 }
                 else /* to double */
                 {
-                  stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
-                  doublecomplex *dvalscomplex = stringsToComplexs(result->pstrValues, result->m * result->n, TRUE, &ierr);
-                  if (dvalscomplex == NULL)
-                  {
-                     freeCsvResult(result);
-                     if (conversion) {FREE(conversion); conversion = NULL;}
-                     if (iRange) { FREE(iRange); iRange = NULL;}
-                     if (ierr == STRINGTOCOMPLEX_ERROR)
-                     {
-                        Scierror(999,_("%s: can not convert data.\n"), fname);
-                     }
-                     else
-                     {
-                         Scierror(999,_("%s: Memory allocation error.\n"), fname);
-                     }
-                     return 0;
-                  }
+                    stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
+                    doublecomplex *dvalscomplex = stringsToComplexs(result->pstrValues, result->m * result->n, TRUE, &ierr);
+                    if (dvalscomplex == NULL)
+                    {
+                        freeCsvResult(result);
+                        if (conversion) {FREE(conversion); conversion = NULL;}
+                        if (iRange) { FREE(iRange); iRange = NULL;}
+                        if (ierr == STRINGTOCOMPLEX_ERROR)
+                        {
+                            Scierror(999,_("%s: can not convert data.\n"), fname);
+                        }
+                        else
+                        {
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                        }
+                        return 0;
+                    }
 
-                  switch(ierr)
-                  {
-                        case STRINGTOCOMPLEX_NOT_A_NUMBER:
-                        case STRINGTOCOMPLEX_NO_ERROR:
+                    switch(ierr)
+                    {
+                    case STRINGTOCOMPLEX_NOT_A_NUMBER:
+                    case STRINGTOCOMPLEX_NO_ERROR:
                         {
                             if (haveRange)
                             {
@@ -251,16 +254,16 @@ int sci_csv_textscan(char *fname)
                         }
                         break;
 
-                        case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
+                    case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
                         {
-                          Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
                         }
-                        default:
-                        case STRINGTOCOMPLEX_ERROR:
+                    default:
+                    case STRINGTOCOMPLEX_ERROR:
                         {
-                          Scierror(999,_("%s: can not convert data.\n"), fname);
+                            Scierror(999,_("%s: can not convert data.\n"), fname);
                         }
-                  }
+                    }
                 }
 
                 if(sciErr.iErr)
@@ -279,15 +282,15 @@ int sci_csv_textscan(char *fname)
             }
             break;
 
-            case CSV_READ_MEMORY_ALLOCATION:
+        case CSV_READ_MEMORY_ALLOCATION:
             {
                 Scierror(999,_("%s: Memory allocation error.\n"), fname);
             }
             break;
 
-            case CSV_READ_READLINES_ERROR:
-            case CSV_READ_COLUMNS_ERROR:
-            case CSV_READ_ERROR:
+        case CSV_READ_READLINES_ERROR:
+        case CSV_READ_COLUMNS_ERROR:
+        case CSV_READ_ERROR:
             {
                 Scierror(999,_("%s: can not read text.\n"), fname);
             }
