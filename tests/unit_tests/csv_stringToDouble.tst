@@ -1,94 +1,100 @@
-clear;ulink
-cd D:\GIT-forge-toolboxes\csv_readwrite\csv-readwrite 
-exec cleaner.sce;
-setenv("DEBUG_SCILAB_DYNAMIC_LINK","YES");
-exec builder.sce;
-exec loader.sce;
-
+// =============================================================================
+// Allan CORNET - DIGITEO - 2011
+// =============================================================================
+tlbxs = atomsGetInstalled();
+if grep(tlbxs, 'csv_readwrite') <> [] then
+  atomsLoad("csv_readwrite");
+else
+  root_path = getenv('CSV_READWRITE_PATH', '');
+  if root_path <> '' then 
+    exec(root_path + 'loader.sce'); 
+  end 
+end
+// =============================================================================
 r = csv_stringtodouble("-Nani");
 if real(r) <> 0 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Nani");
 if real(r) <> 0 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("+Nani");
 if real(r) <> 0 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("-Infi");
 if real(r) <> 0 then pause, end
 if imag(r) <> -%inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Infi");
 if real(r) <> 0 then pause, end
 if imag(r) <> %inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("+Infi");
 if real(r) <> 0 then pause, end
 if imag(r) <> %inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Nan-Nani");
 if ~isnan(real(r)) then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Nan-2i");
 if ~isnan(real(r)) then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("-Nan-2i");
 if ~isnan(real(r)) then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("+Nan-2i");
 if ~isnan(real(r)) then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Nan-Infi");
 if ~isnan(real(r)) then pause, end
 if imag(r) <> -%inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("-Inf-2i");
 if real(r) <> -%inf then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("+Inf-2i");
 if real(r) <> %inf then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Inf-2i");
 if real(r) <> %inf then pause, end
 if imag(r) <> -2 then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Inf-Infi");
 if real(r) <> %inf then pause, end
 if imag(r) <> -%inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("Inf+Infi");
 if real(r) <> %inf then pause, end
 if imag(r) <> %inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("1+Nani");
 if real(r) <> 1 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("1-Nani");
 if real(r) <> 1 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("-1-Nani");
 if real(r) <> -1 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("1+Infi");
 if real(r) <> 1 then pause, end
 if imag(r) <> %inf then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("1-Infi");
 if real(r) <> 1 then pause, end
 if imag(r) <> -%inf then pause, end
-
+// =============================================================================
 if ~isnan(csv_stringtodouble("Nan")) then pause, end
 if ~isnan(csv_stringtodouble("-Nan")) then pause, end
 if ~isnan(csv_stringtodouble("+Nan")) then pause, end
@@ -173,14 +179,15 @@ if csv_stringtodouble("3e2 - 2e3i") <> complex(300, -2000) then pause, end
 if csv_stringtodouble("3d2 - 2d3i") <> complex(300, -2000) then pause, end
 if csv_stringtodouble("3d2 - 2e3i") <> complex(300, -2000) then pause, end
 if csv_stringtodouble("3e2 - 2d3i") <> complex(300, -2000) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("3e2 - blabli");
 if real(r) <> 300 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 r = csv_stringtodouble("3e2 - blabli", %t);
 if real(r) <> 300 then pause, end
 if ~isnan(imag(r)) then pause, end
-
+// =============================================================================
 if execstr("r = csv_stringtodouble(""3e2 - blabli"", %f);", "errcatch") <> 999 then pause, end
 if lasterror() <> msprintf(_("%s: can not convert data.\n"), "csv_stringtodouble") then pause, end
+// =============================================================================
