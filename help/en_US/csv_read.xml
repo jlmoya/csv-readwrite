@@ -16,7 +16,7 @@
   </info>
 
   <refnamediv>
-    <refname>read_csv</refname>
+    <refname>csv_read</refname>
 
     <refpurpose>Read comma-separated value file</refpurpose>
   </refnamediv>
