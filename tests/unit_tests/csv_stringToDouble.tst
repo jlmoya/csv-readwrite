@@ -172,13 +172,15 @@ if csv_stringtodouble("-4e2") <> -400 then pause, end
 if csv_stringtodouble("+4e2") <> 400 then pause, end
 if csv_stringtodouble("0.4e2") <> 40 then pause, end
 if csv_stringtodouble("3e2 + 2e3i") <> complex(300, 2000) then pause, end
-if csv_stringtodouble("3d2 + 2d3i") <> complex(300, 2000) then pause, end
-if csv_stringtodouble("3d2 + 2e3i") <> complex(300, 2000) then pause, end
-if csv_stringtodouble("3e2 + 2d3i") <> complex(300, 2000) then pause, end
 if csv_stringtodouble("3e2 - 2e3i") <> complex(300, -2000) then pause, end
-if csv_stringtodouble("3d2 - 2d3i") <> complex(300, -2000) then pause, end
-if csv_stringtodouble("3d2 - 2e3i") <> complex(300, -2000) then pause, end
+if getos() == "Windows" then
 if csv_stringtodouble("3e2 - 2d3i") <> complex(300, -2000) then pause, end
+if csv_stringtodouble("3e2 + 2d3i") <> complex(300, 2000) then pause, end
+if csv_stringtodouble("3d2 + 2e3i") <> complex(300, 2000) then pause, end
+if csv_stringtodouble("3d2 - 2e3i") <> complex(300, -2000) then pause, end
+if csv_stringtodouble("3d2 + 2d3i") <> complex(300, 2000) then pause, end
+if csv_stringtodouble("3d2 - 2d3i") <> complex(300, -2000) then pause, end
+end
 // =============================================================================
 r = csv_stringtodouble("3e2 - blabli");
 if real(r) <> 300 then pause, end

@@ -4,6 +4,6 @@
 function p = csv_getToolboxPath()
   p = "";
   [fs, p] = libraryinfo("csv_readwritelib");
-  p = fullpath(p + "../");
+  p = pathconvert(fullpath(p + "../"), %t, %t);
 endfunction
 // ====================================================================
