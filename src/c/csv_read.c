@@ -10,7 +10,7 @@
 #include "mopen.h"
 #include "mclose.h"
 #include "splitLine.h"
-#include "strsubst.h"
+#include "csv_strsubst.h"
 #include "FileExist.h"
 #include "expandPathVariable.h"
 #if _MSC_VER
@@ -328,7 +328,7 @@ static char **getStringsFromLines(const char **lines, int sizelines,
                 }
                 else
                 {
-                    results[i + n * j] = strsubst(lineStrings[j], decimal, getCsvDefaultDecimal());
+                    results[i + n * j] = csv_strsubst(lineStrings[j], decimal, getCsvDefaultDecimal());
                     FREE(lineStrings[j]);
                     lineStrings[j] = NULL;
                 }
@@ -394,16 +394,16 @@ static char *stripCharacters(const char *line)
     char *returnedLine = NULL;
     if (line)
     {
-        char *tmpLineWithoutTab = strsubst((char*)line, "\t", "");
+        char *tmpLineWithoutTab = csv_strsubst((char*)line, "\t", "");
         if (tmpLineWithoutTab)
         {
-            char *tmpLineWithoutLF = strsubst(tmpLineWithoutTab, "\r", "");
+            char *tmpLineWithoutLF = csv_strsubst(tmpLineWithoutTab, "\r", "");
             if (tmpLineWithoutLF)
             {
-                char *tmpLineWithoutCR = strsubst(tmpLineWithoutTab, "\n", "");
+                char *tmpLineWithoutCR = csv_strsubst(tmpLineWithoutTab, "\n", "");
                 if (tmpLineWithoutCR)
                 {
-                    returnedLine = strsubst(tmpLineWithoutCR, " ", "");
+                    returnedLine = csv_strsubst(tmpLineWithoutCR, " ", "");
                 }
                 else
                 {
@@ -443,7 +443,7 @@ static char **replaceStrings(const char **lines, int nbLines, const char **torep
                 int j = 0;
                 for (j = 0; j < nbLines; j++)
                 {
-                    replacedStrings[j] = strsubst(lines[j], toreplace[i], toreplace[i + 1]);
+                    replacedStrings[j] = csv_strsubst(lines[j], toreplace[i], toreplace[i + 1]);
                 }
             }
         }

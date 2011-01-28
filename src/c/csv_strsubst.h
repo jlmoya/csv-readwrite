@@ -2,12 +2,12 @@
 /* Allan CORNET */
 /* DIGITEO 2010 */
 /* ========================================================================== */
-#ifndef __STRSUBST_H__
-#define __STRSUBST_H__
+#ifndef __ csv_strsubst_H__
+#define __ csv_strsubst_H__
 
-char *strsubst(char* input_string,
+char * csv_strsubst(char* input_string,
               const char* string_to_search,
               const char* replacement_string);
 
-#endif /* __STRSUBST_H__ */
+#endif /* __ csv_strsubst_H__ */
 /* ========================================================================== */

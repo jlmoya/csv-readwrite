@@ -16,7 +16,7 @@
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
-#include "strsubst.h"
+#include "csv_strsubst.h"
 #include "expandPathVariable.h"
 #include "csv_default.h"
 /* ========================================================================== */
@@ -103,7 +103,7 @@ csvWriteError csv_write_double(const char *filename,
                 char buffer[65535];
                 char *result = NULL;
                 sprintf(buffer, precisionFormat, pdValues[i + m*j]);
-                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
+                result = csv_strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
@@ -187,7 +187,7 @@ csvWriteError csv_write_complex(const char *filename,
                 char buffer[65535];
                 char *result = NULL;
                 sprintf(buffer, precisionFormat, pdValuesReal[i + m*j]);
-                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
+                result = csv_strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     strcpy(StringValue, result);
@@ -234,7 +234,7 @@ csvWriteError csv_write_complex(const char *filename,
                 }
                 
                 sprintf(buffer, precisionFormat, fabs(pdValuesImag[i + m*j]));
-                result = strsubst(buffer, getCsvDefaultDecimal(), decimal);
+                result = csv_strsubst(buffer, getCsvDefaultDecimal(), decimal);
                 
                 if (result)
                 {
@@ -318,7 +318,7 @@ csvWriteError csv_write_string(const char *filename,
             else
             {
                 char *result = NULL;
-                result = strsubst((char*)(pStrValues[i + m*j]), getCsvDefaultDecimal(), decimal);
+                result = csv_strsubst((char*)(pStrValues[i + m*j]), getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);

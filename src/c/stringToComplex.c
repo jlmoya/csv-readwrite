@@ -13,7 +13,7 @@
 #include "strdup_windows.h"
 #endif
 #include "BOOL.h"
-#include "strsubst.h"
+#include "csv_strsubst.h"
 /* ========================================================================== */
 #define PlusChar '+'
 #define LessChar '-'
@@ -83,7 +83,7 @@ doublecomplex stringToComplex(const char *pSTR,
     {
         double real = 0.;
         double imag = 0.;
-        char * pStrWithOutBlanks = strsubst((char*)pSTR, " ", "");
+        char * pStrWithOutBlanks = csv_strsubst((char*)pSTR, " ", "");
 
         if (pStrWithOutBlanks)
         {
@@ -106,11 +106,11 @@ doublecomplex stringToComplex(const char *pSTR,
                     (pStrWithOutBlanks[1] == '.'))
                 {
                     /* case +.4 replaced by +0.4 */
-                    char *pstStrTemp = strsubst(pStrWithOutBlanks, "+.", "+0.");
+                    char *pstStrTemp = csv_strsubst(pStrWithOutBlanks, "+.", "+0.");
                     FREE(pStrWithOutBlanks);
 
                     /* case -.4 replaced by -0.4 */
-                    pStrWithOutBlanks = strsubst(pstStrTemp, "-.", "-0.");
+                    pStrWithOutBlanks = csv_strsubst(pstStrTemp, "-.", "-0.");
                     FREE(pstStrTemp);
                     pstStrTemp = NULL;
                 }

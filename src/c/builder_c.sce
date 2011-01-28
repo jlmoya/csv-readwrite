@@ -19,7 +19,7 @@ CFLAGS = "-I" + src_c_path + " -I" + fileio_includes + " -I" + fileio_src;
 
 files_src = ["csv_read.c", ..
              "csv_write.c", ..
-             "strsubst.c", ..
+             "csv_strsubst.c", ..
              "splitLine.c", ..
              "stringToDouble.c", ..
              "stringToComplex.c", ..

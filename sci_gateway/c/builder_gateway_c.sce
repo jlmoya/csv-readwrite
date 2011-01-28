@@ -1,4 +1,4 @@
-// CORNET Allan - DIGITEO - 2010
+// CORNET Allan - DIGITEO - 2010-2011
 
 function builder_gateway()
 
@@ -7,6 +7,7 @@ function builder_gateway()
     includes_src_c = "-I""" + get_absolute_file_path("builder_gateway_c.sce") + "../../src/c""";
   else
     includes_src_c = "-I" + get_absolute_file_path("builder_gateway_c.sce") + "../../src/c";
+    includes_src_c = includes_src_c + " -I" + get_absolute_file_path("builder_gateway_c.sce");
  end
 
   WITHOUT_AUTO_PUTLHSVAR = %t;

@@ -3,13 +3,13 @@
 /* DIGITEO 2010 */
 /* ========================================================================== */
 #include <string.h>
-#include "strsubst.h"
+#include "csv_strsubst.h"
 #include "MALLOC.h"
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif
 /* ========================================================================== */
-char *strsubst(char* input_string,
+char *csv_strsubst(char* input_string,
               const char* string_to_search,
               const char* replacement_string)
 {
