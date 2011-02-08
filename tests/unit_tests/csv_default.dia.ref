@@ -25,10 +25,10 @@ endfunction
 // See all the available fields
 allvalues = csv_default();
 expected = [
-    "separator:"  ","
-    "decimal:"    "."
-    "conversion:" "string"
-    "precision:"  "%.16lg"
+    "separator"  ","
+    "decimal"    "."
+    "conversion" "string"
+    "precision"  "%.16lg"
 ];
 assert_equal ( allvalues , expected );
 // Get the value of the "precision" field

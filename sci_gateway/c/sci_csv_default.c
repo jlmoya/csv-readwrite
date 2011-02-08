@@ -29,10 +29,6 @@
 #define PRECISION_FIELDNAME "precision"
 #define RESET_PARAMATERS "reset"
 /* ========================================================================== */
-#define SEPARATOR_DISPLAY_FIELDNAME "separator:"
-#define DECIMAL_DISPLAY_FIELDNAME "decimal:"
-#define CONVERSION_DISPLAY_FIELDNAME "conversion:"
-#define PRECISION_DISPLAY_FIELDNAME "precision:"
 #define NUMBER_FIELD 4
 /* ========================================================================== */
 static int sci_csv_default_no_rhs(char *fname);
@@ -69,10 +65,10 @@ static int sci_csv_default_no_rhs(char *fname)
         int nbRows = NUMBER_FIELD;
         int nbCols = 2;
 
-        array[0] = strdup(SEPARATOR_DISPLAY_FIELDNAME);
-        array[1] = strdup(DECIMAL_DISPLAY_FIELDNAME);
-        array[2] = strdup(CONVERSION_DISPLAY_FIELDNAME);
-        array[3] = strdup(PRECISION_DISPLAY_FIELDNAME);
+        array[0] = strdup(SEPARATOR_FIELDNAME);
+        array[1] = strdup(DECIMAL_FIELDNAME);
+        array[2] = strdup(CONVERSION_FIELDNAME);
+        array[3] = strdup(PRECISION_FIELDNAME);
 
         array[4] = strdup(getCsvDefaultSeparator());
         array[5] = strdup(getCsvDefaultDecimal());
