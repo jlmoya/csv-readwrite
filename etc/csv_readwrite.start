@@ -1,52 +1,67 @@
 // Copyright (C) 2010 - DIGITEO - Allan CORNET
 
-mprintf("Start CSV read/write files.\n");
 
-if isdef("csv_readwritelib") then
-	warning("csv_readwrite library is already loaded");
-	return;
+function root_tlbx = loadlibcsvreadwrite ()
+    TOOLBOX_NAME  = "csv_readwrite";
+    TOOLBOX_TITLE = "CSV read write";
+
+    mprintf("Start %s\n",TOOLBOX_TITLE);
+
+    etc_tlbx  = get_absolute_file_path(TOOLBOX_NAME+".start");
+    etc_tlbx = getshortpathname(etc_tlbx);
+    root_tlbx = strncpy( etc_tlbx, length(etc_tlbx)-length("\etc\") );
+
+    //Load  functions library
+    // =============================================================================
+
+    mprintf("\tLoad macros\n");
+    pathmacros = pathconvert( root_tlbx ) + "macros" + filesep();
+    csv_readwritelib = lib(pathmacros);
+
+    // =============================================================================
+    // Load gateways
+    mprintf("\tLoad gateways\n");
+    ilib_verbose(0);
+    exec(pathconvert(root_tlbx+"/sci_gateway/loader_gateway.sce",%f));
+
+    // =============================================================================
+    // Load and add help chapter
+    if or(getscilabmode() == ["NW";"STD"]) then
+        mprintf("\tLoad help\n");
+        path_addchapter = pathconvert(root_tlbx+"/jar");
+        if ( isdir(path_addchapter) <> [] ) then
+            add_help_chapter(TOOLBOX_TITLE, path_addchapter, %F);
+        end
+    end
+
+    // =============================================================================
+    // Add demos
+    if or(getscilabmode() == ["NW";"STD"]) then
+        mprintf("\tLoad demos\n");
+        pathdemos = pathconvert(root_tlbx+"/demos/"+TOOLBOX_NAME+".dem.gateway.sce",%f,%t);
+        add_demo(TOOLBOX_TITLE,pathdemos);
+    end
+
+    // ====================================================================
+    // A Welcome message.
+
+    //mprintf("\tType ""help nisp_overview"" for quick start.\n");
+    mprintf("\tType ""demo_gui()"" and search for ""%s"" for Demonstrations.\n",TOOLBOX_TITLE);
+
+    // =============================================================================
+    // Create variables at level #0
+    
+    csv_readwritelib = resume(csv_readwritelib)
+
+endfunction
+
+
+if ( isdef("csv_readwritelib") ) then
+    warning("	Library is already loaded (""ulink(); clear csv_readwritelib;"" to unload.)");
+    return;
 end
 
-etc_tlbx  = get_absolute_file_path("csv_readwrite.start");
-etc_tlbx  = getshortpathname(etc_tlbx);
-root_tlbx = strncpy( etc_tlbx, length(etc_tlbx)-length("\etc\") );
+loadlibcsvreadwrite();
+clear loadlibcsvreadwrite;
 
-//Load  functions library
-// =============================================================================
-mprintf("\tLoad macros\n");
-pathmacros = pathconvert( root_tlbx ) + "macros" + filesep();
-csv_readwritelib = lib(pathmacros);
-clear pathmacros;
 
-// load gateways
-// =============================================================================
-mprintf("\tLoad gateways\n");
-verboseMode = ilib_verbose();
-ilib_verbose(0);
-exec(pathconvert(root_tlbx+"/sci_gateway/loader_gateway.sce",%f));
-ilib_verbose(verboseMode);
-clear verboseMode;
-
-// Load and add help chapter
-// =============================================================================
-if or(getscilabmode() == ["NW";"STD"]) then
-	mprintf("\tLoad help\n");
-	path_addchapter = pathconvert(root_tlbx+"/jar");
-	if ( isdir(path_addchapter) <> [] ) then
-		add_help_chapter("CSV read/write files", path_addchapter, %F);
-		clear add_help_chapter;
-	end
-	clear path_addchapter;
-end
-
-// Load demos
-// =============================================================================
-if or(getscilabmode() == ["NW";"STD"]) then
-	mprintf("\tLoad demos\n");
-	pathdemos = pathconvert(root_tlbx+"/demos/csv_readwrite.dem.gateway.sce",%F,%T);
-	add_demo("CSV read/write files", pathdemos);
-	clear pathdemos add_demo;
-end
-
-clear root_tlbx;
-clear etc_tlbx;

@@ -7,9 +7,23 @@
 //  are also available at
 //  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
-function p = csv_getToolboxPath()
-  p = "";
-  [fs, p] = libraryinfo("csv_readwritelib");
-  p = pathconvert(fullpath(p + "../"), %t, %t);
+function path = csv_getToolboxPath()
+    // Returns the path to the current module.
+    // 
+    // Calling Sequence
+    //   path = csv_getToolboxPath ( )
+    //
+    // Parameters
+    //   path : a 1-by-1 matrix of strings, the path to the current module.
+    //
+    // Examples
+    //   path = csv_getToolboxPath ( )
+    //
+    // Authors
+    //   Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+
+  [fs, path] = libraryinfo("csv_readwritelib");
+  path = pathconvert(fullpath(path + "../"), %t, %t);
 endfunction
-// ====================================================================
+
+
