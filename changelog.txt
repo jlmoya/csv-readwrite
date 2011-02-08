@@ -1,5 +1,8 @@
 changelog of the csv_readwrite
 
+csv_readwrite (not released yet)
+    * Fixed ticket #270: added licence header to all files.
+
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
     * csv_read can read complex matrix (fix bug 8349).
