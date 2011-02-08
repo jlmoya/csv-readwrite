@@ -2,6 +2,7 @@
 <!--
  *
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -10,7 +11,10 @@
  *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
  *
  -->
-<refentry version="5.0-subset Scilab" xml:id="csv_default" xml:lang="en"
+<refentry
+          version="5.0-subset Scilab"
+          xml:id="csv_default"
+          xml:lang="en"
           xmlns="http://docbook.org/ns/docbook"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           xmlns:svg="http://www.w3.org/2000/svg"
@@ -21,15 +25,15 @@
   <refnamediv>
     <refname>csv_default</refname>
 
-    <refpurpose>Read comma-separated value file</refpurpose>
+    <refpurpose>Get or set defaults for csv files.</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>csv_default() </synopsis>
-    <synopsis>valuename = csv_default(fieldname) </synopsis>
-    <synopsis>bRes = csv_default(fieldname, valuename) </synopsis>
+    <synopsis>allvalues = csv_default() </synopsis>
+    <synopsis>value = csv_default(field) </synopsis>
+    <synopsis>bRes = csv_default(field, value) </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -37,83 +41,162 @@
 
     <variablelist>
       <varlistentry>
-        <term>filename</term>
+        <term>allvalues</term>
 
         <listitem>
-          <para>a character string. The file path.</para>
+          <para>
+            a 4-by-2 matrix of strings, the values of all the fields.
+            The first column contains the available fields, while the second column
+            contains the current values.
+          </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>M</term>
+        <term>field</term>
 
         <listitem>
-          <para>a matrix of strings or double.</para>
+          <para>
+            a 1-by-1 matrix of strings, the name of the field to get or set. 
+            The available values of <literal>field</literal> are "separator", 
+            "decimal", "conversion" and "precision".
+          </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>separator</term>
+        <term>value</term>
 
         <listitem>
-          <para>column separator mark, by default a tabulation: ","</para>
+          <para>
+            a 1-by-1 matrix of strings, the value of the field to get or set.
+          </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>dec</term>
+        <term>bRes</term>
 
         <listitem>
-          <para>decimal mark '.' or ',' by default a '.'</para>
+          <para>
+            a 1-by-1 matrix of booleans, bRes is true if the value was correctly set,
+            bRes is wrong is the value was not correct.
+          </para>
         </listitem>
       </varlistentry>
 
-      
     </variablelist>
   </refsection>
 
   <refsection>
     <title>Description</title>
 
-    <para>csv_write(M, filename) writes matrix M into filename as
-    comma-separated values. The filename input is a string.</para>
-    <para>if the file 'filename' already exists, it is overwritten.</para>
+    <para>
+      This function allows to quiery or configure the options of the csv 
+      files.
+      These options are used by the read and write function when the 
+      user does not specify them in the calling sequence.
+    </para>
+    <para>
+      The <literal>allvalues = csv_default()</literal> calling sequence returns 
+      the value of all the fields.
+    </para>
+    <para>
+      The <literal>value = csv_default(field)</literal> calling sequence returns
+      the value corresponding to the given field.
+    </para>
+    <para>
+      The <literal>bRes = csv_default(field, value)</literal> calling sequence
+      allows to set the value of the given field.
+      
+      <itemizedlist>
+        <listitem>
+          <para>
+            If the function cannot set the field to the given value, then <literal>bRes</literal> is false.
+            In this case, the value of the field is unchanged.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            If the function is able to change the field to the given value, 
+            then <literal>bRes</literal> is true.
+          </para>
+        </listitem>
+      </itemizedlist>
+      
+    </para>
+
+    <para>
+      The available fields are the following.
+    <itemizedlist>
+      <listitem>
+        <para>
+          field = "separator": the separator of the columns of the csv files.
+          Default separator = ",".
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          field = "decimal": the decimal point used in the csv files.
+          Default decimal = ".".
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          field = "conversion": the type of the output of the <literal>csv_read</literal>function. 
+          Possible values are "string" or "double". 
+          Default conversion = "string". 
+          If conversion = "string", then the <literal>csv_read</literal> function returns a matrix of strings.
+          If conversion = "double", then the <literal>csv_read</literal> function returns a matrix of doubles.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          field = "precision": the C format used to create the strings from the doubles in the
+          <literal>csv_write</literal> function.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    </para>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">// save a matrix as csv file format
-A = [1:10] * 0.1;
-csv_write(A, TMPDIR + '/datas.csv');
+    <programlisting role="example">
+      // See all the available fields
+      allvalues = csv_default()
+      // Get the value of the "precision" field
+      value = csv_default("precision")
+      // Set the value of the "precision" field
+      bRes = csv_default("precision","%.17e") // Expected = %t
+      // Set the value of the "precision" field to 
+      // an impossible value
+      bRes = csv_default("precision","Ouch!") // Expected = %f
 
-// read as text
-mgetl(TMPDIR + '/datas.csv')
-
-r = csv_read(TMPDIR + '/datas.csv');
-
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "string")
-
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
-
-</programlisting>
+    </programlisting>
   </refsection>
 
   <refsection>
     <title>See Also</title>
 
     <simplelist type="inline">
-      <member><link linkend="csv_read">csv_read</link></member>
+      <member>
+        <link linkend="csv_read">csv_read</link>
+      </member>
     </simplelist>
   </refsection>
 
   <refsection>
     <title>Authors</title>
 
-    <variablelist>
-      <varlistentry>
-        <term>Allan CORNET</term>
-      </varlistentry>
-    </variablelist>
+    <para>
+      Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+    <para>
+      Copyright (C) 2011 - DIGITEO - Michael Baudin
+    </para>
+
   </refsection>
 </refentry>

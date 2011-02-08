@@ -1,0 +1,46 @@
+//
+//  Copyright (C) 2011 - DIGITEO - Michael Baudin
+//
+//  This file must be used under the terms of the CeCILL.
+//  This source file is licensed as described in the file COPYING, which
+//  you should have received as part of this distribution.  The terms
+//  are also available at
+//  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+//
+
+//
+// assert_equal --
+//   Returns 1 if the two real matrices computed and expected are equal.
+// Arguments
+//   computed, expected : the two matrices to compare
+//   epsilon : a small number
+//
+function flag = assert_equal ( computed , expected )
+  if computed==expected then
+    flag = 1;
+  else
+    flag = 0;
+  end
+  if flag <> 1 then pause,end
+endfunction
+
+// See all the available fields
+allvalues = csv_default();
+expected = [
+    "separator:"  ","
+    "decimal:"    "."
+    "conversion:" "string"
+    "precision:"  "%.16lg"
+];
+assert_equal ( allvalues , expected );
+// Get the value of the "precision" field
+value = csv_default("precision");
+assert_equal ( value , "%.16lg" );
+// Set the value of the "precision" field
+bRes = csv_default("precision","%.17e");
+assert_equal ( bRes , %t );
+// Set the value of the "precision" field to
+// an impossible value
+bRes = csv_default("precision","Ouch!");
+assert_equal ( bRes , %f );
+
