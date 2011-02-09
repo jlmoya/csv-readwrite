@@ -207,6 +207,10 @@
       <member>
         <link linkend="csv_read">csv_read</link>
       </member>
+      <member>
+        <link linkend="csv_write">csv_write</link>
+      </member>
+
     </simplelist>
   </refsection>
 

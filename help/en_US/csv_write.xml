@@ -21,13 +21,19 @@
   <refnamediv>
     <refname>csv_write</refname>
 
-    <refpurpose>Read comma-separated value file</refpurpose>
+    <refpurpose>Write comma-separated value file</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>csv_write(M, filename[, separator[, decimal[, format[, comments]]]]) </synopsis>
+    <synopsis>
+      csv_write(M, filename)
+      csv_write(M, filename, separator)
+      csv_write(M, filename, separator, decimal)
+      csv_write(M, filename, separator, decimal, precision)
+      csv_write(M, filename, separator, decimal, precision, comments)
+    </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -38,7 +44,9 @@
         <term>filename</term>
 
         <listitem>
-          <para>a character string. The file path.</para>
+          <para>
+            a 1-by-1 matrix of strings, the file path.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -46,7 +54,9 @@
         <term>M</term>
 
         <listitem>
-          <para>a matrix of strings or double (complex supported).</para>
+          <para>
+            a m-by-n matrix of strings or double (complex supported).
+          </para>
         </listitem>
       </varlistentry>
 
@@ -54,7 +64,10 @@
         <term>separator</term>
 
         <listitem>
-          <para>column separator mark, by default a tabulation: "," or [] to use current defaut value.</para>
+          <para>
+            a 1-by-1 matrix of strings, the column separator mark, 
+            by default a tabulation: ",".
+          </para>
         </listitem>
       </varlistentry>
 
@@ -62,17 +75,18 @@
         <term>dec</term>
 
         <listitem>
-          <para>decimal mark '.' or ',' by default a '.' or [] to use current default value.</para>
+          <para>
+            a 1-by-1 matrix of strings, the decimal mark '.' or ',' by default a '.'.
+          </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>format</term>
+        <term>precision</term>
 
         <listitem>
           <para>
-            a character string giving the format.
-            The default value is given by the <literal>csv_default</literal> function. 
+            a 1-by-1 matrix of strings, the C format.
           </para>
         </listitem>
       </varlistentry>
@@ -81,11 +95,14 @@
         <term>comments</term>
 
         <listitem>
-          <para>a string matrix giving non numerical comments stored at the beginning of the file.</para>
+          <para>
+            a m-by-1 matrix of strings, the comments stored at 
+            the beginning of the file.
+            This option may be used, for example, to put a 
+            licence header in a data file.
+          </para>
         </listitem>
       </varlistentry>
-      
-
       
     </variablelist>
   </refsection>
@@ -93,28 +110,77 @@
   <refsection>
     <title>Description</title>
 
-    <para>csv_write(M, filename) writes matrix M into filename as
-    comma-separated values. The filename input is a string.</para>
-    <para>if the file 'filename' already exists, it is overwritten.</para>
+    <para>
+      csv_write(M, filename) writes matrix M into filename as
+      comma-separated values. 
+    </para>
+    <para>
+      The default value of the optional input arguments are 
+      defined by the <literal>csv_default</literal> function.
+    </para>
+    <para>
+      Any optional input argument equal to the empty matrix  
+      <literal>[]</literal> is set to its default value.
+    </para>
+    <para>
+      If the file <literal>filename</literal> already exists, it is overwritten.
+    </para>
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">// save a matrix as csv file format
-A = [1:10] * 0.1;
-csv_write(A, TMPDIR + '/datas.csv');
+    <para>
+      In the following example, we combine the <literal>csv_write</literal> 
+      and <literal>csv_read</literal> functions.
+    </para>
 
-// read as text
-mgetl(TMPDIR + '/datas.csv')
+    <programlisting role="example">
+      // Save a matrix as csv file format
+      M = [1:10] * 0.1;
+      filename = fullfile(TMPDIR, "datas.csv");
+      csv_write(M, filename);
 
-r = csv_read(TMPDIR + '/datas.csv');
+      // Read as text
+      mgetl(filename)
 
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "string")
+      r = csv_read(filename);
+    </programlisting>
 
-r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
+    <para>
+      In the following example, we use various options of the 
+      <literal>csv_write</literal> function.
+    </para>
 
-</programlisting>
+    <programlisting role="example">
+      // Save a matrix as csv file format
+      M = rand(2,3);
+      filename = fullfile(TMPDIR, "datas.csv");
+      //
+      // Use tabs as the separator
+      csv_write(M, filename,ascii(9));
+      mgetl(filename)
+      //
+      // Use the "," as the decimal point
+      // (and blank space as the separator).
+      csv_write(M, filename," ",",");
+      mgetl(filename)
+      //
+      // Configure the precision.
+      // Caution: this lower precision may generate 
+      // errors in a write-read cycle!
+      csv_write(M, filename,[],[],"%.8e");
+      mgetl(filename)
+      //
+      // Configure the comments
+      comments = [
+      "// Copyright (C) DIGITEO"
+      "//  This file must be used under the terms of the CeCILL."
+      ];
+      csv_write(M, filename,[],[],[],comments);
+      mgetl(filename)
+    </programlisting>
+
   </refsection>
 
   <refsection>

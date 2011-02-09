@@ -7,6 +7,7 @@ csv_readwrite (not released yet)
     * Fixed ticket #276: The output csv_default() calling sequence 
       was inconsistent with the names of the fields.
     * Fixed ticket #275: The default precision was insufficient.
+    * Fixed ticket #277: The help of csv_write was wrong.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
