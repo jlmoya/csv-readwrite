@@ -30,12 +30,14 @@
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>M = csv_read(filename)</synopsis>
-    <synopsis>M = csv_read(filename, separator)</synopsis>
-    <synopsis>M = csv_read(filename, separator, decimal)</synopsis>
-    <synopsis>M = csv_read(filename, separator, decimal, conversion)</synopsis>
-    <synopsis>M = csv_read(filename, separator, decimal, conversion, substitute)</synopsis>
-    <synopsis>M = csv_read(filename, separator, decimal, conversion, substitute, range)</synopsis>    
+    <synopsis>
+      M = csv_read(filename)
+      M = csv_read(filename, separator)
+      M = csv_read(filename, separator, decimal)
+      M = csv_read(filename, separator, decimal, conversion)
+      M = csv_read(filename, separator, decimal, conversion, substitute)
+      M = csv_read(filename, separator, decimal, conversion, substitute, range)
+    </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -46,7 +48,9 @@
         <term>filename</term>
 
         <listitem>
-          <para>a character string. The file path.</para>
+          <para>
+            a 1-by-1 matrix of strings, the file path.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -54,7 +58,9 @@
         <term>separator</term>
 
         <listitem>
-          <para>a character string. Field separator used, default value is "," or [] uses current default</para>
+          <para>
+            a 1-by-1 matrix of strings, the field separator used.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -62,7 +68,9 @@
         <term>decimal</term>
 
         <listitem>
-          <para>a character string. Field decimal used, default value is "." or [] uses current default</para>
+          <para>
+            a 1-by-1 matrix of strings, the decimal used.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -70,7 +78,10 @@
         <term>conversion</term>
 
         <listitem>
-          <para>a character string. Field conversion used ("string" or "double"), default value is "string" or [] uses current default</para>
+          <para>
+            a 1-by-1 matrix of strings, the type of the output <literal>M</literal> (default <literal>conversion="string"</literal>).
+            Available values are <literal>conversion</literal> are "string" or "double".
+          </para>
         </listitem>
       </varlistentry>
 
@@ -78,7 +89,14 @@
         <term>substitute</term>
 
         <listitem>
-          <para>a matrix of  string. ["searched" , "replaced"] to replace a field by another.</para>
+          <para>
+            a m-by-2 matrix of strings, a replacing map (default = [], meaning no 
+            replacements).
+            The first column <literal>substitute(:,1)</literal> contains the 
+            searched strings and the second column <literal>substitute(:,2)</literal>
+            contains the replace strings. 
+            Every occurence of a searched string in the file is replaced. 
+          </para>
         </listitem>
       </varlistentry>
 
@@ -87,9 +105,14 @@
         <term>range</term>
 
         <listitem>
-          <para>a character string. reads only the range specified.
-Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left corner of the data to be read and (R2,C2) is the lower right corner.</para>
-<para>[]: all range </para>
+          <para>
+            a 1-by-4 matrix of floating point integers, the range
+            of rows and columns which must be read (default range=[], meaning
+            that all the rows and columns).
+            Specify range using the format <literal>[R1 C1 R2 C2]</literal>
+            where (R1,C1) is the upper left corner of the data to
+            be read and (R2,C2) is the lower right corner.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -99,7 +122,7 @@ Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left c
         <term>M</term>
 
         <listitem>
-          <para>a matrix of strings or double.</para>
+          <para>a m-by-n matrix of strings or double.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -108,38 +131,64 @@ Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left c
   <refsection>
     <title>Description</title>
 
-    <para>Given an ascii file with delimited fields, for instance created by a
-    spreadsheet using "Text and comma" format, csv_read(filename) returns the
-    corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
-    another choice of separator.</para>
-    <para>with parameter "conversion" equals to "double" strings are converted as NaN.</para>
+    <para>
+      Given an ascii file with delimited fields, for instance created by a
+      spreadsheet using "Text and comma" format, csv_read(filename) returns the
+      corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
+      another choice of separator.
+    </para>
+    
+    <para>
+      The default value of the optional input arguments are
+      defined by the <literal>csv_default</literal> function.
+    </para>
+    
+    <para>
+      Any optional input argument equal to the empty matrix
+      <literal>[]</literal> is set to its default value.
+    </para>
+
+    <para>
+      When input argument "conversion" is equal to "double", strings are converted as NaN.
+    </para>
 
   </refsection>
 
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">// create a file with some data separated with tab    
-A = 1:50;
-csv_write(A, TMPDIR + '/foo.csv', ascii(9), '.')
-mgetl(TMPDIR + '/foo.csv')
+    <programlisting role="example">
+      // Create a file with some data separated with tabs.
+      M = 1:50;
+      filename = fullfile(TMPDIR, "datas.csv");
+      csv_write(M, filename, ascii(9), '.');
 
-// read csv file
-B = csv_read(TMPDIR + '/foo.csv',ascii(9))
+      // read csv file
+      M1 = csv_read(filename,ascii(9))
 
-// as double
-C = csv_read(TMPDIR + '/foo.csv',ascii(9), '.', 'double')
+      // Returns a double
+      M2 = csv_read(filename,ascii(9), '.', 'double')
 
-// compares original data and result
-and(A == C)
+      // Compares original data and result.
+      and(M == M2)
 
-M = [%inf,%nan];
-filename = fullfile(TMPDIR,'datas.csv');
-csv_write(M, filename);
-mgetl(filename)
-N = csv_read(filename,",",".","double",["Nan", "0"])
+      // Use the substitude argument to manage
+      // special data files.
+      content = [
+      "1"
+      "Not-A-Number"
+      "2"
+      "Not-A-Number"
+      ];
+      substitute = [
+      "Not-A-Number" "Nan"
+      ];
+      mputl(content,filename);
+      M = csv_read(filename,",",".","double",substitute)
+      isnan(M(2,1)) // Expected=%t
+      isnan(M(4,1)) // Expected=%t
 
-</programlisting>
+    </programlisting>
   </refsection>
 
   <refsection>
@@ -153,10 +202,11 @@ N = csv_read(filename,",",".","double",["Nan", "0"])
   <refsection>
     <title>Authors</title>
 
-    <variablelist>
-      <varlistentry>
-        <term>Allan CORNET</term>
-      </varlistentry>
-    </variablelist>
+    <para>
+      Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+    <para>
+      Copyright (C) 2011 - DIGITEO - Michael Baudin
+    </para>
   </refsection>
 </refentry>
