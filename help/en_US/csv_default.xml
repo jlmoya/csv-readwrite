@@ -154,6 +154,28 @@
         <para>
           field = "precision": the C format used to create the strings from the doubles in the
           <literal>csv_write</literal> function.
+          The default value is <literal>precision="%.17lg"</literal>.
+          This format allows to perform write-read error-free cycles.
+          This means that we can save a double into a .csv, then read the double and
+          get the exact same value.
+          The supported format is: %type or %[width].[precision]type.
+          <itemizedlist>
+            <listitem>
+              <para>
+                type: lf, lg, d, i, e, f, g
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                width: Optional number that specifies the minimum number of characters output.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                precision: Optional number that specifies the maximum number of characters printed for all or part of the output field, or the minimum number of digits printed for integer values.
+              </para>
+            </listitem>
+          </itemizedlist>
         </para>
       </listitem>
     </itemizedlist>

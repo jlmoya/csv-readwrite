@@ -19,7 +19,7 @@
 /* ========================================================================== */
 #define DEFAULT_CSV_SEPARATOR ","
 #define DEFAULT_CSV_DECIMAL "."
-#define DEFAULT_CSV_PRECISION "%.16lg"
+#define DEFAULT_CSV_PRECISION "%.17lg"
 #define CSV_DECIMAL_MODE_1 DEFAULT_CSV_DECIMAL
 #define CSV_DECIMAL_MODE_2 ","
 #define DEFAULT_CSV_CONVERSION "string"

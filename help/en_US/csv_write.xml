@@ -70,11 +70,10 @@
         <term>format</term>
 
         <listitem>
-          <para>a character string giving the format. This is an optional parameter, the default value is "%.16lg".
-supported format: %[width].[precision]type or %type
-width: Optional number that specifies the minimum number of characters output.
-precision: Optional number that specifies the maximum number of characters printed for all or part of the output field, or the minimum number of digits printed for integer values.
-type: lf, lg, d, i, e, f, g</para>
+          <para>
+            a character string giving the format.
+            The default value is given by the <literal>csv_default</literal> function. 
+          </para>
         </listitem>
       </varlistentry>
       
@@ -129,10 +128,11 @@ r = csv_read(TMPDIR + '/datas.csv', ",", ".", "double")
   <refsection>
     <title>Author</title>
 
-    <variablelist>
-      <varlistentry>
-        <term>Allan CORNET</term>
-      </varlistentry>
-    </variablelist>
+    <para>
+      Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+    <para>
+      Copyright (C) 2011 - DIGITEO - Michael Baudin
+    </para>
   </refsection>
 </refentry>
