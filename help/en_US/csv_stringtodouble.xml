@@ -2,6 +2,7 @@
 <!--
  *
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -20,13 +21,16 @@
   <refnamediv>
     <refname>csv_stringtodouble</refname>
 
-    <refpurpose>convert a matrix of strings to a matrix of double</refpurpose>
+    <refpurpose>Convert a matrix of strings to a matrix of doubles.</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <title>Calling Sequence</title>
 
-    <synopsis>r = csv_stringtodouble(strs[,convertStrToNan]) </synopsis>
+    <synopsis>
+      r = csv_stringtodouble(strs)
+      r = csv_stringtodouble(strs,convertStrToNan)
+    </synopsis>
   </refsynopsisdiv>
 
   <refsection>
@@ -37,7 +41,7 @@
         <term>strs</term>
 
         <listitem>
-          <para>a matrix of strings.</para>
+          <para>a m-by-n matrix of strings.</para>
         </listitem>
       </varlistentry>
 
@@ -45,10 +49,11 @@
         <term>convertStrToNan</term>
 
         <listitem>
-          <para>a boolean. if %t it converts no valid string to Nan. if %f a
-          no valid string returns a error</para>
-
-          <para>%t is default value.</para>
+          <para>
+            a 1-by-1 matrix of booleans (default convertStrToNan=%t).
+            If %t it converts no valid string to Nan.
+            If %f a no valid string returns a error.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -56,7 +61,7 @@
         <term>r</term>
 
         <listitem>
-          <para>a matrix of double</para>
+          <para>a m-by-n matrix of doubles.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -65,20 +70,24 @@
   <refsection>
     <title>Description</title>
 
-    <para>convert a matrix of strings to a matrix of double.</para>
+    <para>
+      Convert a matrix of strings to a matrix of double.
+    </para>
 
-    <para>This function is faster than evstr to convert a matrix convert a
-    matrix of strings to a matrix of double.</para>
+    <para>
+      This function is faster than evstr to convert a matrix convert a
+      matrix of strings to a matrix of double.
+    </para>
 
-    <para>tic();evstr(string(1:10000));toc()</para>
+    <para>
+      The <literal>csv_stringtodouble</literal> converts any complex number as a whole into a
+      complex numeric field, converting the real and imaginary parts to the
+      specified numeric type.
+    </para>
 
-    <para>tic();csv_stringtodouble(string(1:10000));toc()</para>
-
-    <para>csv_stringtodouble converts any complex number as a whole into a
-    complex numeric field, converting the real and imaginary parts to the
-    specified numeric type.</para>
-
-    <para>Valid forms for a complex number are :</para>
+    <para>
+      Valid forms for a complex number are :
+    </para>
 
     <informaltable border="1">
       <tr>
@@ -104,26 +113,51 @@
   <refsection>
     <title>Examples</title>
 
-    <programlisting role="example">csv_stringtodouble("123.45e7")
-csv_stringtodouble("123 + 45i")
-csv_stringtodouble("3.14159")
-csv_stringtodouble(["2.71" "3.1415"])
+    <programlisting role="example">
+      csv_stringtodouble("123.45e7")
+      csv_stringtodouble("123 + 45i")
+      csv_stringtodouble("3.14159")
+      csv_stringtodouble(["2.71" "3.1415"])
 
-mA = string(1:100);
-r = csv_stringtodouble(mA)
+      mA = string(1:100);
+      r = csv_stringtodouble(mA)
 
-r = csv_stringtodouble("2.6 + 3j")
+      r = csv_stringtodouble("2.6 + 3j")
 
-csv_stringtodouble("not a number")
-csv_stringtodouble("not a number", %t)
-csv_stringtodouble("not a number", %f)</programlisting>
+      csv_stringtodouble("not a number")
+      csv_stringtodouble("not a number", %t)
+      csv_stringtodouble("not a number", %f)
+    </programlisting>
+
+    <para>
+      In the following script, we compare the performances of the <literal>evstr</literal> 
+      and <literal>csv_stringtodouble</literal> functions. 
+      Typical values of <literal>t1/t2</literal> are between 3 and 10.
+    </para>
+
+    <programlisting role="example">
+      n=10000;
+      x = string(1:n);
+      tic();evstr(x);t1=toc()
+      tic();csv_stringtodouble(x);t2=toc()
+      t1/t2
+    </programlisting>
+
+    <para>
+      For large values of <literal>n</literal>, the previous script can fail because 
+      of a lack of memory, while <literal>csv_stringtodouble</literal> 
+      may succeed.
+    </para>
+
   </refsection>
 
   <refsection>
     <title>See Also</title>
 
     <simplelist type="inline">
-      <member><link linkend="evstr">evstr</link></member>
+      <member>
+        <link linkend="evstr">evstr</link>
+      </member>
     </simplelist>
   </refsection>
 
@@ -132,6 +166,9 @@ csv_stringtodouble("not a number", %f)</programlisting>
 
     <para>
       Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+    <para>
+      Copyright (C) 2011 - DIGITEO - Michael Baudin
     </para>
 
   </refsection>
