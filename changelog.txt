@@ -10,6 +10,7 @@ csv_readwrite (not released yet)
     * Fixed ticket #277: The help of csv_write was wrong.
     * Fixed ticket #242: The description of csv_write in the help was wrong.
     * Added examples in csv_read.
+    * Added examples in csv_write.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
