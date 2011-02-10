@@ -14,6 +14,7 @@ csv_readwrite (not released yet)
     * Improved the csv_textscan help.
     * Improved the help of csv_stringtodouble.
     * Separated tests for csv_read and csv_write.
+    * Added tests to check write-read cycles.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
