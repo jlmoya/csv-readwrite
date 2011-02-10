@@ -79,8 +79,8 @@
 
         <listitem>
           <para>
-            a 1-by-1 matrix of strings, the type of the output <literal>M</literal> (default <literal>conversion="string"</literal>).
-            Available values are <literal>conversion</literal> are "string" or "double".
+            a 1-by-1 matrix of strings, the type of the output <literal>M</literal> 
+            Available values are "string" or "double".
           </para>
         </listitem>
       </varlistentry>

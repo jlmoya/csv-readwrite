@@ -2,6 +2,7 @@
 <!--
  *
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -31,6 +32,7 @@
       csv_textscan(M)
       csv_textscan(M, separator)
       csv_textscan(M, separator, decimal)
+      csv_textscan(M, separator, decimal, conversion)
       csv_textscan(M, separator, decimal, conversion, range)
     </synopsis>
   </refsynopsisdiv>
@@ -44,7 +46,7 @@
         <term>M</term>
 
         <listitem>
-          <para>a matrix of strings.</para>
+          <para>a m-by-1 or 1-by-m matrix of strings.</para>
         </listitem>
       </varlistentry>
 
@@ -52,7 +54,9 @@
         <term>separator</term>
 
         <listitem>
-          <para>column separator mark, by default a tabulation: ","</para>
+          <para>
+            a 1-by-1 matrix of strings, the column separator mark.
+          </para>
         </listitem>
       </varlistentry>
 
@@ -60,7 +64,10 @@
         <term>decimal</term>
 
         <listitem>
-          <para>decimal mark '.' or ',' by default a '.'</para>
+          <para>
+            a 1-by-1 matrix of strings, the decimal mark.
+            The available values are "." or ",".
+          </para>
         </listitem>
       </varlistentry>
 
@@ -68,15 +75,10 @@
         <term>conversion</term>
 
         <listitem>
-          <para>"string" or "double"</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>conversion</term>
-
-        <listitem>
-          <para>"string" or "double"</para>
+          <para>
+            a 1-by-1 matrix of strings, the type of the output.
+            Available values are "string" or "double".
+          </para>
         </listitem>
       </varlistentry>
 
@@ -84,9 +86,14 @@
         <term>range</term>
 
         <listitem>
-          <para>a character string. reads only the range specified.
-Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left corner of the data to be read and (R2,C2) is the lower right corner.</para>
-<para>[]: all range </para>
+          <para>
+            a m-by-2 matrix of strings, a replacing map (default = [], meaning no
+            replacements).
+            The first column <literal>substitute(:,1)</literal> contains the
+            searched strings and the second column <literal>substitute(:,2)</literal>
+            contains the replace strings.
+            Every occurence of a searched string in the file is replaced.
+          </para>
         </listitem>
       </varlistentry>
       
@@ -96,7 +103,33 @@ Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left c
   <refsection>
     <title>Description</title>
 
-    <para>csv_textscan</para>
+    <para>
+      The <literal>csv_textscan</literal> function has the same 
+      purpose as <literal>csv_read</literal>, except that
+      <literal>csv_textscan</literal> reads in a string, while 
+      <literal>csv_read</literal> reads in a file.
+    </para>
+
+    <para>
+      Given an ascii file with delimited fields, for instance created by a
+      spreadsheet using "Text and comma" format, csv_read(filename) returns the
+      corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
+      another choice of separator.
+    </para>
+
+    <para>
+      The default value of the optional input arguments are
+      defined by the <literal>csv_default</literal> function.
+    </para>
+
+    <para>
+      Any optional input argument equal to the empty matrix
+      <literal>[]</literal> is set to its default value.
+    </para>
+
+    <para>
+      When input argument "conversion" is equal to "double", strings are converted as NaN.
+    </para>
   </refsection>
 
   <refsection>
@@ -133,6 +166,10 @@ Specify range using the notation [R1 C1 R2 C2] where (R1,C1) is the upper left c
 
     <para>
       Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+
+    <para>
+      Copyright (C) 2011 - DIGITEO - Michael Baudin
     </para>
 
   </refsection>

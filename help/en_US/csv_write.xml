@@ -65,18 +65,18 @@
 
         <listitem>
           <para>
-            a 1-by-1 matrix of strings, the column separator mark, 
-            by default a tabulation: ",".
+            a 1-by-1 matrix of strings, the column separator mark.
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>dec</term>
+        <term>decimal</term>
 
         <listitem>
           <para>
-            a 1-by-1 matrix of strings, the decimal mark '.' or ',' by default a '.'.
+            a 1-by-1 matrix of strings, the decimal mark.
+            The available values are "." or ",".
           </para>
         </listitem>
       </varlistentry>

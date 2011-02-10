@@ -137,7 +137,8 @@
       </listitem>
       <listitem>
         <para>
-          field = "decimal": the decimal point used in the csv files.
+          field = "decimal": the decimal point used in the csv files. 
+          The available values are "." or ",". 
           Default decimal = ".".
         </para>
       </listitem>
