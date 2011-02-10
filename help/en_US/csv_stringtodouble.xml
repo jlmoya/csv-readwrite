@@ -130,10 +130,9 @@ csv_stringtodouble("not a number", %f)</programlisting>
   <refsection>
     <title>Author</title>
 
-    <variablelist>
-      <varlistentry>
-        <term>Allan CORNET</term>
-      </varlistentry>
-    </variablelist>
+    <para>
+      Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+    </para>
+
   </refsection>
 </refentry>

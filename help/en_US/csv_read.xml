@@ -157,6 +157,11 @@
   <refsection>
     <title>Examples</title>
 
+    <para>
+      The following script presents some basic uses of the 
+      <literal>csv_read</literal> function.
+    </para>
+
     <programlisting role="example">
       // Create a file with some data separated with tabs.
       M = 1:50;
@@ -189,6 +194,50 @@
       isnan(M(4,1)) // Expected=%t
 
     </programlisting>
+
+    <para>
+      The following script presents more practical uses of the 
+      <literal>csv_read</literal> function.
+    </para>
+
+    <programlisting role="example">
+      // Define a matrix of strings
+      Astr = [
+      "1" "8" "15" "22" "29" "36" "43" "50"
+      "2" "9" "16" "23" "30" "37" "44" "51"
+      "3" "10" "17" "6+3*I" "31" "38" "45" "52"
+      "4" "11" "18" "25" "32" "39" "46" "53"
+      "5" "12" "19" "26" "33" "40" "47" "54"
+      "6" "13" "20" "27" "34" "41" "48" "55"
+      "+0" "-0" "Inf" "-Inf" "Nan" "1.D+308" "1.e-308" "1.e-323"
+      ];
+
+      // Create a file with some data separated with commas
+      filename = fullfile(TMPDIR , 'foo.csv');
+      sep = ",";
+      fd = mopen(filename,'wt');
+      for i = 1 : size(Astr,"r")
+      mfprintf(fd,"%s\n",strcat(Astr(i,:),sep));
+      end
+      mclose(fd);
+      // To see the file : edit(filename)
+
+      // Read this file
+      Bstr = csv_read ( filename )
+
+      // Create a file with a particular separator: here ";"
+      filename = fullfile(TMPDIR , 'foo.csv');
+      sep = ";";
+      fd = mopen(filename,'wt');
+      for i = 1 : size(Astr,"r")
+      mfprintf(fd,"%s\n",strcat(Astr(i,:),sep));
+      end
+      mclose(fd);
+      //
+      // Read the file and customize the separator
+      csv_read ( filename , sep )
+    </programlisting>
+
   </refsection>
 
   <refsection>
