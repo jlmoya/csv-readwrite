@@ -144,13 +144,13 @@ function [nonan,numb] = mythrownan(x)
     nonan=x(~isnan(x))
 endfunction
 
-function [flag,errmsg] = assert_checkfilesequal ( varargin )
+function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
   //   Check two files are equal.
   //
   // Calling Sequence
-  //   flag = assert_checkfilesequal ( filecomp , fileref )
-  //   flag = assert_checkfilesequal ( filecomp , fileref , compfun )
-  //   [flag,errmsg] = assert_checkfilesequal ( ... )
+  //   flag = Myassert_checkfilesequal ( filecomp , fileref )
+  //   flag = Myassert_checkfilesequal ( filecomp , fileref , compfun )
+  //   [flag,errmsg] = Myassert_checkfilesequal ( ... )
   //
   // Parameters
   //   filecomp : a 1x1 matrix of strings, the computed file.
@@ -207,14 +207,14 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   // mclose(fd);
   //
   // // A test which pass
-  // flag = assert_checkfilesequal ( filecomp1 , fileref1 )
-  // [flag,errmsg] = assert_checkfilesequal ( filecomp1 , fileref1 )
+  // flag = Myassert_checkfilesequal ( filecomp1 , fileref1 )
+  // [flag,errmsg] = Myassert_checkfilesequal ( filecomp1 , fileref1 )
   //
   // // Failure: filecomp2 <> fileref1
   // // Error generated
-  // flag = assert_checkfilesequal ( filecomp2 , fileref1 )
+  // flag = Myassert_checkfilesequal ( filecomp2 , fileref1 )
   // // No error generated
-  // [flag,errmsg] = assert_checkfilesequal ( filecomp2 , fileref1 )
+  // [flag,errmsg] = Myassert_checkfilesequal ( filecomp2 , fileref1 )
   //
   // // Prepare data for the tests
   // // fileref2 == filecomp3, given that comment lines are ignored.
@@ -277,16 +277,16 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   // endfunction
   // //
   // // A test which pass
-  // [flag,errmsg] = assert_checkfilesequal ( filecomp3 , fileref2 , mycompfun )
+  // [flag,errmsg] = Myassert_checkfilesequal ( filecomp3 , fileref2 , mycompfun )
   // // A test which fails
-  // [flag,errmsg] = assert_checkfilesequal ( filecomp4 , fileref2 , mycompfun )
+  // [flag,errmsg] = Myassert_checkfilesequal ( filecomp4 , fileref2 , mycompfun )
   //
   // Authors
   //   Michael Baudin, 2010
 
   [lhs,rhs]=argn()
   if ( and ( rhs <> [ 2 3 ] ) ) then
-    errmsg = sprintf ( gettext ( "%s: Unexpected number of input arguments : %d provided while %d to %d are expected.") , "assert_checkfilesequal" , rhs , 2 , 3 )
+    errmsg = sprintf ( gettext ( "%s: Unexpected number of input arguments : %d provided while %d to %d are expected.") , "Myassert_checkfilesequal" , rhs , 2 , 3 )
     error(errmsg)
   end
   //
@@ -301,34 +301,34 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   //
   // Check types of variables
   if ( typeof(filecomp) <> "string" ) then
-    errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" for input argument %s #%d, but got %s instead.") , "assert_checkfilesequal" , "string" , "filecomp" , 1 , typeof(filecomp) )
+    errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" for input argument %s #%d, but got %s instead.") , "Myassert_checkfilesequal" , "string" , "filecomp" , 1 , typeof(filecomp) )
     error(errmsg)
   end
   if ( typeof(fileref) <> "string" ) then
-    errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" for input argument %s #%d, but got %s instead.") , "assert_checkfilesequal" , "string" , "fileref" , 2 , typeof(fileref) )
+    errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" for input argument %s #%d, but got %s instead.") , "Myassert_checkfilesequal" , "string" , "fileref" , 2 , typeof(fileref) )
     error(errmsg)
   end
   if ( compfun <> [] ) then
     if ( and ( typeof(compfun) <> [ "function" "list" ] ) ) then
-      errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" or ""%s"" for input argument %s #%d, but got %s instead.") , "assert_checkfilesequal" , "function" , "list" , "compfun" , 3 , typeof(compfun) )
+      errmsg = sprintf ( gettext ( "%s: Expected type ""%s"" or ""%s"" for input argument %s #%d, but got %s instead.") , "Myassert_checkfilesequal" , "function" , "list" , "compfun" , 3 , typeof(compfun) )
       error(errmsg)
     end
   end
   //
   // Check sizes of variables
   if ( size(filecomp,"*") <> 1 ) then
-    errmsg = sprintf ( gettext ( "%s: Wrong size for input argument #%d: %s: Expected size %d, but got %d instead.") , "assert_checkfilesequal" , 1 , "filecomp" , 1 , size(filecomp,"*") )
+    errmsg = sprintf ( gettext ( "%s: Wrong size for input argument #%d: %s: Expected size %d, but got %d instead.") , "Myassert_checkfilesequal" , 1 , "filecomp" , 1 , size(filecomp,"*") )
     error(errmsg)
   end
   if ( size(fileref,"*") <> 1 ) then
-    errmsg = sprintf ( gettext ( "%s: Wrong size for input argument #%d: %s: Expected size %d, but got %d instead.") , "assert_checkfilesequal" , 2 , "fileref" , 1 , size(fileref,"*") )
+    errmsg = sprintf ( gettext ( "%s: Wrong size for input argument #%d: %s: Expected size %d, but got %d instead.") , "Myassert_checkfilesequal" , 2 , "fileref" , 1 , size(fileref,"*") )
     error(errmsg)
   end
   //
   // Test if both files exist on disk
   if ( fileinfo(filecomp) == [] ) then
     flag = %f
-    errmsg = sprintf ( gettext ( "%s: Computed file ""%s"" does not exist on disk.") , "assert_checkfilesequal" , filecomp )
+    errmsg = sprintf ( gettext ( "%s: Computed file ""%s"" does not exist on disk.") , "Myassert_checkfilesequal" , filecomp )
     if ( lhs < 2 ) then
       assert_generror ( errmsg )
     else
@@ -337,7 +337,7 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   end
   if ( fileinfo(fileref) == [] ) then
     flag = %f
-    errmsg = sprintf ( gettext ( "%s: Reference file ""%s"" does not exist on disk.") , "assert_checkfilesequal" , fileref )
+    errmsg = sprintf ( gettext ( "%s: Reference file ""%s"" does not exist on disk.") , "Myassert_checkfilesequal" , fileref )
     if ( lhs < 2 ) then
       assert_generror ( errmsg )
     else
@@ -349,7 +349,7 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   [fdc,err] = mopen(filecomp,"r")
   if ( err <> 0 ) then
     flag = %f
-    errmsg = sprintf ( gettext ( "%s: Unable to open computed file ""%s"".") , "assert_checkfilesequal" , filecomp )
+    errmsg = sprintf ( gettext ( "%s: Unable to open computed file ""%s"".") , "Myassert_checkfilesequal" , filecomp )
     if ( lhs < 2 ) then
       assert_generror ( errmsg )
     else
@@ -359,7 +359,7 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   [fdr,err] = mopen(fileref,"r")
   if ( err <> 0 ) then
     flag = %f
-    errmsg = sprintf ( gettext ( "%s: Unable to open reference file ""%s"".") , "assert_checkfilesequal" , fileref )
+    errmsg = sprintf ( gettext ( "%s: Unable to open reference file ""%s"".") , "Myassert_checkfilesequal" , fileref )
     if ( lhs < 2 ) then
       assert_generror ( errmsg )
     else
@@ -389,7 +389,7 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   else
     flag = %f
     errmsg = msprintf(gettext("%s: The content of computed file ""%s"" is different from the content of reference file ""%s""."), ..
-      "assert_checkfilesequal",filecomp,fileref)
+      "Myassert_checkfilesequal",filecomp,fileref)
     // Do not generate the error now: let us close the files before!
   end
   // 
@@ -397,14 +397,14 @@ function [flag,errmsg] = assert_checkfilesequal ( varargin )
   err=mclose(fdc)
   if ( err <> 0 ) then
     flag = %f
-    errmsg = sprintf ( gettext ( "%s: Unable to close computed file ""%s"": error = %d.") , "assert_checkfilesequal" , filecomp , err )
+    errmsg = sprintf ( gettext ( "%s: Unable to close computed file ""%s"": error = %d.") , "Myassert_checkfilesequal" , filecomp , err )
     // It may happen that we overwrite the content of the errmsg varaiable.
     // For example, we are there, while the file contents were different.
     // We consider that that not being able to close the file is a bigger issue, 
   end
   err=mclose(fdr)
   if ( err <> 0 ) then
-    errmsg = sprintf ( gettext ( "%s: Unable to close reference file ""%s"": error = %d.") , "assert_checkfilesequal" , fileref , err )
+    errmsg = sprintf ( gettext ( "%s: Unable to close reference file ""%s"": error = %d.") , "Myassert_checkfilesequal" , fileref , err )
     // It may happen that we overwrite the content of the errmsg varaiable.
     // For example, we are there, while the file contents were different.
     // We consider that that not being able to close the file is a bigger issue, 
@@ -423,55 +423,55 @@ M = eye(3, 5);
 //
 filename = fullfile(TMPDIR,"M_1.csv");
 csv_write(M, filename);
-assert_checkfilesequal ( filename , fullfile(path,"M_1.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"M_1.csv") );
 //
 filename = fullfile(TMPDIR,"M_2.csv");
 csv_write(M, filename, ascii(9));
-assert_checkfilesequal ( filename , fullfile(path,"M_2.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"M_2.csv") );
 //
 filename = fullfile(TMPDIR,"M_3.csv");
 csv_write(M, filename, " ", ",");
-assert_checkfilesequal ( filename , fullfile(path,"M_3.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"M_3.csv") );
 //
 filename = fullfile(TMPDIR,"M_4.csv");
 csv_write(M, filename, ";", ",");
-assert_checkfilesequal ( filename , fullfile(path,"M_4.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"M_4.csv") );
 // =============================================================================
 N = [%nan , 1, %nan ; -%inf , %inf, 4];
 //
 filename = fullfile(TMPDIR,"N_1.csv");
 csv_write(N, filename);
-assert_checkfilesequal ( filename , fullfile(path,"N_1.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"N_1.csv") );
 //
 filename = fullfile(TMPDIR,"N_1.csv");
 csv_write(N, filename, ascii(9));
-assert_checkfilesequal ( filename , fullfile(path,"N_2.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"N_2.csv") );
 //
 filename = fullfile(TMPDIR,"N_1.csv");
 csv_write(N, filename, " ", ",");
-assert_checkfilesequal (filename , fullfile(path,"N_3.csv") );
+Myassert_checkfilesequal (filename , fullfile(path,"N_3.csv") );
 //
 filename = fullfile(TMPDIR,"N_1.csv");
 csv_write(N, filename, ";", ",");
-assert_checkfilesequal ( filename , fullfile(path,"N_4.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"N_4.csv") );
 // =============================================================================
 K = eye(3, 2) + 0.1;
 //
 filename = fullfile(TMPDIR,"K_1.csv");
 csv_write(K, filename);
-assert_checkfilesequal ( filename , fullfile(path,"K_1.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"K_1.csv") );
 //
 filename = fullfile(TMPDIR,"K_2.csv");
 csv_write(K, filename, ascii(9));
-assert_checkfilesequal ( filename , fullfile(path,"K_2.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"K_2.csv") );
 //
 filename = fullfile(TMPDIR,"K_3.csv");
 csv_write(K, filename, " ", ",");
-assert_checkfilesequal ( filename , fullfile(path,"K_3.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"K_3.csv") );
 //
 filename = fullfile(TMPDIR,"K_4.csv");
 csv_write(K, filename, ";", ",");
-assert_checkfilesequal ( filename , fullfile(path,"K_4.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"K_4.csv") );
 // =============================================================================
 S = [
     "Allan",                  "2", "CORNET";
@@ -480,22 +480,42 @@ S = [
 //
 filename = fullfile(TMPDIR,"S_1.csv");
 csv_write(S, filename, "|");
-assert_checkfilesequal ( filename , fullfile(path,"S_1.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"S_1.csv") );
 //
 filename = fullfile(TMPDIR,"S_2.csv");
 csv_write(S, filename, ascii(9));
-assert_checkfilesequal ( filename , fullfile(path,"S_2.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"S_2.csv") );
 //
 filename = fullfile(TMPDIR,"S_3.csv");
 csv_write(S, filename, "!", ",");
-assert_checkfilesequal ( filename , fullfile(path,"S_3.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"S_3.csv") );
 //
 filename = fullfile(TMPDIR,"S_4.csv");
 csv_write(S, filename, ";", ",");
-assert_checkfilesequal ( filename , fullfile(path,"S_4.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"S_4.csv") );
 // =============================================================================
 M = [%inf, %nan];
 filename = fullfile(TMPDIR,"datas.csv");
 csv_write(M, filename);
-assert_checkfilesequal ( filename , fullfile(path,"datas.csv") );
+Myassert_checkfilesequal ( filename , fullfile(path,"datas.csv") );
+//
+// =============================================================================
+//
+// Configure the comments
+M = [1:4] * 0.1;
+comm = [
+"// Copyright (C) DIGITEO"
+"//  This file must be used under the terms of the CeCILL."
+];
+filename = fullfile(TMPDIR,"test.csv");
+csv_write(M, filename,[],[],[],comm);
+Mstr = mgetl(filename);
+expected = [
+"// Copyright (C) DIGITEO"
+"//  This file must be used under the terms of the CeCILL."
+"0.10000000000000001,0.20000000000000001,0.30000000000000004,0.40000000000000002"
+];
+Myassert_checkequal ( Mstr , expected );
+
+
 

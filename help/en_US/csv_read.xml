@@ -132,10 +132,15 @@
     <title>Description</title>
 
     <para>
-      Given an ascii file with delimited fields, for instance created by a
-      spreadsheet using "Text and comma" format, csv_read(filename) returns the
-      corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
-      another choice of separator.
+      Given an ascii file with comma separated values delimited fields, this
+      function returns the corresponding Scilab matrix of strings.
+      For example, the .csv data file may have been created by a
+      spreadsheet software using "Text and comma" format.
+    </para>
+
+    <para>
+      It might happen that the columns are separated by a non-comma separator.
+      In this case, use csv_read(filename, separator) for another choice of separator.
     </para>
     
     <para>
@@ -149,7 +154,8 @@
     </para>
 
     <para>
-      When input argument "conversion" is equal to "double", strings are converted as NaN.
+      When the input argument "conversion" is equal to "double", the non-numeric
+      fields within the .csv (e.g. strings) are converted into NaN.
     </para>
 
   </refsection>

@@ -111,7 +111,7 @@
     <title>Description</title>
 
     <para>
-      csv_write(M, filename) writes matrix M into filename as
+      This function writes matrix M into filename as
       comma-separated values. 
     </para>
     <para>
