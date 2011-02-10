@@ -152,16 +152,6 @@
   </refsection>
 
   <refsection>
-    <title>See Also</title>
-
-    <simplelist type="inline">
-      <member>
-        <link linkend="evstr">evstr</link>
-      </member>
-    </simplelist>
-  </refsection>
-
-  <refsection>
     <title>Author</title>
 
     <para>
