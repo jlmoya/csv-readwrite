@@ -1,38 +1,41 @@
-readme.txt of the csv_readwrite module
+CSV read/write toolbox
 
-fast dedicated scilab functions to read and write csv files
+Purpose
+-------
 
-- csv_read
-- csv_write
+The purpose of this module is to read and write 
+Comma Separated Values (CSV) data files. 
+The goal of this toolbox is to improve the flexibility, consistency and speed of 
+CSV reading and writing with respect to Scilab built-in 
+write_csv and read_csv functions. 
 
-To compare speed (x100 faster):
+On a 1000-by-1000 matrix, we observed a 73x improvement of the 
+speed in writing and 3x improvement in reading.
 
-with default scilab functions:
-stacksize('max');
-M = ones(1000, 1000);
+Features
+--------
 
-timer();
-write_csv(M, TMPDIR + "/csv_write_1.csv");
-timer()
+ * csv_default : Get or set defaults for csv files.
+ * csv_getToolboxPath : Returns the path to the current module.
+ * csv_read : Read comma-separated value file
+ * csv_stringtodouble : Convert a matrix of strings to a matrix of doubles.
+ * csv_textscan : Read comma-separated value in a matrix of strings
+ * csv_write : Write comma-separated value file
 
-timer();
-r = read_csv(TMPDIR + "/csv_write_1.csv")
-timer()
+Authors
+-------
+
+Copyright (C) 2010 - 2011 - DIGITEO - Allan Cornet
+Copyright (C) 2011 - DIGITEO - Michael Baudin
+
+Licence
+-------
+
+This toolbox is released under the CeCILL_V2 licence :
+
+http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 
 
-with optimized functions:
 
-stacksize('max');
-M = ones(1000, 1000);
-
-timer();
-csv_write(M, TMPDIR + "/csv_write_1.csv");
-timer()
-
-timer();
-r = csv_read(TMPDIR + "/csv_write_1.csv");
-timer()
-
-Allan CORNET - 2010
 
 

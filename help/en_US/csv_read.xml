@@ -79,7 +79,7 @@
 
         <listitem>
           <para>
-            a 1-by-1 matrix of strings, the type of the output <literal>M</literal> 
+            a 1-by-1 matrix of strings, the type of the output <literal>M</literal>.
             Available values are "string" or "double".
           </para>
         </listitem>
@@ -133,7 +133,9 @@
 
     <para>
       Given an ascii file with comma separated values delimited fields, this
-      function returns the corresponding Scilab matrix of strings.
+      function returns the corresponding Scilab matrix of strings or doubles. 
+    </para>
+    <para>
       For example, the .csv data file may have been created by a
       spreadsheet software using "Text and comma" format.
     </para>

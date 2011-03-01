@@ -29,11 +29,11 @@
     <title>Calling Sequence</title>
 
     <synopsis>
-      csv_textscan(M)
-      csv_textscan(M, separator)
-      csv_textscan(M, separator, decimal)
-      csv_textscan(M, separator, decimal, conversion)
-      csv_textscan(M, separator, decimal, conversion, range)
+      A = csv_textscan(M)
+      A = csv_textscan(M, separator)
+      A = csv_textscan(M, separator, decimal)
+      A = csv_textscan(M, separator, decimal, conversion)
+      A = csv_textscan(M, separator, decimal, conversion, range)
     </synopsis>
   </refsynopsisdiv>
 
@@ -76,7 +76,7 @@
 
         <listitem>
           <para>
-            a 1-by-1 matrix of strings, the type of the output.
+            a 1-by-1 matrix of strings, the type of the output <literal>A</literal>. 
             Available values are "string" or "double".
           </para>
         </listitem>
@@ -87,16 +87,24 @@
 
         <listitem>
           <para>
-            a m-by-2 matrix of strings, a replacing map (default = [], meaning no
-            replacements).
-            The first column <literal>substitute(:,1)</literal> contains the
-            searched strings and the second column <literal>substitute(:,2)</literal>
-            contains the replace strings.
-            Every occurence of a searched string in the file is replaced.
+            a 1-by-4 matrix of floating point integers, the range
+            of rows and columns which must be read (default range=[], meaning
+            that all the rows and columns).
+            Specify range using the format <literal>[R1 C1 R2 C2]</literal>
+            where (R1,C1) is the upper left corner of the data to
+            be read and (R2,C2) is the lower right corner.
           </para>
         </listitem>
       </varlistentry>
       
+      <varlistentry>
+        <term>A</term>
+
+        <listitem>
+          <para>a m-by-n matrix of strings or double.</para>
+        </listitem>
+      </varlistentry>
+
     </variablelist>
   </refsection>
 
@@ -104,17 +112,15 @@
     <title>Description</title>
 
     <para>
+      Given an ascii file with delimited fields, this function returns the
+      corresponding Scilab matrix of strings or doubles. 
+    </para>
+
+    <para>
       The <literal>csv_textscan</literal> function has the same 
       purpose as <literal>csv_read</literal>, except that
       <literal>csv_textscan</literal> reads in a string, while 
       <literal>csv_read</literal> reads in a file.
-    </para>
-
-    <para>
-      Given an ascii file with delimited fields, for instance created by a
-      spreadsheet using "Text and comma" format, csv_read(filename) returns the
-      corresponding Scilab matrix of strings. Use csv_read(filename, separator) for
-      another choice of separator.
     </para>
 
     <para>
