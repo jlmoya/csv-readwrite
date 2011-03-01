@@ -438,6 +438,10 @@ static char *stripCharacters(const char *line)
 static char **replaceStrings(const char **lines, int nbLines, const char **toreplace, int sizetoreplace)
 {
     char **replacedStrings = NULL;
+	int nr = 0;
+
+	nr = sizetoreplace/2;
+
     if (lines)
     {
         int i = 0;
@@ -445,16 +449,22 @@ static char **replaceStrings(const char **lines, int nbLines, const char **torep
         replacedStrings = (char**)MALLOC(sizeof(char*) * nbLines);
         if (replacedStrings)
         {
-            for (i = 0; i < sizetoreplace; i = i + 2)
-            {
-                int j = 0;
-                for (j = 0; j < nbLines; j++)
-                {
-                    replacedStrings[j] = csv_strsubst(lines[j], toreplace[i], toreplace[i + 1]);
-                }
-            }
-        }
-    }
-    return replacedStrings;
+			// Copy the source lines to the target replacedStrings.
+			int j = 0;
+			for (j = 0; j < nbLines; j++)
+			{
+				replacedStrings[j] = lines[j];
+			}
+			// Make replacements within the target replacedStrings.
+			for (i = 0; i < nr; i = i++)
+			{
+				for (j = 0; j < nbLines; j++)
+				{
+					replacedStrings[j] = csv_strsubst(replacedStrings[j], toreplace[i], toreplace[nr + i]);
+				}
+			}
+		}
+	}
+	return replacedStrings;
 }
 /* ========================================================================== */

@@ -16,6 +16,8 @@ csv_readwrite (not released yet)
     * Separated tests for csv_read and csv_write.
     * Added tests to check write-read cycles.
     * Added tests for csv_write and the comment option.
+    * Improved the unit test for csv_textscan.
+    * Fixed ticket #281: The substitute option did not work in csv_read.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
