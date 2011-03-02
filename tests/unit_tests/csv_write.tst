@@ -118,7 +118,7 @@ function [flag,errmsg] = Myassert_checkequal ( computed , expected )
         "Myassert_checkequal",estr,cstr)
         if ( lhs < 2 ) then
             // If no output variable is given, generate an error
-            assert_generror ( errmsg )
+            error ( errmsg )
         end
     end
 endfunction
@@ -330,7 +330,7 @@ function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
     flag = %f
     errmsg = sprintf ( gettext ( "%s: Computed file ""%s"" does not exist on disk.") , "Myassert_checkfilesequal" , filecomp )
     if ( lhs < 2 ) then
-      assert_generror ( errmsg )
+      error ( errmsg )
     else
       return
     end
@@ -339,7 +339,7 @@ function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
     flag = %f
     errmsg = sprintf ( gettext ( "%s: Reference file ""%s"" does not exist on disk.") , "Myassert_checkfilesequal" , fileref )
     if ( lhs < 2 ) then
-      assert_generror ( errmsg )
+      error ( errmsg )
     else
       return
     end
@@ -351,7 +351,7 @@ function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
     flag = %f
     errmsg = sprintf ( gettext ( "%s: Unable to open computed file ""%s"".") , "Myassert_checkfilesequal" , filecomp )
     if ( lhs < 2 ) then
-      assert_generror ( errmsg )
+      error ( errmsg )
     else
       return
     end
@@ -361,7 +361,7 @@ function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
     flag = %f
     errmsg = sprintf ( gettext ( "%s: Unable to open reference file ""%s"".") , "Myassert_checkfilesequal" , fileref )
     if ( lhs < 2 ) then
-      assert_generror ( errmsg )
+      error ( errmsg )
     else
       return
     end
@@ -412,7 +412,7 @@ function [flag,errmsg] = Myassert_checkfilesequal ( varargin )
 
   if ( ~flag & lhs < 2 ) then
     // If no output variable is given, generate an error
-    assert_generror ( errmsg )
+    error ( errmsg )
   end
 endfunction
 

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -11,6 +12,9 @@
 
 #include "MALLOC.h"
 #include "getRange.h"
+#ifdef _MSC_VER
+#include "strdup_windows.h"
+#endif
 /* ========================================================================== */
 #define SIZE_ARRAY_RANGE 4
 /* ========================================================================== */
@@ -46,6 +50,7 @@ char **getRangeAsString(const char **pStrsValues,
     {
         char **newStrArray = NULL;
         int sizeRange = getNumberElementsInRange(iRange, nbRows, nbCols);
+		int R1, C1, R2, C2;
 
         *returnedNbRows = getSizeRows(iRange, nbRows);
         *returnedNbCols = getSizeCols(iRange, nbCols);
@@ -62,11 +67,16 @@ char **getRangeAsString(const char **pStrsValues,
             int j = 0;
             int k = 0;
             
-            for ( j = iRange[1] ; j <= iRange[3] ; j++)
-            {
-                for (i = iRange[0] ; i <= iRange[2] ; i++ )
-                {
-                    newStrArray[k] = strdup(pStrsValues[j + (*returnedNbRows)*i]);
+			R1 = iRange[0];
+			C1 = iRange[1];
+			R2 = iRange[2];
+			C2 = iRange[3];
+
+			for ( j = C1-1 ; j < C2 ; j++)
+			{
+				for (i = R1-1 ; i < R2 ; i++ )
+				{
+                    newStrArray[k] = strdup(pStrsValues[i + nbRows*j]);
                     k++;
                 }
             }
@@ -85,6 +95,8 @@ doublecomplex *getRangeAsComplex(const doublecomplex *pComplex,
     {
         doublecomplex *newComplexArray = NULL;
         int sizeRange = getSizeRange(iRange, nbRows, nbCols);
+		int R1, C1, R2, C2;
+		doublecomplex source;
 
         *returnedNbRows = getSizeRows(iRange, nbRows);
         *returnedNbCols = getSizeCols(iRange, nbCols);
@@ -100,13 +112,19 @@ doublecomplex *getRangeAsComplex(const doublecomplex *pComplex,
             int i = 0;
             int j = 0;
             int k = 0;
-            
-            for (i = iRange[0] ; i < (*returnedNbCols) ; i++ )
-            {
-                for ( j = iRange[1] ; j < (*returnedNbRows) ; j++)
-                {
-                    newComplexArray[k].r = pComplex[i + (*returnedNbCols)*j].r;
-                    newComplexArray[k].i = pComplex[i + (*returnedNbCols)*j].i;
+
+			R1 = iRange[0];
+			C1 = iRange[1];
+			R2 = iRange[2];
+			C2 = iRange[3];
+
+			for ( j = C1-1 ; j < C2 ; j++)
+			{
+				for (i = R1-1 ; i < R2 ; i++ )
+				{
+					source = pComplex[i + nbRows*j];
+                    newComplexArray[k].r = source.r;
+                    newComplexArray[k].i = source.i;
                     k++;
                 }
             }
@@ -129,29 +147,47 @@ static int getSizeRange(const int *iRange, int maxRows, int maxCols)
 static int getSizeRows(const int *iRange, int maxRows)
 {
     int sizeRows = 0;
-    if (iRange == NULL) return 0;
-    sizeRows = iRange[3] - iRange[1];
-    if (sizeRows == 0) return (sizeRows = 1);
+	int R1, R2;
+
+	R1 = iRange[0];
+	R2 = iRange[2];
+
+	if (iRange == NULL) {
+		return 0;
+	}
+    sizeRows = R2 - R1 + 1;
+
+	if (sizeRows == 0) {
+		return 1;
+	}
         
     if (sizeRows > maxRows)
     {
         return maxRows;
     }
-    return sizeRows + 1;
+    return sizeRows;
 }
 /* ========================================================================== */
 static int getSizeCols(const int *iRange, int maxCols)
 {
     int sizeCols = 0;
+		int C1, C2;
+
+	C1 = iRange[1];
+	C2 = iRange[3];
+
     if (iRange == NULL) return 0;
-    sizeCols = iRange[2] - iRange[0];
-    if (sizeCols == 0) return (sizeCols = 1);
+    sizeCols = C2 - C1 + 1;
+
+	if (sizeCols == 0) {
+		return 1;
+	}
 
     if (sizeCols > maxCols)
     {
         return maxCols;
     }
-    return sizeCols + 1;
+    return sizeCols;
 }
 /* ========================================================================== */
 static int getNumberElementsInRange(const int *iRange, int maxRows, int maxCols)

@@ -1,16 +1,20 @@
+// Copyright (C) 2008 - 2010 - Michael Baudin
 //
-//  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
-//  Copyright (C) 2011 - DIGITEO - Michael Baudin
+// This file must be used under the terms of the CeCILL.
+// This source file is licensed as described in the file COPYING, which
+// you should have received as part of this distribution.  The terms
+// are also available at
+// http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
-//  This file must be used under the terms of the CeCILL.
-//  This source file is licensed as described in the file COPYING, which
-//  you should have received as part of this distribution.  The terms
-//  are also available at
-//  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
-
 // <-- JVM NOT MANDATORY -->
-
+// <-- Non-regression test for bug 298 -->
+//
+// <-- URL -->
+//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/281/
+//
+// <-- Short Description -->
+// The text_scan function does not extract the correct range.
 function [flag,errmsg] = Myassert_checkequal ( computed , expected )
     //  Check that computed and expected are equal.
     //
@@ -57,7 +61,6 @@ function [flag,errmsg] = Myassert_checkequal ( computed , expected )
     //
     // Bibliography
     //   "Automated Software Testing for Matlab", Steven Eddins, 2009
-
     [lhs,rhs]=argn()
     if ( rhs <> 2 ) then
         errmsg = sprintf ( gettext ( "%s: Unexpected number of input arguments : %d provided while %d are expected.") , "Myassert_checkequal" , rhs , 2 )
@@ -121,7 +124,6 @@ function [flag,errmsg] = Myassert_checkequal ( computed , expected )
         end
     end
 endfunction
-
 function [nonan,numb] = mythrownan(x)
     //
     //
@@ -142,44 +144,52 @@ function [nonan,numb] = mythrownan(x)
     numb=find(bool2s(~isnan(x)))
     nonan=x(~isnan(x))
 endfunction
-
-function y = writereadcycle(x,filename)
-    csv_write(x,filename);
-    separator = [];
-    decimal=[];
-    conversion ="double";
-    y = csv_read(filename, separator, decimal, conversion);
-endfunction
-
-
-// Test write-read cycles
 //
-//=======================================================
-// Basic.
-K = eye(3, 2) + 0.1;
-filename = fullfile(TMPDIR,"test.csv");
-K2 = writereadcycle(K,filename);
-Myassert_checkequal ( K , K2 );
-//=======================================================
-// Numerical issues.
-huge=number_properties("huge");
-tiny=number_properties("tiny");
-tiniest=number_properties("tiniest");
-x1 = nearfloat("succ",1);
-x2 = nearfloat("pred",1);
-K = [
-   %inf %nan  huge  tiny  tiniest  x1  x2  0
-  -%inf %nan -huge -tiny -tiniest -x1 -x2 -0
+// Read only rows/columns in range
+Astr = [
+"1,8,15,22,29,36,43,50"
+"2,9,16,23,30,37,44,51"
+"3,10,17,6,31,38,45,52"
+"4,11,18,25,32,39,46,53"
+"5,12,19,26,33,40,47,54"
+"6,13,20,27,34,41,48,55"
+"+0,-0,Inf,-Inf,Nan,1.D+308,1.e-308,1.e-323"
 ];
-K2 = writereadcycle(K,filename);
-Myassert_checkequal ( K , K2 );
-//=======================================================
-// Complexes and numerical issues in complexes.
-K = [
-  1+2*%i                -1+0.5*huge*%i     2*tiny*%i          1
-  1+0.1*%i              complex(%inf,%nan) complex(%nan,%inf) complex(tiniest,%inf)
-  complex(%inf,tiniest) complex( 0  ,%nan) complex(%nan,0)    -1
+A = csv_textscan ( Astr,[],[],"double",[2 3 5 6]' );
+expected = [
+ 16 23 30 37
+ 17 6  31 38
+ 18 25 32 39
+ 19 26 33 40
 ];
-K2 = writereadcycle(K,filename);
-Myassert_checkequal ( K , K2 );
-
+Myassert_checkequal ( A , expected );
+//
+// Extract range as string.
+A = csv_textscan ( Astr,[],[],"string",[2 3 5 6]' );
+expected = [
+"16","23","30","37";
+"17","6","31","38";
+"18","25","32","39";
+"19","26","33","40"
+];
+Myassert_checkequal ( A , expected );
+//
+// Extract a non-symetrical range.
+A = csv_textscan ( Astr,[],[],"string",[2 3 5 5]' );
+expected = [
+"16","23","30";
+"17","6","31";
+"18","25","32";
+"19","26","33"
+];
+Myassert_checkequal ( A , expected );
+//
+// Extract a non-symetrical range.
+A = csv_textscan ( Astr,[],[],"double",[2 3 5 5]' );
+expected = [
+16 23 30
+17  6 31
+18 25 32
+19 26 33
+];
+Myassert_checkequal ( A , expected );

@@ -118,7 +118,7 @@ function [flag,errmsg] = Myassert_checkequal ( computed , expected )
         "Myassert_checkequal",estr,cstr)
         if ( lhs < 2 ) then
             // If no output variable is given, generate an error
-            assert_generror ( errmsg )
+            error ( errmsg )
         end
     end
 endfunction
