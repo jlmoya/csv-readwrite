@@ -286,27 +286,7 @@ int sci_csv_textscan(char *fname)
 									}
 									else
 									{
-										BOOL bIsReal;
-										double * dRealValues = NULL;
-										// See if matrix is real, or complex
-										bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
-										if ( bIsReal )
-										{
-											int i;
-											// Copy the real entries into an array of doubles.
-											dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
-											for (i = 0; i < result->m*result->n; i++)
-											{
-												dRealValues[i] = dvalscomplex[i].r;
-											}
-											sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
-											FREE(dRealValues);
-											dRealValues = NULL;
-										}
-										else
-										{
-											sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
-										}
+										sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, newM , newN , complexRange);
 									}
 									FREE(complexRange);
 									complexRange = NULL;
@@ -318,7 +298,27 @@ int sci_csv_textscan(char *fname)
 							}
 							else
 							{
-								sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+								BOOL bIsReal;
+								double * dRealValues = NULL;
+								// See if matrix is real, or complex
+								bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
+								if ( bIsReal )
+								{
+									int i;
+									// Copy the real entries into an array of doubles.
+									dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
+									for (i = 0; i < result->m*result->n; i++)
+									{
+										dRealValues[i] = dvalscomplex[i].r;
+									}
+									sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
+									FREE(dRealValues);
+									dRealValues = NULL;
+								}
+								else
+								{
+									sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+								}
 							}
 							FREE(dvalscomplex);
 							dvalscomplex = NULL;
