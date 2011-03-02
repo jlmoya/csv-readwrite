@@ -8,6 +8,7 @@ else
   root_path = getenv('CSV_READWRITE_PATH', '');
   if root_path <> '' then 
     exec(root_path + 'loader.sce'); 
+ATTENTION :  Library is already loaded ("ulink(); clear csv_readwritelib;" to unload.)
   end 
 end
 // =============================================================================
