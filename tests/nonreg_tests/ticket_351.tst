@@ -1,4 +1,4 @@
-// Copyright (C) 2010 - 2011 - DIGITEO - Michael Baudin
+// Copyright (C) 2011 - DIGITEO - Michael Baudin
 //
 // This file must be used under the terms of the CeCILL.
 // This source file is licensed as described in the file COPYING, which
@@ -9,18 +9,17 @@
 //
 // <-- JVM NOT MANDATORY -->
 
-// <-- Non-regression test for bug 350 -->
+// <-- Non-regression test for bug 351 -->
 //
 // <-- URL -->
-//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/350/
+//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/351/
 //
 // <-- Short Description -->
-// The csv_stringtodouble function always returns complex doubles.
+// The csv_read function always returns complex entries.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
 exec(fullfile(path,"myassert_checkequal.sci"));
 
-r = csv_stringtodouble("12");
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "double");
 myassert_checkequal ( isreal(r) , %t );
-
 

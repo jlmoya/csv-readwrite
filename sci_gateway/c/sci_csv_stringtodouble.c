@@ -84,15 +84,7 @@ int sci_csv_stringtodouble(char *fname)
         case STRINGTOCOMPLEX_NO_ERROR:
         {
 			// See if matrix is real, or complex
-			bIsReal = TRUE;
-			for (i = 0; i < m1*n1; i++)
-			{
-				if ( dvalscomplex[i].i != 0 )
-				{
-					bIsReal = FALSE;
-					break;
-				}
-			}
+			bIsReal = csv_isreal(dvalscomplex, m1 , n1 );
 			if ( bIsReal )
 			{
 				// Copy the real entries into an array of doubles.

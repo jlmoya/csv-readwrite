@@ -43,6 +43,9 @@ int sci_csv_read(char *fname)
 
     csvResult *result = NULL;
 
+	BOOL bIsReal;
+    double *dRealValues = NULL;
+
     CheckRhs(1, 5);
     CheckLhs(1, 1);
 
@@ -174,9 +177,28 @@ int sci_csv_read(char *fname)
                         case STRINGTOCOMPLEX_NOT_A_NUMBER:
                         case STRINGTOCOMPLEX_NO_ERROR:
                         {
-                          sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+							// See if matrix is real, or complex
+							int i;
+							bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
+							if ( bIsReal )
+							{
+								// Copy the real entries into an array of doubles.
+								dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
+								for (i = 0; i < result->m*result->n; i++)
+								{
+									dRealValues[i] = dvalscomplex[i].r;
+								}
+								sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
+								FREE(dRealValues);
+								dRealValues = NULL;
+							}
+							else
+							{
+								sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+							}
                           FREE(dvalscomplex);
                           dvalscomplex = NULL;
+
                         }
                         break;
 

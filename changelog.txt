@@ -24,6 +24,7 @@ csv_readwrite (not released yet)
       the correct range.
     * Fixed ticket #350: The csv_stringtodouble function always returned 
       complex doubles.
+    * The csv_textscan function always returned complex matrices.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).

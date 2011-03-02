@@ -422,3 +422,20 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
     return iReturnedArray;
 }
 /* ========================================================================== */
+
+int csv_isreal(doublecomplex *dvalscomplex, int m , int n )
+{
+	int i;
+	BOOL bIsReal;
+
+	bIsReal = TRUE;
+	for (i = 0; i < m*n; i++)
+	{
+		if ( dvalscomplex[i].i != 0 )
+		{
+			bIsReal = FALSE;
+			break;
+		}
+	}
+	return bIsReal;
+}

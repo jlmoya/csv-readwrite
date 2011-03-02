@@ -38,5 +38,6 @@ int csv_isColumnVector(void* _pvCtx, int _iVar);
 int csv_isScalar(void* _pvCtx, int _iVar);
 int csv_isDoubleScalar(void* _pvCtx, int _iVar);
 int csv_isEmpty(void* _pvCtx, int _iVar);
+int csv_isreal(doublecomplex *dvalscomplex, int m , int n );
 
 #endif /* __GW_CSV_HELPERS_H__ */
