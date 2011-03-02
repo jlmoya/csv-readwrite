@@ -195,8 +195,21 @@ int sci_csv_textscan(char *fname)
                         char **pStrRange = getRangeAsString(result->pstrValues, result->m, result->n, iRange, &newM, &newN);
                         if (pStrRange)
                         {
-                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
-                            freeArrayOfString(pStrRange, newM * newN);
+                            /* Workaround bug ticket 194 andbug 8688 */
+                            if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+                            { 
+                                sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
+                                freeArrayOfString(pStrRange, newM * newN);
+                            }
+                            else
+                            {
+                                freeArrayOfString(pStrRange, newM * newN);
+                                freeCsvResult(result);
+                                if (conversion) {FREE(conversion); conversion = NULL;}
+                                if (iRange) { FREE(iRange); iRange = NULL;}
+                                SciError(17);
+                                return 0;                                
+                            }
                         }
                         else
                         {
@@ -206,7 +219,19 @@ int sci_csv_textscan(char *fname)
                     }
                     else
                     {
-                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                        /* Workaround bug ticket 194 andbug 8688 */
+                        if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+                        { 
+                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                        }
+                        else
+                        {
+                            freeCsvResult(result);
+                            if (conversion) {FREE(conversion); conversion = NULL;}
+                            if (iRange) { FREE(iRange); iRange = NULL;}
+                            SciError(17);
+                            return 0;                                
+                        }
                     }
                 }
                 else /* to double */

@@ -147,7 +147,19 @@ int sci_csv_read(char *fname)
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
-                  sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                    /* Workaround bug ticket 194 andbug 8688 */
+                    if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+                    {
+                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                    }
+                    else
+                    {
+                        freeCsvResult(result);
+                        if (filename) {FREE(filename); filename = NULL;}
+                        if (conversion) {FREE(conversion); conversion = NULL;}
+                        SciError(17);
+                        return 0;
+                    }
                 }
                 else /* to double */
                 {
