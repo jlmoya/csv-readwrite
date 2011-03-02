@@ -143,6 +143,51 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
     return returnedValue;
 }
 /* ========================================================================== */
+double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
+                                   const char *fname, int *iErr)
+{
+    SciErr sciErr;
+    double dValue = 0.;
+    int *piAddressVar = NULL;
+    int m = 0, n = 0;
+    int iType = 0;
+
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return 0;
+    }
+
+    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        *iErr = sciErr.iErr;
+        return 0;
+    }
+
+    if (iType != sci_matrix)
+    {
+        Scierror(999,_("%s: Wrong type for input argument #%d: A double expected.\n"), fname, _iVar);
+        *iErr =  API_ERROR_INVALID_TYPE;
+        return 0;
+    }
+
+    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+
+    if (*iErr == 0 )
+    {
+        *iErr = API_ERROR_CHECK_VAR_DIMENSION;
+        Scierror(999,_("%s: Wrong size for input argument #%d: A double expected.\n"), fname, _iVar);
+        return 0;
+    }
+
+    *iErr = getScalarDouble(pvApiCtx, piAddressVar, &dValue);
+    return dValue;
+}
+/* ========================================================================== */
 int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
                               const char *fname, int *iErr)
 {
@@ -264,6 +309,43 @@ int csv_isScalar(void* _pvCtx, int _iVar)
     sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
     return isScalar(pvApiCtx, piAddressVar);
+}
+/* ========================================================================== */
+int csv_isDoubleScalar(void* _pvCtx, int _iVar)
+{
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr) return 0;
+        
+    if (csv_isScalar(_pvCtx, _iVar))
+    {
+        int iType = 0;
+        sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+        if(sciErr.iErr) return 0;
+
+        if (isVarComplex(pvApiCtx, piAddressVar) == 0)
+        {
+            return (iType == sci_matrix);
+        }
+    }
+    return 0;
+}
+/* ========================================================================== */
+int csv_isEmpty(void* _pvCtx, int _iVar)
+{
+    SciErr sciErr;
+    int *piAddressVar = NULL;
+    
+    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    if(sciErr.iErr)
+    {
+        printError(&sciErr, 0);
+        if(sciErr.iErr) return 0;
+    }
+
+    return isEmptyMatrix(pvApiCtx, piAddressVar);
 }
 /* ========================================================================== */
 int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,

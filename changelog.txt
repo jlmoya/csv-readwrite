@@ -1,6 +1,7 @@
 changelog of the csv_readwrite
 
 csv_readwrite (not released yet)
+    * Fixed ticket #299: extends format to digit in csv_default and csv_write
     * Fixed ticket #294: default conversion moved as 'double'
     * Fixed ticket #270: added licence header to all files.
     * Added documentation for csv_getToolboxPath function.

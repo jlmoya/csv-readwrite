@@ -28,9 +28,15 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
 int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
                                        const char *fname,
                                        int *m, int *n, int *iErr);
+                                       
+double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
+                                   const char *fname, int *iErr);
+                                       
 
 int csv_isRowVector(void* _pvCtx, int _iVar);
 int csv_isColumnVector(void* _pvCtx, int _iVar);
 int csv_isScalar(void* _pvCtx, int _iVar);
+int csv_isDoubleScalar(void* _pvCtx, int _iVar);
+int csv_isEmpty(void* _pvCtx, int _iVar);
 
 #endif /* __GW_CSV_HELPERS_H__ */

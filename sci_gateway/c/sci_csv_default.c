@@ -9,6 +9,7 @@
  *
  */
 #include <string.h>
+#include <stdio.h>
 #include "stack-c.h"
 #include "api_scilab.h"
 #include "sci_types.h"
@@ -159,16 +160,66 @@ static int sci_csv_default_two_rhs(char *fname)
 
     char *fieldname = NULL;
     char *fieldvalue = NULL;
+    int  ifieldvalue = 0;
 
     fieldname = csv_getArgumentAsString(pvApiCtx, 1, fname, &iErr);
     if (iErr) return 0;
 
-    fieldvalue = csv_getArgumentAsString(pvApiCtx, 2, fname, &iErr);
-    if (iErr)
+    if (strcmp(fieldname, PRECISION_FIELDNAME) == 0)
     {
-        if (fieldname) {FREE(fieldname); fieldname = NULL;}
-        return 0;
+        if (csv_isEmpty(pvApiCtx, 2))
+        {
+            if (fieldname) {FREE(fieldname); fieldname = NULL;}
+            Scierror(999,_("%s: Wrong type for input argument #%d: A double expected.\n"), fname, 2);
+            return 0;
+        }
+        
+        if (csv_isDoubleScalar(pvApiCtx, 2))
+        {
+            #define FORMAT_FIELDVALUESTR "%%.%dlg"
+            ifieldvalue = (int) csv_getArgumentAsScalarDouble(pvApiCtx, 2, fname, &iErr);
+            if (iErr)
+            {
+                if (fieldname) {FREE(fieldname); fieldname = NULL;}
+                return 0;
+            }
+        
+            if ((ifieldvalue < 1) || (ifieldvalue > 17))
+            {
+                if (fieldname) {FREE(fieldname); fieldname = NULL;}
+                Scierror(999,_("%s: Wrong value for input argument #%d: A double (value 1 to 17) expected.\n"), fname, 2);
+                return 0;
+            }
+        
+            fieldvalue = (char*)MALLOC(sizeof(char) * ((int)strlen(FORMAT_FIELDVALUESTR)+1));
+            if (fieldvalue == NULL)
+            {
+                if (fieldname) {FREE(fieldname); fieldname = NULL;}
+                Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                return 0;
+            }
+            sprintf(fieldvalue, FORMAT_FIELDVALUESTR, ifieldvalue);
+        }
+        else
+        {
+            fieldvalue = csv_getArgumentAsString(pvApiCtx, 2, fname, &iErr);
+            if (iErr)
+            {
+                if (fieldname) {FREE(fieldname); fieldname = NULL;}
+                return 0;
+            }
+        }
     }
+    else
+    {
+        fieldvalue = csv_getArgumentAsString(pvApiCtx, 2, fname, &iErr);
+        if (iErr)
+        {
+            if (fieldname) {FREE(fieldname); fieldname = NULL;}
+            return 0;
+        }
+    }
+    
 
     if (strcmp(fieldname, SEPARATOR_FIELDNAME) == 0)
     {
