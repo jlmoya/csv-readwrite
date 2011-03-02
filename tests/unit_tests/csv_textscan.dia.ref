@@ -1,5 +1,6 @@
 //
 //  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+//  Copyright (C) 2011 - DIGITEO - Michael Baudin
 //
 //  This file must be used under the terms of the CeCILL.
 //  This source file is licensed as described in the file COPYING, which
@@ -7,23 +8,250 @@
 //  are also available at
 //  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
+// <-- JVM NOT MANDATORY -->
+function [flag,errmsg] = Myassert_checkequal ( computed , expected )
+    //  Check that computed and expected are equal.
+    //
+    // Calling Sequence
+    //   Myassert_checkequal ( computed , expected )
+    //   flag = Myassert_checkequal ( computed , expected )
+    //   [flag,errmsg] = Myassert_checkequal ( computed , expected )
+    //
+    // Parameters
+    //   computed: the computed result
+    //   expected : the expected result
+    //   flag : a 1x1 matrix of boolean, %t if computed is close to expected, %f if not
+    //   errmsg : a 1x1 matrix of strings, the error message. If flag==%t, then errormsg=="". If flag==%f, then errmsg contains the error message.
+    //
+    // Description
+    //   Performs silently if computed and expected are equal.
+    //
+    //   If the type of both input arguments is 1 (i.e. a real matrix),
+    //   we check that non-nan values are equal.
+    //
+    //   If the comparison shows that computed is equal to expected, 
+    //   and if the errmsg output variable is not used, an error is generated.
+    //   If the comparison shows that computed is equal to expected, 
+    //   and if the errmsg output variable is used, no error is generated.
+    //
+    // Examples
+    // // Tests with success
+    // Myassert_checkequal ( %T , %T );
+    // flag = Myassert_checkequal ( list() , list() );
+    // [flag , errmsg] = Myassert_checkequal ( [%T %F], [%T %F] );
+    // Myassert_checkequal ( %nan , %nan );
+    // 
+    // // Tests with failure
+    // Myassert_checkequal ( %F , %T );
+    // flag = Myassert_checkequal ( %F , %T );
+    // // No error produced :
+    // [flag , errmsg] = Myassert_checkequal ( %F , %T )
+    // Myassert_checkequal ( [1 2], [3 4] )
+    // Myassert_checkequal ( 1 , [2 3] )
+    // Myassert_checkequal ( 1 , "b" )
+    //
+    // Authors
+    //   Michael Baudin, 2010
+    //
+    // Bibliography
+    //   "Automated Software Testing for Matlab", Steven Eddins, 2009
+    [lhs,rhs]=argn()
+    if ( rhs <> 2 ) then
+        errmsg = sprintf ( gettext ( "%s: Unexpected number of input arguments : %d provided while %d are expected.") , "Myassert_checkequal" , rhs , 2 )
+        error(errmsg)
+    end
+    //
+    // Check types of variables
+    if ( typeof(computed) <> typeof(expected) ) then
+        errmsg = sprintf ( gettext ( "%s: Variable typeof(computed) = %s while typeof(expected) = %s: inconsistent match.") , "Myassert_checkequal" , typeof(computed) , typeof(expected) )
+        error(errmsg)
+    end
+    //
+    // Check sizes of variables
+    ncom = size(computed)
+    nexp = size(expected)
+    if ( or(ncom <> nexp) ) then
+        cstr = "[" + strcat(string(ncom)," ") + "]"
+        estr = "[" + strcat(string(nexp)," ") + "]"
+        errmsg = sprintf ( gettext ( "%s: We have size(computed) = %s while size(expected) = %s: not consistent comparison.") , "Myassert_checkequal" , cstr , estr )
+        error(errmsg)
+    end  
+    //
+    if ( type(computed) == 1 & type(expected) == 1 ) then
+        // These are two matrices of doubles
+        csize = size (computed,"*")
+        esize = size (expected,"*")
+        [cnonan , cnumb] = mythrownan(computed)
+        [enonan , enumb] = mythrownan(expected)
+        if ( and(enonan == cnonan) & and(enumb == cnumb) ) then
+            flag = %t
+        else
+            flag = %f
+        end
+    else
+        if ( and ( computed == expected ) ) then
+            flag = %t
+        else
+            flag = %f
+        end
+    end
+    if ( flag == %t ) then
+        errmsg = ""
+    else
+        // Change the message if the matrix contains more than one value
+        if ( size(expected,"*") == 1 ) then
+            estr = string(expected)
+        else
+            estr = "[" + string(expected(1)) + " ...]"
+        end
+        if ( size(computed,"*") == 1 ) then
+            cstr = string(computed)
+        else
+            cstr = "[" + string(computed(1)) + " ...]"
+        end
+        errmsg = msprintf(gettext(..
+        "%s: Assertion failed: expected = %s while computed = %s"), ..
+        "Myassert_checkequal",estr,cstr)
+        if ( lhs < 2 ) then
+            // If no output variable is given, generate an error
+            assert_generror ( errmsg )
+        end
+    end
+endfunction
+function [nonan,numb] = mythrownan(x)
+    //
+    //
+    // Copyright (C) 2000 - INRIA - Carlos Klimann
+    // Copyright (C) 2010 - DIGITEO - Michael Baudin
+    //This  function  returns  in  vector  nonan  the  values
+    //(ignoring the NANs) of a  vector or matrix x and in the
+    //corresponding places of vector  numb the indexes of the
+    //value.
+    //
+    //For  a  vector  or matrix  x,  [nonan,numb]=thrownan(x)
+    //considers x, whatever his dimensions are, like a linear
+    //vector (columns  first).
+    //
+    //
+    [lhs,rhs]=argn(0)
+    if rhs<>1 then error(msprintf(gettext("%s: Wrong number of input argument: %d expected.\n"),"thrownan",1)), end
+    numb=find(bool2s(~isnan(x)))
+    nonan=x(~isnan(x))
+endfunction
 // =============================================================================
 A = "        1;        2;     3";
 B = "        4;        5;     6";
 C = [A;B];
-bbSTR = csv_textscan(C, ';');
-if bbSTR(1, 1) <> "        1" then bugmes();quit;end
-if bbSTR(1, 2) <> "        2" then bugmes();quit;end
-if bbSTR(1, 3) <> "     3" then bugmes();quit;end
-if bbSTR(2, 3) <> "     6" then bugmes();quit;end
-if bbSTR(2, 2) <> "        5" then bugmes();quit;end
-if bbSTR(2, 1) <> "        4" then bugmes();quit;end
+bbSTR = csv_textscan(C, ';', [], "string");
+expected = [
+"        1" , "        2" , "     3" 
+"        4" , "        5" , "     6" 
+];
+Myassert_checkequal ( bbSTR , expected );
 // =============================================================================
 bbDouble = csv_textscan(C, ';', [], 'double');
-if bbDouble(1, 1) <> 1 then bugmes();quit;end
-if bbDouble(1, 2) <> 2 then bugmes();quit;end
-if bbDouble(1, 3) <> 3 then bugmes();quit;end
-if bbDouble(2, 3) <> 6 then bugmes();quit;end
-if bbDouble(2, 2) <> 5 then bugmes();quit;end
-if bbDouble(2, 1) <> 4 then bugmes();quit;end
+expected = [1 2 3;4 5 6];
+Myassert_checkequal ( bbDouble , expected );
+// =============================================================================
+path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
+// =============================================================================
+Mstr = [
+"1" "0" "0" "0" "0"
+"0" "1" "0" "0" "0"
+"0" "0" "1" "0" "0"
+];
+//
+r = mgetl(fullfile(path,"M_1.csv"));
+b = csv_textscan(r, [], [], "string");
+Myassert_checkequal (b,Mstr);
+//
+r = mgetl(fullfile(path,"M_2.csv"));
+b = csv_textscan(r, ascii(9), [], "string");
+Myassert_checkequal (b,Mstr);
+//
+r = mgetl(fullfile(path,"M_3.csv"));
+b = csv_textscan(r, " ", ",", "string");
+Myassert_checkequal (b,Mstr);
+//
+r = mgetl(fullfile(path,"M_4.csv"));
+b = csv_textscan(r, ";", ",", "string");
+Myassert_checkequal (b,Mstr);
+// =============================================================================
+Nstr = [
+"Nan"   "1"    "Nan"
+"-Inf"  "Inf"  "4"
+];
+//
+r = mgetl(fullfile(path,"N_1.csv"));
+b = csv_textscan(r, [], [], "string");
+Myassert_checkequal (b,Nstr);
+//
+r = mgetl(fullfile(path,"N_2.csv"));
+b = csv_textscan(r, ascii(9), [], "string");
+Myassert_checkequal (b,Nstr);
+//
+r = mgetl(fullfile(path,"N_3.csv"));
+b = csv_textscan(r, " ", ",", "string");
+Myassert_checkequal (b,Nstr);
+//
+r = mgetl(fullfile(path,"N_4.csv"));
+b = csv_textscan(r, ";", ",", "string");
+Myassert_checkequal (b,Nstr);
+// =============================================================================
+Kstr = [
+"1.1000000000000001" "0.10000000000000001"
+"0.10000000000000001" "1.1000000000000001"
+"0.10000000000000001" "0.10000000000000001"
+];
+Kstr2 = [
+"1,1000000000000001" "0,10000000000000001"
+"0,10000000000000001" "1,1000000000000001"
+"0,10000000000000001" "0,10000000000000001"
+];
+//
+r = mgetl(fullfile(path,"K_1.csv"));
+b = csv_textscan(r, [], [], "string");
+Myassert_checkequal (b,Kstr);
+//
+r = mgetl(fullfile(path,"K_2.csv"));
+b = csv_textscan(r, ascii(9), [], "string");
+Myassert_checkequal (b,Kstr);
+//
+r = mgetl(fullfile(path,"K_3.csv"));
+b = csv_textscan(r, " ", ",", "string");
+Myassert_checkequal (b,Kstr2);
+//
+r = mgetl(fullfile(path,"K_4.csv"));
+b = csv_textscan(r, ";", ",", "string");
+Myassert_checkequal (b,Kstr2);
+// =============================================================================
+S = [
+  "Allan",                  "2", "CORNET";
+  "csv read/write toolbox", "3", "for scilab"
+];
+//
+r = mgetl(fullfile(path,"S_1.csv"));
+b = csv_textscan(r, "|", [], "string");
+Myassert_checkequal (b,S);
+//
+r = mgetl(fullfile(path,"S_2.csv"));
+b = csv_textscan(r, ascii(9), [], "string");
+Myassert_checkequal (b,S);
+//
+r = mgetl(fullfile(path,"S_3.csv"));
+b = csv_textscan(r, "!", ",", "string");
+Myassert_checkequal (b,S);
+//
+r = mgetl(fullfile(path,"S_4.csv"));
+b = csv_textscan(r, ";", ",", "string");
+Myassert_checkequal (b,S);
+//
+r = mgetl(fullfile(path,"S_1.csv"));
+b = csv_textscan(r, "|", ".", "string");
+Myassert_checkequal (b,S);
+//
+r = mgetl(fullfile(path,"S_1.csv"));
+b = csv_textscan(r, "|", ".", "double");
+ref = [%nan , 2, %nan; %nan, 3, %nan];
+Myassert_checkequal ( b , ref);
 // =============================================================================

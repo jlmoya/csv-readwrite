@@ -29,13 +29,13 @@ allvalues = csv_default();
 expected = [
     "separator"  ","
     "decimal"    "."
-    "conversion" "string"
-    "precision"  "%.16lg"
+    "conversion" "double"
+    "precision"  "%.17lg"
 ];
 assert_equal ( allvalues , expected );
 // Get the value of the "precision" field
 value = csv_default("precision");
-assert_equal ( value , "%.16lg" );
+assert_equal ( value , "%.17lg" );
 // Set the value of the "precision" field
 bRes = csv_default("precision","%.17e");
 assert_equal ( bRes , %t );

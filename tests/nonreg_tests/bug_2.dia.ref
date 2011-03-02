@@ -8,7 +8,7 @@
 //  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
 // =============================================================================
-r_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_2.csv", ",");
+r_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_2.csv", ",", [], "string");
 r_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_2.csv", ",", ".", "double");
 if size(r_string, "c") <> size(r_double, "c") then bugmes();quit;end
 if size(r_string, "r") <> size(r_double, "r") then bugmes();quit;end

@@ -76,15 +76,43 @@ int sci_csv_write(char *fname)
 
     if (Rhs > 4)
     {
-        precisionFormat = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 5, fname, getCsvDefaultPrecision(), &iErr);
-
-        if (iErr) return 0;
-        if (checkCsvWriteFormat(precisionFormat))
+        if (csv_isDoubleScalar(pvApiCtx, 5))
         {
-            Scierror(999,_("%s: Not supported format %s.\n"), fname, precisionFormat);
-            if (precisionFormat) {FREE(precisionFormat); precisionFormat = NULL;}
-            if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
-            return 0;
+            #define FORMAT_FIELDVALUESTR "%%.%dlg"
+            int iFormatValue = (int) csv_getArgumentAsScalarDouble(pvApiCtx, 5, fname, &iErr);
+            if (iErr)
+            {
+                if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
+                return 0;
+            }
+        
+            if ((iFormatValue < 1) || (iFormatValue > 17))
+            {
+                Scierror(999,_("%s: Wrong value for input argument #%d: A double (value 1 to 17) expected.\n"), fname, 5);
+                if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
+                return 0;
+            }
+        
+            precisionFormat = (char*)MALLOC(sizeof(char) * ((int)strlen(FORMAT_FIELDVALUESTR)+1));
+            if (precisionFormat == NULL)
+            {
+                Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
+                return 0;
+            }
+            sprintf(precisionFormat, FORMAT_FIELDVALUESTR, iFormatValue);
+        }
+        else
+        {
+            precisionFormat = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 5, fname, getCsvDefaultPrecision(), &iErr);
+            if (iErr) return 0;
+            if (checkCsvWriteFormat(precisionFormat))
+            {
+                Scierror(999,_("%s: Not supported format %s.\n"), fname, precisionFormat);
+                if (precisionFormat) {FREE(precisionFormat); precisionFormat = NULL;}
+                if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
+                return 0;
+            }
         }
     }
     else
