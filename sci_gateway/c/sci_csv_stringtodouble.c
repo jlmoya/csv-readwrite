@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -32,11 +33,14 @@ int sci_csv_stringtodouble(char *fname)
     char **pStringValues = NULL;
 
     BOOL bConvertToNan = TRUE;
+	BOOL bIsReal;
 
     int i = 0;
 
     doublecomplex *dvalscomplex = NULL;
     stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
+
+    double *dRealValues = NULL;
 
     CheckRhs(1, 2);
     CheckLhs(1, 1);
@@ -79,7 +83,32 @@ int sci_csv_stringtodouble(char *fname)
         case STRINGTOCOMPLEX_NOT_A_NUMBER:
         case STRINGTOCOMPLEX_NO_ERROR:
         {
-            sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dvalscomplex);
+			// See if matrix is real, or complex
+			bIsReal = TRUE;
+			for (i = 0; i < m1*n1; i++)
+			{
+				if ( dvalscomplex[i].i != 0 )
+				{
+					bIsReal = FALSE;
+					break;
+				}
+			}
+			if ( bIsReal )
+			{
+				// Copy the real entries into an array of doubles.
+				dRealValues = (double*)MALLOC(sizeof(double) * m1*n1);
+				for (i = 0; i < m1*n1; i++)
+				{
+					dRealValues[i] = dvalscomplex[i].r;
+				}
+				sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dRealValues);
+				FREE(dRealValues);
+				dRealValues = NULL;
+			}
+			else
+			{
+				sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dvalscomplex);
+			}
             FREE(dvalscomplex);
             dvalscomplex = NULL;
         }

@@ -22,6 +22,8 @@ csv_readwrite (not released yet)
     * Fixed ticket #281: The substitute option did not work in csv_read.
     * Fixed ticket #298: The text_scan function did not extract 
       the correct range.
+    * Fixed ticket #350: The csv_stringtodouble function always returned 
+      complex doubles.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).
