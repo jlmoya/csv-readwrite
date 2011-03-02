@@ -195,8 +195,21 @@ int sci_csv_textscan(char *fname)
 						char **pStrRange = getRangeAsString(result->pstrValues, result->m, result->n, iRange, &newM, &newN);
 						if (pStrRange)
 						{
-							sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
-							freeArrayOfString(pStrRange, newM * newN);
+							/* Workaround bug ticket 194 andbug 8688 */
+							if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+							{ 
+								sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
+								freeArrayOfString(pStrRange, newM * newN);
+							}
+							else
+							{
+								freeArrayOfString(pStrRange, newM * newN);
+								freeCsvResult(result);
+								if (conversion) {FREE(conversion); conversion = NULL;}
+								if (iRange) { FREE(iRange); iRange = NULL;}
+								SciError(17);
+								return 0;                                
+							}
 						}
 						else
 						{
@@ -206,7 +219,19 @@ int sci_csv_textscan(char *fname)
 					}
 					else
 					{
-						sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+						/* Workaround bug ticket 194 andbug 8688 */
+						if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+						{ 
+							sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+						}
+						else
+						{
+							freeCsvResult(result);
+							if (conversion) {FREE(conversion); conversion = NULL;}
+							if (iRange) { FREE(iRange); iRange = NULL;}
+							SciError(17);
+							return 0;                                
+						}
 					}
 				}
 				else /* to double */
@@ -261,7 +286,27 @@ int sci_csv_textscan(char *fname)
 									}
 									else
 									{
-										sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, newM, newN, complexRange);
+										BOOL bIsReal;
+										double * dRealValues = NULL;
+										// See if matrix is real, or complex
+										bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
+										if ( bIsReal )
+										{
+											int i;
+											// Copy the real entries into an array of doubles.
+											dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
+											for (i = 0; i < result->m*result->n; i++)
+											{
+												dRealValues[i] = dvalscomplex[i].r;
+											}
+											sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
+											FREE(dRealValues);
+											dRealValues = NULL;
+										}
+										else
+										{
+											sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+										}
 									}
 									FREE(complexRange);
 									complexRange = NULL;
@@ -273,27 +318,7 @@ int sci_csv_textscan(char *fname)
 							}
 							else
 							{
-								BOOL bIsReal;
-								double * dRealValues = NULL;
-								// See if matrix is real, or complex
-								bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
-								if ( bIsReal )
-								{
-									int i;
-									// Copy the real entries into an array of doubles.
-									dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
-									for (i = 0; i < result->m*result->n; i++)
-									{
-										dRealValues[i] = dvalscomplex[i].r;
-									}
-									sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
-									FREE(dRealValues);
-									dRealValues = NULL;
-								}
-								else
-								{
-									sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
-								}
+								sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
 							}
 							FREE(dvalscomplex);
 							dvalscomplex = NULL;

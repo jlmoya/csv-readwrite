@@ -11,6 +11,7 @@
 #ifndef __GW_CSV_HELPERS_H__
 #define __GW_CSV_HELPERS_H__
 
+
 char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar,
                                                  const char *fname, const char *defaultValue,
                                                  int *iErr);
@@ -32,6 +33,8 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
 double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
                                    const char *fname, int *iErr);
                                        
+
+int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings);
 
 int csv_isRowVector(void* _pvCtx, int _iVar);
 int csv_isColumnVector(void* _pvCtx, int _iVar);

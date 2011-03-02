@@ -11,6 +11,7 @@ csv_readwrite (not released yet)
     * Fixed ticket #275: The default precision was insufficient.
     * Fixed ticket #277: The help of csv_write was wrong.
     * Fixed ticket #242: The description of csv_write in the help was wrong.
+    * Fixed ticket #194: csv_read may fail on large files.
     * Added examples in csv_read.
     * Added examples in csv_write.
     * Improved the csv_textscan help.

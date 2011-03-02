@@ -439,3 +439,30 @@ int csv_isreal(doublecomplex *dvalscomplex, int m , int n )
 	}
 	return bIsReal;
 }
+/* ========================================================================== */
+
+int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings)
+{
+    int iNewPos = Top - Rhs + _iVar;
+    int iAddr   = *Lstk(iNewPos);
+    int iMemSize = 0;
+    int iFreeSpace = 0;
+
+    int iLens = 0;
+    int i = 0;
+
+    for (i = 0; i < m * n; i++)
+    {
+        iLens = iLens + (int)strlen(pstStrings[i]) + 1;
+    }
+    
+    iMemSize = iLens + 2;
+    iFreeSpace = iadr(*Lstk(Bot)) - (iadr(iAddr));
+    
+    if (iMemSize > iFreeSpace)
+    {
+        return 0;
+    }
+    return 1;
+}
+/* ========================================================================== */
