@@ -63,10 +63,17 @@ int sci_csv_textscan(char *fname)
 		iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 5, fname, &m5, &n5, &iErr);
 		if (iErr) return 0;
 
-		if ((m5 * n5 != SIZE_RANGE_SUPPORTED) || (n5 != 1))
+		if ((m5 * n5 != SIZE_RANGE_SUPPORTED) )
 		{
 			if (iRange) {FREE(iRange); iRange = NULL;}
-			Scierror(999,_("%s: Wrong size for input argument #%d: A column vector expected.\n"), fname, 5);
+			Scierror(999,_("%s: Wrong size for input argument #%d: Four entries expected.\n"), fname, 5);
+			return 0;
+		}
+
+		if ((m5 != 1) && (n5 != 1))
+		{
+			if (iRange) {FREE(iRange); iRange = NULL;}
+			Scierror(999,_("%s: Wrong size for input argument #%d: A column or row vector expected.\n"), fname, 5);
 			return 0;
 		}
 
@@ -286,27 +293,7 @@ int sci_csv_textscan(char *fname)
 									}
 									else
 									{
-										BOOL bIsReal;
-										double * dRealValues = NULL;
-										// See if matrix is real, or complex
-										bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
-										if ( bIsReal )
-										{
-											int i;
-											// Copy the real entries into an array of doubles.
-											dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
-											for (i = 0; i < result->m*result->n; i++)
-											{
-												dRealValues[i] = dvalscomplex[i].r;
-											}
-											sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
-											FREE(dRealValues);
-											dRealValues = NULL;
-										}
-										else
-										{
-											sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
-										}
+										sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, newM , newN , complexRange);
 									}
 									FREE(complexRange);
 									complexRange = NULL;
@@ -318,7 +305,27 @@ int sci_csv_textscan(char *fname)
 							}
 							else
 							{
-								sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+								BOOL bIsReal;
+								double * dRealValues = NULL;
+								// See if matrix is real, or complex
+								bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
+								if ( bIsReal )
+								{
+									int i;
+									// Copy the real entries into an array of doubles.
+									dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
+									for (i = 0; i < result->m*result->n; i++)
+									{
+										dRealValues[i] = dvalscomplex[i].r;
+									}
+									sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
+									FREE(dRealValues);
+									dRealValues = NULL;
+								}
+								else
+								{
+									sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+								}
 							}
 							FREE(dvalscomplex);
 							dvalscomplex = NULL;
