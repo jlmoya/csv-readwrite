@@ -63,10 +63,17 @@ int sci_csv_textscan(char *fname)
 		iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 5, fname, &m5, &n5, &iErr);
 		if (iErr) return 0;
 
-		if ((m5 * n5 != SIZE_RANGE_SUPPORTED) || (n5 != 1))
+		if ((m5 * n5 != SIZE_RANGE_SUPPORTED) )
 		{
 			if (iRange) {FREE(iRange); iRange = NULL;}
-			Scierror(999,_("%s: Wrong size for input argument #%d: A column vector expected.\n"), fname, 5);
+			Scierror(999,_("%s: Wrong size for input argument #%d: Four entries expected.\n"), fname, 5);
+			return 0;
+		}
+
+		if ((m5 != 1) && (n5 != 1))
+		{
+			if (iRange) {FREE(iRange); iRange = NULL;}
+			Scierror(999,_("%s: Wrong size for input argument #%d: A column or row vector expected.\n"), fname, 5);
 			return 0;
 		}
 
