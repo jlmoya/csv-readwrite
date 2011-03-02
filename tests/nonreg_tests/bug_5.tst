@@ -9,7 +9,7 @@
 //
 
 // =============================================================================
-r1_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_5.csv", ",");
+r1_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_5.csv", ",", [], "string");
 r1_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_5.csv", ",", ".", "double");
 // =============================================================================
 if size(r1_string, "c") <> size(r1_double, "c") then pause, end

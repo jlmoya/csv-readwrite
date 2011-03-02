@@ -146,16 +146,16 @@ Mstr = [
 "0" "0" "1" "0" "0"
 ];
 //
-r = csv_read(fullfile(path,"M_1.csv"));
+r = csv_read(fullfile(path,"M_1.csv"),[],[],"string");
 Myassert_checkequal (r,Mstr);
 //
-r = csv_read(fullfile(path,"M_2.csv"), ascii(9));
+r = csv_read(fullfile(path,"M_2.csv"), ascii(9), [], "string");
 Myassert_checkequal (r,Mstr);
 //
-r = csv_read(fullfile(path,"M_3.csv"), " ", ",");
+r = csv_read(fullfile(path,"M_3.csv"), " ", ",", "string");
 Myassert_checkequal (r,Mstr);
 //
-r = csv_read(fullfile(path,"M_4.csv"), ";", ",");
+r = csv_read(fullfile(path,"M_4.csv"), ";", ",", "string");
 Myassert_checkequal (r,Mstr);
 // =============================================================================
 Nstr = [
@@ -163,16 +163,16 @@ Nstr = [
 "-Inf"  "Inf"  "4"
 ];
 //
-r = csv_read(fullfile(path,"N_1.csv"));
+r = csv_read(fullfile(path,"N_1.csv"), [], [], "string");
 Myassert_checkequal (r,Nstr);
 //
-r = csv_read(fullfile(path,"N_2.csv"), ascii(9));
+r = csv_read(fullfile(path,"N_2.csv"), ascii(9), [], "string");
 Myassert_checkequal (r,Nstr);
 //
-r = csv_read(fullfile(path,"N_3.csv"), " ", ",");
+r = csv_read(fullfile(path,"N_3.csv"), " ", ",", "string");
 Myassert_checkequal (r,Nstr);
 //
-r = csv_read(fullfile(path,"N_4.csv"), ";", ",");
+r = csv_read(fullfile(path,"N_4.csv"), ";", ",", "string");
 Myassert_checkequal (r,Nstr);
 // =============================================================================
 Kstr = [
@@ -186,16 +186,16 @@ Kstr2 = [
 "0,10000000000000001" "0,10000000000000001"
 ];
 //
-r = csv_read(fullfile(path,"K_1.csv"));
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "string");
 Myassert_checkequal (r,Kstr);
 //
-r = csv_read(fullfile(path,"K_2.csv"), ascii(9));
+r = csv_read(fullfile(path,"K_2.csv"), ascii(9), [], "string");
 Myassert_checkequal (r,Kstr);
 //
-r = csv_read(fullfile(path,"K_3.csv"), " ", ",");
+r = csv_read(fullfile(path,"K_3.csv"), " ", ",", "string");
 Myassert_checkequal (r,Kstr2);
 //
-r = csv_read(fullfile(path,"K_4.csv"), ";", ",");
+r = csv_read(fullfile(path,"K_4.csv"), ";", ",", "string");
 Myassert_checkequal (r,Kstr2);
 // =============================================================================
 S = [
@@ -203,16 +203,16 @@ S = [
   "csv read/write toolbox", "3", "for scilab"
 ];
 //
-r = csv_read(fullfile(path,"S_1.csv"), "|");
+r = csv_read(fullfile(path,"S_1.csv"), "|", [], "string");
 Myassert_checkequal (r,S);
 //
-r = csv_read(fullfile(path,"S_2.csv"), ascii(9));
+r = csv_read(fullfile(path,"S_2.csv"), ascii(9), [], "string");
 Myassert_checkequal (r,S);
 //
-r = csv_read(fullfile(path,"S_3.csv"), "!", ",");
+r = csv_read(fullfile(path,"S_3.csv"), "!", ",", "string");
 Myassert_checkequal (r,S);
 //
-r = csv_read(fullfile(path,"S_4.csv"), ";", ",");
+r = csv_read(fullfile(path,"S_4.csv"), ";", ",", "string");
 Myassert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_1.csv"), "|", ".", "string");

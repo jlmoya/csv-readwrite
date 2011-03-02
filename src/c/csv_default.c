@@ -22,9 +22,9 @@
 #define DEFAULT_CSV_PRECISION "%.17lg"
 #define CSV_DECIMAL_MODE_1 DEFAULT_CSV_DECIMAL
 #define CSV_DECIMAL_MODE_2 ","
-#define DEFAULT_CSV_CONVERSION "string"
+#define DEFAULT_CSV_CONVERSION "double"
 #define CSV_CONVERSION_MODE_1 DEFAULT_CSV_CONVERSION
-#define CSV_CONVERSION_MODE_2 "double"
+#define CSV_CONVERSION_MODE_2 "string"
 /* ========================================================================== */
 static char *defaultCsvSeparator = NULL;
 static char *defaultCsvDecimal = NULL;

@@ -146,7 +146,7 @@
         <para>
           field = "conversion": the type of the output of the <literal>csv_read</literal>function. 
           Possible values are "string" or "double". 
-          Default conversion = "string". 
+          Default conversion = "double". 
           If conversion = "string", then the <literal>csv_read</literal> function returns a matrix of strings.
           If conversion = "double", then the <literal>csv_read</literal> function returns a matrix of doubles.
         </para>

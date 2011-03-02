@@ -27,7 +27,7 @@ allvalues = csv_default();
 expected = [
     "separator"  ","
     "decimal"    "."
-    "conversion" "string"
+    "conversion" "double"
     "precision"  "%.17lg"
 ];
 assert_equal ( allvalues , expected );

@@ -12,7 +12,7 @@ ATTENTION :  Library is already loaded ("ulink(); clear csv_readwritelib;" to un
   end 
 end
 // =============================================================================
-r_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_3.csv", ",");
+r_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_3.csv", ",", [], "string");
 r_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_3.csv", ",", ".", "double");
 if size(r_string, "c") <> size(r_double, "c") then bugmes();quit;end
 if size(r_string, "r") <> size(r_double, "r") then bugmes();quit;end

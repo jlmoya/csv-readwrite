@@ -9,10 +9,10 @@
 //
 
 // =============================================================================
-r1_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_1.csv", ",");
-r2_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_2.csv", " ");
-r3_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_shortline_1.csv", ",");
-r4_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_shortline_2.csv", " ");
+r1_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_1.csv", ",", [], "string");
+r2_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_2.csv", " ", [], "string");
+r3_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_shortline_1.csv", ",", [], "string");
+r4_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_shortline_2.csv", " ", [], "string");
 // =============================================================================
 r1_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_1.csv", ",", ".", "double");
 r2_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_4_longline_2.csv", " ", ".", "double");

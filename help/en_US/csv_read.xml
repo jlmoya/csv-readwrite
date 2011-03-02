@@ -80,7 +80,7 @@
         <listitem>
           <para>
             a 1-by-1 matrix of strings, the type of the output <literal>M</literal>.
-            Available values are "string" or "double".
+            Available values are "string" or "double" (default).
           </para>
         </listitem>
       </varlistentry>
@@ -177,7 +177,7 @@
       csv_write(M, filename, ascii(9), '.');
 
       // read csv file
-      M1 = csv_read(filename,ascii(9))
+      M1 = csv_read(filename,ascii(9), [], 'string')
 
       // Returns a double
       M2 = csv_read(filename,ascii(9), '.', 'double')

@@ -148,7 +148,7 @@ endfunction
 A = "        1;        2;     3";
 B = "        4;        5;     6";
 C = [A;B];
-bbSTR = csv_textscan(C, ';');
+bbSTR = csv_textscan(C, ';', [], "string");
 expected = [
 "        1" , "        2" , "     3" 
 "        4" , "        5" , "     6" 
@@ -168,19 +168,19 @@ Mstr = [
 ];
 //
 r = mgetl(fullfile(path,"M_1.csv"));
-b = csv_textscan(r);
+b = csv_textscan(r, [], [], "string");
 Myassert_checkequal (b,Mstr);
 //
 r = mgetl(fullfile(path,"M_2.csv"));
-b = csv_textscan(r, ascii(9));
+b = csv_textscan(r, ascii(9), [], "string");
 Myassert_checkequal (b,Mstr);
 //
 r = mgetl(fullfile(path,"M_3.csv"));
-b = csv_textscan(r, " ", ",");
+b = csv_textscan(r, " ", ",", "string");
 Myassert_checkequal (b,Mstr);
 //
 r = mgetl(fullfile(path,"M_4.csv"));
-b = csv_textscan(r, ";", ",");
+b = csv_textscan(r, ";", ",", "string");
 Myassert_checkequal (b,Mstr);
 // =============================================================================
 Nstr = [
@@ -189,19 +189,19 @@ Nstr = [
 ];
 //
 r = mgetl(fullfile(path,"N_1.csv"));
-b = csv_textscan(r);
+b = csv_textscan(r, [], [], "string");
 Myassert_checkequal (b,Nstr);
 //
 r = mgetl(fullfile(path,"N_2.csv"));
-b = csv_textscan(r, ascii(9));
+b = csv_textscan(r, ascii(9), [], "string");
 Myassert_checkequal (b,Nstr);
 //
 r = mgetl(fullfile(path,"N_3.csv"));
-b = csv_textscan(r, " ", ",");
+b = csv_textscan(r, " ", ",", "string");
 Myassert_checkequal (b,Nstr);
 //
 r = mgetl(fullfile(path,"N_4.csv"));
-b = csv_textscan(r, ";", ",");
+b = csv_textscan(r, ";", ",", "string");
 Myassert_checkequal (b,Nstr);
 // =============================================================================
 Kstr = [
@@ -216,19 +216,19 @@ Kstr2 = [
 ];
 //
 r = mgetl(fullfile(path,"K_1.csv"));
-b = csv_textscan(r);
+b = csv_textscan(r, [], [], "string");
 Myassert_checkequal (b,Kstr);
 //
 r = mgetl(fullfile(path,"K_2.csv"));
-b = csv_textscan(r, ascii(9));
+b = csv_textscan(r, ascii(9), [], "string");
 Myassert_checkequal (b,Kstr);
 //
 r = mgetl(fullfile(path,"K_3.csv"));
-b = csv_textscan(r, " ", ",");
+b = csv_textscan(r, " ", ",", "string");
 Myassert_checkequal (b,Kstr2);
 //
 r = mgetl(fullfile(path,"K_4.csv"));
-b = csv_textscan(r, ";", ",");
+b = csv_textscan(r, ";", ",", "string");
 Myassert_checkequal (b,Kstr2);
 // =============================================================================
 S = [
@@ -237,19 +237,19 @@ S = [
 ];
 //
 r = mgetl(fullfile(path,"S_1.csv"));
-b = csv_textscan(r, "|");
+b = csv_textscan(r, "|", [], "string");
 Myassert_checkequal (b,S);
 //
 r = mgetl(fullfile(path,"S_2.csv"));
-b = csv_textscan(r, ascii(9));
+b = csv_textscan(r, ascii(9), [], "string");
 Myassert_checkequal (b,S);
 //
 r = mgetl(fullfile(path,"S_3.csv"));
-b = csv_textscan(r, "!", ",");
+b = csv_textscan(r, "!", ",", "string");
 Myassert_checkequal (b,S);
 //
 r = mgetl(fullfile(path,"S_4.csv"));
-b = csv_textscan(r, ";", ",");
+b = csv_textscan(r, ";", ",", "string");
 Myassert_checkequal (b,S);
 //
 r = mgetl(fullfile(path,"S_1.csv"));

@@ -159,7 +159,7 @@ substitute = [
 "Not-A-Number" "Nan"
 ];
 mputl(content,filename);
-M = csv_read(filename,[],[],[],substitute);
+M = csv_read(filename,[],[],"string",substitute);
 expected = "Inf";
 Myassert_checkequal ( M , expected );
 M = csv_read(filename,[],[],"double",substitute);
@@ -177,7 +177,7 @@ substitute = [
 "Youwillnotfind" "NotAChance"
 ];
 mputl(content,filename);
-M = csv_read(filename,[],[],[],substitute);
+M = csv_read(filename,[],[],"string",substitute);
 expected = "Inf";
 Myassert_checkequal ( M , expected );
 M = csv_read(filename,[],[],"double",substitute);
@@ -206,7 +206,7 @@ mclose(fd);
 // Customize the replace map.
 
 substitute=["Nan","%nan";"Infinity","%inf";"I","%i"];
-M = csv_read ( filename , [] , [] , [] , substitute );
+M = csv_read ( filename , [] , [] , "string" , substitute );
 Myassert_checkequal ( M , expected );
 
 

@@ -9,7 +9,7 @@
 //
 
 // =============================================================================
-r = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_1.csv", ",");
+r = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_1.csv", ",", [], "string");
 
 if size(r, "c") <> 2 then pause, end
 if size(r, "r") <> 7534 then pause, end
