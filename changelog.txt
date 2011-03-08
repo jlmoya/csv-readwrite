@@ -28,6 +28,7 @@ csv_readwrite (not released yet)
     * Fixed ticket #351: The csv_read function always returns complex entries.
     * Fixed ticket #352: The csv_textscan function always returned complex matrices.
     * Fixed ticket #297: The csv_textscan function did not take range as a row matrix.
+    * Fixed ticket #353: The csv_read function did not manage the range.
 
 csv_readwrite (0.3)
     * csv_write can write complex matrix (fix bug 8349).

@@ -8,12 +8,12 @@
  *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
  *
  */
-#ifndef __ csv_strsubst_H__
-#define __ csv_strsubst_H__
+#ifndef __CSV_STRSUBST_H__
+#define __CSV_STRSUBST_H__
 
 char * csv_strsubst(char* input_string,
               const char* string_to_search,
               const char* replacement_string);
 
-#endif /* __ csv_strsubst_H__ */
+#endif /* __CSV_STRSUBST_H__ */
 /* ========================================================================== */

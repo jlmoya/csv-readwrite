@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+ *  Copyright (C) 2011 - DIGITEO - Michael Baudin
  *
  *  This file must be used under the terms of the CeCILL.
  *  This source file is licensed as described in the file COPYING, which
@@ -397,7 +398,7 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
         if ((double)iVal != dArray[j])
         {
             *iErr = API_ERROR_GET_DOUBLE;
-            Scierror(999,_("%s: Wrong value for input argument #%d: A matrix of double expected.\n"), fname, _iVar);
+            Scierror(999,_("%s: Wrong value for input argument #%d: A matrix of double, with integer values, expected.\n"), fname, _iVar);
             return NULL;
         }
     }
