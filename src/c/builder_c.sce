@@ -13,6 +13,9 @@ src_c_path = get_absolute_file_path("builder_c.sce");
 fileio_includes = SCI + '/modules/fileio/includes';
 fileio_src = SCI + '/modules/fileio/src/c';
 
+string_includes = SCI + '/modules/string/includes';
+string_src = SCI + '/modules/string/src/c';
+
 if ~isdir(fileio_includes) | ~isdir(fileio_src) then
   error("it requires a local built of Scilab");
 end
@@ -21,9 +24,11 @@ LIBS = "";
 
 if getos() == "Windows" then
   LIBS = SCI + '/bin/fileio';
+  LIBS = [LIBS;SCI + '/bin/string'];
 end
 
-CFLAGS = "-I" + src_c_path + " -I" + fileio_includes + " -I" + fileio_src;
+CFLAGS = "-I" + src_c_path + " -I" + fileio_includes + " -I" + fileio_src + ..
+         " -I" + string_includes + " -I" + string_src;
 
 files_src = ["csv_read.c", ..
              "csv_write.c", ..

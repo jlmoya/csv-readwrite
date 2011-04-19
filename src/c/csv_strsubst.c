@@ -16,7 +16,7 @@
 #include "strdup_windows.h"
 #endif
 /* ========================================================================== */
-char *csv_strsubst(char* input_string,
+char *csv_strsubst(const char* input_string,
               const char* string_to_search,
               const char* replacement_string)
 {

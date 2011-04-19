@@ -12,11 +12,11 @@ macros/names
 Edit?
 jar/
 help/en_US/master_help.xml
-help/en_US/scilab_en_US_help/
-help/en_US/scilab_fr_FR_help/
+help/en_US/scilab_*_help/
 sci_gateway/c/Makelib.mak
 sci_gateway/c/Release/
 sci_gateway/c/Debug/
+sci_gateway/c/gw_gpu.h
 sci_gateway/cleaner_gateway.sce
 sci_gateway/loader_gateway.sce
 sci_gateway/c/csvreadwrite_c.c

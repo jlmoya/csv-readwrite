@@ -19,17 +19,21 @@ typedef enum {
     CSV_READ_READLINES_ERROR = 4,
     CSV_READ_COLUMNS_ERROR = 5,
     CSV_READ_ERROR = 6,
-    CSV_READ_SEPARATOR_DECIMAL_EQUAL = 7
+    CSV_READ_SEPARATOR_DECIMAL_EQUAL = 7,
+    CSV_READ_REGEXP_ERROR = 8
 } csvReadError;
 
 typedef struct {
     char **pstrValues;
     int m;
     int n;
+    char **pstrComments;
+    int nbComments;
     csvReadError err;
 } csvResult;
 
-csvResult* csv_read(const char *filename, const char *separator, const char *decimal, const char **toreplace, int sizetoreplace);
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal, 
+                    const char **toreplace, int sizetoreplace, const char *regexpcomments);
 
 csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separator, const char *decimal);
 

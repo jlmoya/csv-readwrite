@@ -41,27 +41,53 @@ int sci_csv_read(char *fname)
     char **toreplace = NULL;
     int nbElementsToReplace = 0;
 
+    char *regexp = NULL;
+
     csvResult *result = NULL;
 
-	BOOL bIsReal;
+    BOOL bIsReal;
     double *dRealValues = NULL;
 
-    CheckRhs(1, 5);
-    CheckLhs(1, 1);
+    CheckRhs(1, 6);
+    CheckLhs(1, 2);
 
-    if (Rhs == 5)
+    if (Rhs == 6)
     {
-        int m5 = 0, n5 = 0;
-        toreplace = csv_getArgumentAsMatrixOfString(pvApiCtx, 5, fname, &m5, &n5, &iErr);
+        regexp = csv_getArgumentAsString(pvApiCtx, 6, fname, &iErr);
         if (iErr) return 0;
-        if (n5 != 2) 
+    }
+    else
+    {
+        regexp = NULL;
+    }
+
+    if (Rhs >= 5)
+    {
+        if (csv_isEmpty(pvApiCtx, 5))
         {
-             freeArrayOfString(toreplace, m5 * n5);
-             toreplace = NULL;
-             Scierror(999,_("%s: Wrong size for input argument #%d.\n"), fname, 5);
-             return 0;
+            toreplace = NULL;
+            nbElementsToReplace = 0;
         }
-        nbElementsToReplace = m5;
+        else
+        {
+            int m5 = 0, n5 = 0;
+            toreplace = csv_getArgumentAsMatrixOfString(pvApiCtx, 5, fname, &m5, &n5, &iErr);
+            if (iErr)
+            {
+                if (regexp) {FREE(regexp); regexp = NULL;}
+                return 0;
+            }
+
+            if (n5 != 2)
+            {
+                if (regexp) {FREE(regexp); regexp = NULL;}
+                freeArrayOfString(toreplace, m5 * n5);
+                toreplace = NULL;
+                Scierror(999,_("%s: Wrong size for input argument #%d.\n"), fname, 5);
+                return 0;
+            }
+            nbElementsToReplace = m5;
+        }
     }
     else
     {
@@ -76,6 +102,7 @@ int sci_csv_read(char *fname)
         if (iErr) return 0;
         if (!((strcmp(conversion, CONVTOSTR) == 0) || (strcmp(conversion, CONVTODOUBLE) == 0)))
         {
+            if (regexp) {FREE(regexp); regexp = NULL;}
             if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             if (conversion) {FREE(conversion); conversion = NULL;}
             Scierror(999,_("%s: Wrong value for input argument #%d: '%s' or '%s' string expected.\n"), fname, 4, "double", "string");
@@ -93,6 +120,7 @@ int sci_csv_read(char *fname)
         decimal = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 3, fname, getCsvDefaultDecimal(), &iErr);
         if (iErr)
         {
+            if (regexp) {FREE(regexp); regexp = NULL;}
             if (conversion) {FREE(conversion); conversion = NULL;}
             if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             return 0;
@@ -109,6 +137,7 @@ int sci_csv_read(char *fname)
         separator = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 2, fname, getCsvDefaultSeparator(), &iErr);
         if (iErr)
         {
+            if (regexp) {FREE(regexp); regexp = NULL;}
             if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
             if (conversion) {FREE(conversion); conversion = NULL;}
             if (decimal) {FREE(decimal); decimal = NULL;}
@@ -124,6 +153,7 @@ int sci_csv_read(char *fname)
     filename = csv_getArgumentAsString(pvApiCtx, 1, fname, &iErr);
     if (iErr)
     {
+        if (regexp) {FREE(regexp); regexp = NULL;}
         if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
         if (separator) {FREE(separator); separator = NULL;}
         if (conversion) {FREE(conversion); conversion = NULL;}
@@ -131,7 +161,8 @@ int sci_csv_read(char *fname)
         return 0;
     }
 
-    result = csv_read(filename, separator, decimal, toreplace, nbElementsToReplace * 2);
+    result = csv_read(filename, separator, decimal, toreplace, nbElementsToReplace * 2, regexp);
+    if (regexp) {FREE(regexp); regexp = NULL;}
     if (toreplace) {freeArrayOfString(toreplace, nbElementsToReplace * 2); toreplace = NULL;}
     if (separator) {FREE(separator); separator = NULL;}
     if (decimal) {FREE(decimal); decimal = NULL;}
@@ -140,6 +171,12 @@ int sci_csv_read(char *fname)
     {
         switch(result->err)
         {
+            case CSV_READ_REGEXP_ERROR:
+            {
+                Scierror(999,_("%s: Wrong value for input argument #%d.\n"), fname, 6);
+            }
+            break;
+            
             case CSV_READ_SEPARATOR_DECIMAL_EQUAL:
             {
                 Scierror(999,_("%s: separator and decimal must have different values.\n"), fname);
@@ -150,7 +187,7 @@ int sci_csv_read(char *fname)
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
-                    /* Workaround bug ticket 194 andbug 8688 */
+                    /* Workaround bug ticket 194 and bug 8688 */
                     if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
                     {
                         sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
@@ -189,25 +226,25 @@ int sci_csv_read(char *fname)
                         case STRINGTOCOMPLEX_NOT_A_NUMBER:
                         case STRINGTOCOMPLEX_NO_ERROR:
                         {
-							// See if matrix is real, or complex
-							int i;
-							bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
-							if ( bIsReal )
-							{
-								// Copy the real entries into an array of doubles.
-								dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
-								for (i = 0; i < result->m*result->n; i++)
-								{
-									dRealValues[i] = dvalscomplex[i].r;
-								}
-								sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
-								FREE(dRealValues);
-								dRealValues = NULL;
-							}
-							else
-							{
-								sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
-							}
+                            // See if matrix is real, or complex
+                            int i;
+                            bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
+                            if ( bIsReal )
+                            {
+                                // Copy the real entries into an array of doubles.
+                                dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
+                                for (i = 0; i < result->m*result->n; i++)
+                                {
+                                    dRealValues[i] = dvalscomplex[i].r;
+                                }
+                                sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
+                                FREE(dRealValues);
+                                dRealValues = NULL;
+                            }
+                            else
+                            {
+                                sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+                            }
                           FREE(dvalscomplex);
                           dvalscomplex = NULL;
 
@@ -237,6 +274,32 @@ int sci_csv_read(char *fname)
                 else
                 {
                     LhsVar(1) = Rhs + 1;
+                    
+                    if (Lhs == 2)
+                    {
+                        /* Workaround bug ticket 194 and bug 8688 */
+                        if (csv_checkSpaceInStackForString(Rhs + 2, result->nbComments, 1, result->pstrComments))
+                        {
+                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 2, result->nbComments, 1, result->pstrComments);
+                            if(sciErr.iErr)
+                            {
+                                freeCsvResult(result);
+                                if (filename) {FREE(filename); filename = NULL;}
+                                if (conversion) {FREE(conversion); conversion = NULL;}
+                                printError(&sciErr, 0);
+                                return 0;
+                            }
+                            LhsVar(2) = Rhs + 2;
+                        }
+                        else
+                        {
+                            freeCsvResult(result);
+                            if (filename) {FREE(filename); filename = NULL;}
+                            if (conversion) {FREE(conversion); conversion = NULL;}
+                            SciError(17);
+                            return 0;
+                        }                        
+                    }
                     C2F(putlhsvar)();
                 }
             }

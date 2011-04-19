@@ -36,7 +36,8 @@
       M = csv_read(filename, separator, decimal)
       M = csv_read(filename, separator, decimal, conversion)
       M = csv_read(filename, separator, decimal, conversion, substitute)
-      M = csv_read(filename, separator, decimal, conversion, substitute, range)
+      M = csv_read(filename, separator, decimal, conversion, substitute, range, rexgepcomments)
+      [M, comments] = csv_read(filename, separator, decimal, conversion, substitute, range, rexgepcomments)
     </synopsis>
   </refsynopsisdiv>
 
@@ -116,7 +117,13 @@
         </listitem>
       </varlistentry>
 
-      
+      <varlistentry>
+        <term>rexgepcomments</term>
+
+        <listitem>
+          <para>a string: a regexp to remove lines which match.</para>
+        </listitem>
+      </varlistentry>
 
       <varlistentry>
         <term>M</term>
@@ -125,6 +132,14 @@
           <para>a m-by-n matrix of strings or double.</para>
         </listitem>
       </varlistentry>
+      
+      <varlistentry>
+        <term>comments</term>
+        <listitem>
+          <para>a m-by-n matrix of strings matched by regexp.</para>
+        </listitem>
+      </varlistentry>
+      
     </variablelist>
   </refsection>
 
@@ -245,6 +260,26 @@
       // Read the file and customize the separator
       csv_read ( filename , sep )
     </programlisting>
+    
+    <para>
+      The following script shows how to remove lines with regexp argument of the 
+      <literal>csv_read</literal> function.
+    </para>
+    
+    <programlisting role="example">CSV = ["// tata"; ..
+"1,0,0,0,0"; ..
+"// titi"; ..
+"0,1,0,0,0"; ..
+"// toto"; ..
+"0,0,1,0,0"; ..
+"// tutu"];
+filename = fullfile(TMPDIR , 'foo.csv');
+mputl(CSV, filename);
+
+// remove lines with // @ beginning
+[M, comments] = csv_read(filename, [], [], [], [], '/\/\//')
+</programlisting>
+
 
   </refsection>
 
