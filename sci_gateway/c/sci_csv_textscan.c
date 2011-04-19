@@ -1,5 +1,6 @@
 /*
 *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2011 - DIGITEO - Michael Baudin
 *
 *  This file must be used under the terms of the CeCILL.
 *  This source file is licensed as described in the file COPYING, which
@@ -28,6 +29,7 @@
 /* ========================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
+#define SIZE_RANGE_SUPPORTED 4
 /* ========================================================================== */
 int sci_csv_textscan(char *fname)
 {
@@ -47,6 +49,9 @@ int sci_csv_textscan(char *fname)
 	char *decimal = NULL;
 	char *conversion = NULL;
 
+	BOOL bIsReal;
+	double * dRealValues = NULL;
+
 	int *iRange = NULL;
 	int haveRange = 0;
 
@@ -57,7 +62,6 @@ int sci_csv_textscan(char *fname)
 
 	if (Rhs == 5)
 	{
-#define SIZE_RANGE_SUPPORTED 4
 		int m5 = 0, n5 = 0;
 
 		iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 5, fname, &m5, &n5, &iErr);
@@ -84,7 +88,7 @@ int sci_csv_textscan(char *fname)
 		else
 		{
 			if (iRange) {FREE(iRange); iRange = NULL;}
-			Scierror(999,_("%s: Wrong value for input argument #%d: A column vector expected.\n"), fname, 5);
+			Scierror(999,_("%s: Wrong value for input argument #%d: Unconsistent range.\n"), fname, 5);
 			return 0;
 		}
 	}
@@ -203,7 +207,7 @@ int sci_csv_textscan(char *fname)
 						if (pStrRange)
 						{
 							/* Workaround bug ticket 194 andbug 8688 */
-							if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+							if (csv_checkSpaceInStackForString(Rhs + 1, newM, newN, pStrRange))
 							{ 
 								sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
 								freeArrayOfString(pStrRange, newM * newN);
@@ -305,8 +309,6 @@ int sci_csv_textscan(char *fname)
 							}
 							else
 							{
-								BOOL bIsReal;
-								double * dRealValues = NULL;
 								// See if matrix is real, or complex
 								bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
 								if ( bIsReal )

@@ -493,7 +493,7 @@ static char *stripCharacters(const char *line)
     return returnedLine;
 }
 /* ========================================================================== */
-static char **replaceStrings(const char **lines, int nbLines, const char **toreplace, int sizetoreplace)
+static char **replaceStrings(char **lines, int nbLines, const char **toreplace, int sizetoreplace)
 {
     char **replacedStrings = NULL;
     int nr = 0;
