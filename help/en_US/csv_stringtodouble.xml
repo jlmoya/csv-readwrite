@@ -103,7 +103,7 @@
       </tr>
 
       <tr>
-        <td>±&lt;imag&gt;i|j</td>
+        <td>±&lt;imag&gt;i|%i|j</td>
 
         <td>-7j</td>
       </tr>
@@ -116,6 +116,8 @@
     <programlisting role="example">
       csv_stringtodouble("123.45e7")
       csv_stringtodouble("123 + 45i")
+      csv_stringtodouble("123 + 45%i")
+      csv_stringtodouble("123 + 45*%i")
       csv_stringtodouble("3.14159")
       csv_stringtodouble(["2.71" "3.1415"])
 
@@ -123,6 +125,8 @@
       r = csv_stringtodouble(mA)
 
       r = csv_stringtodouble("2.6 + 3j")
+      r = csv_stringtodouble("2.6 + 3*%i")
+      r = csv_stringtodouble("2.6 + 3%i")
 
       csv_stringtodouble("not a number")
       csv_stringtodouble("not a number", %t)

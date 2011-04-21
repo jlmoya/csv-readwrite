@@ -27,6 +27,8 @@
 #define LessChar '-'
 #define ComplexCharI 'i'
 #define ComplexCharJ 'j'
+#define ComplexScilab "%i"
+#define ComplexI "i"
 /* ========================================================================== */
 #ifndef _MSC_VER
   #ifndef strnicmp
@@ -34,6 +36,10 @@
   #endif
 #else  
     #define stricmp _stricmp
+#endif
+#ifdef _MSC_VER
+  #undef strnicmp
+  #define strnicmp _strnicmp
 #endif
 /* ========================================================================== */
 static int ParseNumber(const char* tx);
@@ -181,24 +187,26 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
     char *inum_string = NULL;
     int lnum = 0;
     BOOL haveImagI = FALSE;
+    char *modifiedTxt = NULL;
 
     *real = stringToDouble(tx, FALSE, &ierr);
     *imag = 0;
 
     if (ierr != STRINGTODOUBLE_NO_ERROR)
     {
-        lnum = ParseNumber(tx);
+        modifiedTxt = csv_strsubst(tx, ComplexScilab, ComplexI);
+        lnum = ParseNumber(modifiedTxt);
         if (lnum <= 1)
         {
             /* manages special cases nan + nani, ... */
-            if (strnicmp(tx, NanString, strlen(NanString)) == 0) lnum = strlen(NanString);
-            else if (strnicmp(tx, InfString, strlen(InfString)) == 0) lnum = strlen(InfString);
-            else if (strnicmp(tx, NegInfString, strlen(NegInfString)) == 0) lnum = strlen(NegInfString);
-            else if (strnicmp(tx, PosInfString, strlen(PosInfString)) == 0) lnum = strlen(PosInfString);
-            else if (strnicmp(tx, NegNanString, strlen(NegNanString)) == 0) lnum = strlen(NegNanString);
-            else if (strnicmp(tx, PosNanString, strlen(PosNanString)) == 0) lnum = strlen(PosNanString);
+            if (strnicmp(modifiedTxt, NanString, strlen(NanString)) == 0) lnum = strlen(NanString);
+            else if (strnicmp(modifiedTxt, InfString, strlen(InfString)) == 0) lnum = strlen(InfString);
+            else if (strnicmp(modifiedTxt, NegInfString, strlen(NegInfString)) == 0) lnum = strlen(NegInfString);
+            else if (strnicmp(modifiedTxt, PosInfString, strlen(PosInfString)) == 0) lnum = strlen(PosInfString);
+            else if (strnicmp(modifiedTxt, NegNanString, strlen(NegNanString)) == 0) lnum = strlen(NegNanString);
+            else if (strnicmp(modifiedTxt, PosNanString, strlen(PosNanString)) == 0) lnum = strlen(PosNanString);
         }
-        inum_string = midstring(tx, lnum, -1);
+        inum_string = midstring(modifiedTxt, lnum, -1);
         if ((inum_string[strlen(inum_string) - 1] == 'i') ||
             (inum_string[strlen(inum_string) - 1] == 'j'))
         {
@@ -224,7 +232,7 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
         {
             haveImagI = FALSE;
         }
-        rnum_string = leftstring(tx, lnum);
+        rnum_string = leftstring(modifiedTxt, lnum);
 
         if (strcmp(inum_string, "") == 0)
         {
@@ -280,6 +288,7 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
 
         if (rnum_string) {FREE(rnum_string); rnum_string = NULL;}
         if (inum_string) {FREE(inum_string); inum_string = NULL;}
+        if (modifiedTxt) {FREE(modifiedTxt); modifiedTxt = NULL;}
     }
     return ierr;
 }
@@ -327,21 +336,30 @@ static char *leftstring(const char *tx, int pos)
 /* ========================================================================== */
 static BOOL is_unit_imaginary (const char *src, double *im)
 {
-    if (*src == LessChar) 
+    char *modifiedSrc = csv_strsubst(src, ComplexScilab, ComplexI);
+    BOOL isUnitImag = FALSE;
+
+    if (*modifiedSrc == LessChar) 
     {
         *im = -1.0;
-        src++;
+        modifiedSrc++;
     } 
     else 
     {
         *im = +1.0;
-        if (*src == PlusChar) src++;
+        if (*modifiedSrc == PlusChar) modifiedSrc++;
     }
 
-    if ((*src == ComplexCharI || *src == ComplexCharJ) && src[1] == 0) 
+    if ((*modifiedSrc == ComplexCharI || *modifiedSrc == ComplexCharJ) && modifiedSrc[1] == 0) 
     {
-        return TRUE;
+        isUnitImag = TRUE;
     } 
-    return FALSE;
+
+    if (modifiedSrc)
+    {
+        FREE(modifiedSrc);
+        modifiedSrc = NULL;
+    }
+    return isUnitImag;
 }
 /* ========================================================================== */

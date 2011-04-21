@@ -45,7 +45,7 @@ static char **replaceStrings(const char **lines, int nbLines,
                              const char **toreplace, int sizetoreplace);
 static char **extractComments(const char **lines, int nbLines, const char *regexpcomments,
                               int *nbcomments, int *iErr);
-static char **removeComments(char **lines, int nbLines, 
+static char **removeComments(const char **lines, int nbLines, 
                              const char *regexpcomments, int *nbNewLine, int *iErr);
 /* ========================================================================== */
 csvResult* csv_read(const char *filename, const char *separator, const char *decimal, 
@@ -493,7 +493,7 @@ static char *stripCharacters(const char *line)
     return returnedLine;
 }
 /* ========================================================================== */
-static char **replaceStrings(char **lines, int nbLines, const char **toreplace, int sizetoreplace)
+static char **replaceStrings(const char **lines, int nbLines, const char **toreplace, int sizetoreplace)
 {
     char **replacedStrings = NULL;
     int nr = 0;
@@ -562,7 +562,7 @@ static char **extractComments(const char **lines, int nbLines,
     return pComments;
 }
 /* ========================================================================== */
-static char **removeComments(char **lines, int nbLines, 
+static char **removeComments(const char **lines, int nbLines, 
                              const char *regexpcomments, int *newNbLines, int *iErr)
 {
     char **pLinesCleaned = NULL;
@@ -574,7 +574,7 @@ static char **removeComments(char **lines, int nbLines,
     {
         int Output_Start = 0;
         int Output_End = 0;
-        pcre_error_code answer = pcre_private(lines[i], regexpcomments, &Output_Start, &Output_End);
+        pcre_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
         if ( answer == PCRE_FINISHED_OK )
         {
             FREE(lines[i]);
@@ -599,7 +599,7 @@ static char **removeComments(char **lines, int nbLines,
                 return NULL;
             }
 
-            pLinesCleaned[(*newNbLines) - 1] = lines[i];
+            pLinesCleaned[(*newNbLines) - 1] = (char*)lines[i];
         }
     }
     return pLinesCleaned;

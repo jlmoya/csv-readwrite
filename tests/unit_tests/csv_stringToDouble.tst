@@ -175,4 +175,28 @@ myassert_checkequal ( r , %nan);
 myassert_checkequal ( execstr("r = csv_stringtodouble(""3e2 - blabli"", %f);", "errcatch") , 999 );
 myassert_checkequal ( lasterror() , msprintf(_("%s: can not convert data.\n"), "csv_stringtodouble") );
 // =============================================================================
-
+r = csv_stringtodouble("-Nan*%i");
+myassert_checkequal ( isnan(imag(r)) , %t);
+myassert_checkequal ( csv_stringtodouble("+%i") , %i  );
+myassert_checkequal ( csv_stringtodouble("-%i") , -%i  );
+myassert_checkequal ( csv_stringtodouble("%i") , %i  );
+myassert_checkequal ( csv_stringtodouble(" 3 + 2*%i") , complex(3,2) );
+myassert_checkequal ( csv_stringtodouble(" 3 - 2*%i") , complex(3,- 2) );
+myassert_checkequal ( csv_stringtodouble(" -3 + 2*%i") , complex(-3,2) );
+myassert_checkequal ( csv_stringtodouble(" 3 - 2*%i") , complex(3,-2) );
+myassert_checkequal ( csv_stringtodouble("- 3 - 2*%i") , complex(-3,-2) );
+myassert_checkequal ( csv_stringtodouble("+3 - 2*%i") , complex(+3,-2) );
+myassert_checkequal ( csv_stringtodouble("+3 + 2*%i") , complex(3,2) );
+myassert_checkequal ( csv_stringtodouble("+3 - 2*%i") , complex(3,-2) );
+myassert_checkequal ( csv_stringtodouble("4+%i") , complex(4,1) );
+myassert_checkequal ( csv_stringtodouble("4-%i") , complex(4,-1) );
+myassert_checkequal ( csv_stringtodouble("-4+%i") , complex(-4,1) );
+myassert_checkequal ( csv_stringtodouble("-4-%i") , complex(-4,-1) );
+myassert_checkequal ( csv_stringtodouble("+4+%i") , complex(4,1) );
+myassert_checkequal ( csv_stringtodouble("+4-%i") , complex(4,-1) );
+myassert_checkequal ( csv_stringtodouble("1*%i") , %i );
+myassert_checkequal ( csv_stringtodouble("+1*%i") , %i );
+myassert_checkequal ( csv_stringtodouble("-1*%i") , complex(0,-1) );
+myassert_checkequal ( csv_stringtodouble("3e2 + 2e3*%i") , complex(300, 2000) );
+myassert_checkequal ( csv_stringtodouble("3e2 - 2e3*%i") , complex(300, -2000) );
+// =============================================================================

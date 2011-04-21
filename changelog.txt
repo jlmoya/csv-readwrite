@@ -1,7 +1,8 @@
 changelog of the csv_readwrite
 
 csv_readwrite (not released yet)
-    * csv_read manages regexp to remove comments in files
+    * csv_stringtodouble manages %i format for complex numbers.
+    * csv_read manages regexp to remove comments in files.
     * Fixed ticket #299: extends format to digit in csv_default and csv_write
     * Fixed ticket #294: default conversion moved as 'double'
     * Fixed ticket #270: added licence header to all files.

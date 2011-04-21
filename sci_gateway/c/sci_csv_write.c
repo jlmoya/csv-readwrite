@@ -9,6 +9,7 @@
  *
  */
 #include <string.h>
+#include <stdio.h>
 #include "stack-c.h"
 #include "api_scilab.h"
 #include "sci_types.h"
