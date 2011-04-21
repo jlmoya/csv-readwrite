@@ -9,10 +9,10 @@
 //
 // <-- JVM NOT MANDATORY -->
 
-// <-- Non-regression test for bug 353 -->
+// <-- Non-regression test for bug 360 -->
 //
 // <-- URL -->
-//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/353/
+//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/360/
 //
 // <-- Short Description -->
 // The csv_read function does not manage the range.
