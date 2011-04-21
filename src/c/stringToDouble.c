@@ -19,6 +19,7 @@
 #ifdef  _MSC_VER
 #include "strdup_windows.h"
 #endif
+#include "nan.h"
 /* ========================================================================== */
 #ifndef _MSC_VER
   #ifndef stricmp
@@ -31,7 +32,6 @@
 #define DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT "%lg"
 /* ========================================================================== */
 static double returnINF(BOOL bPositive);
-static double returnNAN(void);
 /* ========================================================================== */
 double *stringsToDoubles(const char **pSTRs, int nbElements, 
                          BOOL bConvertByNAN, stringToDoubleError *ierr)
@@ -75,19 +75,6 @@ static double returnINF(BOOL bPositive)
     double p = 10;
     if (!bPositive) p = -10;
     return (double) p / (double)v;
-}
-/* ========================================================================== */
-static double returnNAN(void)
-{
-    static int first = 1;
-    static double nan = 1.0;
-
-    if ( first )
-    {
-        nan = (nan - (double) first)/(nan - (double) first);
-        first = 0;
-    }
-    return (nan);
 }
 /* ========================================================================== */
 double stringToDouble(const char *pSTR,

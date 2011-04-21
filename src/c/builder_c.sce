@@ -38,7 +38,8 @@ files_src = ["csv_read.c", ..
              "stringToComplex.c", ..
              "checkCsvWriteFormat.c", ..
              "getRange.c", ..
-             "csv_default.c"];
+             "csv_default.c", ..
+             "nan.c"];
 
 functions_c = ["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble", ..
                "stringToComplex", "csv_default", "checkCsvWriteFormat", "getRange"];

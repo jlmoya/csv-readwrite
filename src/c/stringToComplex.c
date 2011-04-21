@@ -21,6 +21,7 @@
 #endif
 #include "BOOL.h"
 #include "csv_strsubst.h"
+#include "nan.h"
 /* ========================================================================== */
 #define PlusChar '+'
 #define LessChar '-'
@@ -179,6 +180,7 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
     char *rnum_string = NULL;
     char *inum_string = NULL;
     int lnum = 0;
+    BOOL haveImagI = FALSE;
 
     *real = stringToDouble(tx, FALSE, &ierr);
     *imag = 0;
@@ -201,6 +203,10 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
             (inum_string[strlen(inum_string) - 1] == 'j'))
         {
             inum_string[strlen(inum_string) - 1] = 0;
+            if (inum_string[strlen(inum_string) - 1] == '*')
+            {
+                inum_string[strlen(inum_string) - 1] = 0;
+            }
             if (strcmp(inum_string, "+") == 0) 
             {
                 FREE(inum_string);
@@ -212,6 +218,11 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
                 FREE(inum_string);
                 inum_string = strdup("-1");
             }
+            haveImagI = TRUE;
+        }
+        else
+        {
+            haveImagI = FALSE;
         }
         rnum_string = leftstring(tx, lnum);
 
@@ -222,8 +233,49 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
         }
         else
         {
-            *real = stringToDouble(rnum_string, bConvertByNAN, &ierr);
-            *imag = stringToDouble(inum_string, bConvertByNAN, &ierr);
+            double dReal = 0.;
+            double dImag = 0.;
+
+            stringToComplexError ierrReal = 0;
+            stringToComplexError ierrImag = 0;
+            dReal = stringToDouble(rnum_string, FALSE, &ierrReal);
+            dImag = stringToDouble(inum_string, FALSE, &ierrImag);
+
+            if ((ierrReal == STRINGTODOUBLE_NO_ERROR) && (ierrImag == STRINGTODOUBLE_NO_ERROR))
+            {
+                if (!haveImagI)
+                {
+                    if (bConvertByNAN)
+                    {
+                        ierr = STRINGTOCOMPLEX_NO_ERROR;
+                        *real = returnNAN();
+                        *imag = 0.;
+                    }
+                    else
+                    {
+                        ierr = STRINGTOCOMPLEX_ERROR;
+                    }
+                }
+                else
+                {
+                    ierr = STRINGTOCOMPLEX_NO_ERROR;
+                    *real = dReal;
+                    *imag = dImag;
+                }
+            }
+            else
+            {
+                if (bConvertByNAN)
+                {
+                    ierr = STRINGTOCOMPLEX_NO_ERROR;
+                    *real = returnNAN();
+                    *imag = 0.;
+                }
+                else
+                {
+                    ierr = STRINGTOCOMPLEX_ERROR;
+                }
+            }
         }
 
         if (rnum_string) {FREE(rnum_string); rnum_string = NULL;}

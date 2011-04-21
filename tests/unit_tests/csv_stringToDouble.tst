@@ -167,10 +167,10 @@ if ( getos() == "Windows" ) then
 end
 // =============================================================================
 r = csv_stringtodouble("3e2 - blabli");
-myassert_checkequal ( r , complex(300,%nan) );
+myassert_checkequal ( r , %nan);
 // =============================================================================
 r = csv_stringtodouble("3e2 - blabli", %t);
-myassert_checkequal ( r , complex(300,%nan) );
+myassert_checkequal ( r , %nan);
 // =============================================================================
 myassert_checkequal ( execstr("r = csv_stringtodouble(""3e2 - blabli"", %f);", "errcatch") , 999 );
 myassert_checkequal ( lasterror() , msprintf(_("%s: can not convert data.\n"), "csv_stringtodouble") );
