@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 
 #include <string.h>
 #include "splitLine.h"
@@ -98,7 +98,7 @@ char **splitLine(const char *str, const char *sep, int *toks, char meta)
     {
         retstr[curr_str] = (char *) MALLOC((sizeof(char) * len) + 1);
 
-        if(retstr[curr_str] == NULL) 
+        if(retstr[curr_str] == NULL)
         {
             *toks = 0;
             return NULL;

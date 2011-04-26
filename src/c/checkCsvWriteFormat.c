@@ -17,8 +17,8 @@
 #endif
 #include "checkCsvWriteFormat.h"
 /* ========================================================================== */
-#define NB_FORMAT_SUPPORTED 7 
-static char *supportedFormat[NB_FORMAT_SUPPORTED] = 
+#define NB_FORMAT_SUPPORTED 7
+static char *supportedFormat[NB_FORMAT_SUPPORTED] =
 {"lf", "lg", "d", "i", "e", "f", "g"};
 /* ========================================================================== */
 static char *replaceInFormat(const char *format);
@@ -78,7 +78,7 @@ static char *getCleanedFormat(const char *format)
                 char *token = strstr(percent, supportedFormat[i]);
                 if (token)
                 {
-                    int nbcharacters = strlen(percent) - strlen(token);          
+                    int nbcharacters = strlen(percent) - strlen(token);
                     cleanedFormat = strdup(percent);
                     cleanedFormat[nbcharacters] = 0;
                     if ( ((nbcharacters - 1 > 0) && (isdigit(cleanedFormat[nbcharacters-1])) ||

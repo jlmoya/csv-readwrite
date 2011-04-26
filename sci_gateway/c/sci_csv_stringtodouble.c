@@ -1,14 +1,14 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *  Copyright (C) 2011 - DIGITEO - Michael Baudin
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2011 - DIGITEO - Michael Baudin
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 #include <string.h>
 #include "stack-c.h"
 #include "api_scilab.h"
@@ -24,6 +24,7 @@
 #include "stringToComplex.h"
 #include "csv_default.h"
 #include "gw_csv_helpers.h"
+#include "csv_complex.h"
 /* ========================================================================== */
 int sci_csv_stringtodouble(char *fname)
 {
@@ -33,14 +34,9 @@ int sci_csv_stringtodouble(char *fname)
     char **pStringValues = NULL;
 
     BOOL bConvertToNan = TRUE;
-	BOOL bIsReal;
 
-    int i = 0;
-
-    doublecomplex *dvalscomplex = NULL;
+    csv_complexArray *ptrCsvComplexArray = NULL;
     stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
-
-    double *dRealValues = NULL;
 
     CheckRhs(1, 2);
     CheckLhs(1, 1);
@@ -58,61 +54,51 @@ int sci_csv_stringtodouble(char *fname)
     pStringValues = csv_getArgumentAsMatrixOfString(pvApiCtx, 1, fname, &m1, &n1, &iErr);
     if (iErr) return 0;
 
-    dvalscomplex = stringsToComplexs(pStringValues, m1 * n1, bConvertToNan, &ierr);
+    ptrCsvComplexArray = stringsToCvsComplexArray(pStringValues, m1 * n1, bConvertToNan, &ierr);
 
     freeArrayOfString(pStringValues, m1 * n1);
     pStringValues = NULL;
 
-    if (dvalscomplex == NULL)
+    if (ptrCsvComplexArray == NULL)
     {
         switch(ierr)
         {
-            case STRINGTOCOMPLEX_NOT_A_NUMBER:
-            case STRINGTOCOMPLEX_ERROR:
-                Scierror(999,_("%s: can not convert data.\n"), fname);
+        case STRINGTOCOMPLEX_NOT_A_NUMBER:
+        case STRINGTOCOMPLEX_ERROR:
+            Scierror(999,_("%s: can not convert data.\n"), fname);
             return 0;
 
-            default:
-                Scierror(999,_("%s: Memory allocation error.\n"), fname);
+        default:
+            Scierror(999,_("%s: Memory allocation error.\n"), fname);
             return 0;
         }
     }
 
     switch(ierr)
     {
-        case STRINGTOCOMPLEX_NOT_A_NUMBER:
-        case STRINGTOCOMPLEX_NO_ERROR:
+    case STRINGTOCOMPLEX_NOT_A_NUMBER:
+    case STRINGTOCOMPLEX_NO_ERROR:
         {
-			// See if matrix is real, or complex
-			bIsReal = csv_isreal(dvalscomplex, m1 , n1 );
-			if ( bIsReal )
-			{
-				// Copy the real entries into an array of doubles.
-				dRealValues = (double*)MALLOC(sizeof(double) * m1*n1);
-				for (i = 0; i < m1*n1; i++)
-				{
-					dRealValues[i] = dvalscomplex[i].r;
-				}
-				sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dRealValues);
-				FREE(dRealValues);
-				dRealValues = NULL;
-			}
-			else
-			{
-				sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, dvalscomplex);
-			}
-            FREE(dvalscomplex);
-            dvalscomplex = NULL;
+            if (ptrCsvComplexArray->isComplex)
+            {
+                sciErr = createComplexMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, ptrCsvComplexArray->realPart, ptrCsvComplexArray->imagPart);
+            }
+            else
+            {
+                sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, m1, n1, ptrCsvComplexArray->realPart);
+            }
+            freeCsvComplexArray(ptrCsvComplexArray);
+            ptrCsvComplexArray = NULL;
         }
         break;
 
-        case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
+    case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
         {
             Scierror(999,_("%s: Memory allocation error.\n"), fname);
         }
 
-        default:
-        case STRINGTOCOMPLEX_ERROR:
+    default:
+    case STRINGTOCOMPLEX_ERROR:
         {
             Scierror(999,_("%s: can not convert data.\n"), fname);
         }

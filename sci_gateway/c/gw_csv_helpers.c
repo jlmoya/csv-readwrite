@@ -1,14 +1,14 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *  Copyright (C) 2011 - DIGITEO - Michael Baudin
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2011 - DIGITEO - Michael Baudin
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 #include <string.h>
 #include "api_scilab.h"
 #include "stack-c.h"
@@ -145,7 +145,7 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
 }
 /* ========================================================================== */
 double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
-                                   const char *fname, int *iErr)
+                                     const char *fname, int *iErr)
 {
     SciErr sciErr;
     double dValue = 0.;
@@ -190,7 +190,7 @@ double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
 }
 /* ========================================================================== */
 int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
-                              const char *fname, int *iErr)
+                                   const char *fname, int *iErr)
 {
     SciErr sciErr;
     int bValue = 0;
@@ -316,10 +316,10 @@ int csv_isDoubleScalar(void* _pvCtx, int _iVar)
 {
     SciErr sciErr;
     int *piAddressVar = NULL;
-    
+
     sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
-        
+
     if (csv_isScalar(_pvCtx, _iVar))
     {
         int iType = 0;
@@ -338,7 +338,7 @@ int csv_isEmpty(void* _pvCtx, int _iVar)
 {
     SciErr sciErr;
     int *piAddressVar = NULL;
-    
+
     sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
@@ -350,8 +350,8 @@ int csv_isEmpty(void* _pvCtx, int _iVar)
 }
 /* ========================================================================== */
 int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
-                                       const char *fname,
-                                       int *m, int *n, int *iErr)
+                                            const char *fname,
+                                            int *m, int *n, int *iErr)
 {
     int *iReturnedArray = NULL;
     double *dArray = NULL;
@@ -423,25 +423,6 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
     return iReturnedArray;
 }
 /* ========================================================================== */
-
-int csv_isreal(doublecomplex *dvalscomplex, int m , int n )
-{
-	int i;
-	BOOL bIsReal;
-
-	bIsReal = TRUE;
-	for (i = 0; i < m*n; i++)
-	{
-		if ( dvalscomplex[i].i != 0 )
-		{
-			bIsReal = FALSE;
-			break;
-		}
-	}
-	return bIsReal;
-}
-/* ========================================================================== */
-
 int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings)
 {
     int iNewPos = Top - Rhs + _iVar;
@@ -456,10 +437,10 @@ int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const c
     {
         iLens = iLens + (int)strlen(pstStrings[i]) + 1;
     }
-    
+
     iMemSize = iLens + 2;
     iFreeSpace = iadr(*Lstk(Bot)) - (iadr(iAddr));
-    
+
     if (iMemSize > iFreeSpace)
     {
         return 0;

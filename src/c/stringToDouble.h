@@ -31,7 +31,7 @@ typedef enum {
 double *stringsToDoubles(const char **pSTRs, int nbElements,
                        BOOL bConvertByNAN,
                        stringToDoubleError *ierr);
-                       
+
 double stringToDouble(const char *pSTR,
                        BOOL bConvertByNAN,
                        stringToDoubleError *ierr);

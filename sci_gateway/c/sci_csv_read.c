@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 #include <string.h>
 #include "stack-c.h"
 #include "api_scilab.h"
@@ -21,6 +21,7 @@
 #endif
 #include "stringToComplex.h"
 #include "csv_default.h"
+#include "csv_complex.h"
 #include "gw_csv_helpers.h"
 /* ==================================================================== */
 #define CONVTOSTR "string"
@@ -111,7 +112,7 @@ int sci_csv_read(char *fname)
     }
     else
     {
-      conversion = strdup(getCsvDefaultConversion());
+        conversion = strdup(getCsvDefaultConversion());
     }
 
     if (Rhs >= 3)
@@ -171,19 +172,19 @@ int sci_csv_read(char *fname)
     {
         switch(result->err)
         {
-            case CSV_READ_REGEXP_ERROR:
+        case CSV_READ_REGEXP_ERROR:
             {
                 Scierror(999,_("%s: Wrong value for input argument #%d.\n"), fname, 6);
             }
             break;
-            
-            case CSV_READ_SEPARATOR_DECIMAL_EQUAL:
+
+        case CSV_READ_SEPARATOR_DECIMAL_EQUAL:
             {
                 Scierror(999,_("%s: separator and decimal must have different values.\n"), fname);
             }
             break;
 
-            case CSV_READ_NO_ERROR:
+        case CSV_READ_NO_ERROR:
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
@@ -203,78 +204,67 @@ int sci_csv_read(char *fname)
                 }
                 else /* to double */
                 {
-                  stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
-                  doublecomplex *dvalscomplex = stringsToComplexs(result->pstrValues, result->m * result->n, TRUE, &ierr);
-                  if (dvalscomplex == NULL)
-                  {
-                     freeCsvResult(result);
-                     if (filename) {FREE(filename); filename = NULL;}
-                     if (conversion) {FREE(conversion); conversion = NULL;}
-                     if (ierr == STRINGTOCOMPLEX_ERROR)
-                     {
-                        Scierror(999,_("%s: can not convert data.\n"), fname);
-                     }
-                     else
-                     {
-                         Scierror(999,_("%s: Memory allocation error.\n"), fname);
-                     }
-                     return 0;
-                  }
+                    stringToComplexError ierr = STRINGTOCOMPLEX_ERROR;
+                    csv_complexArray *ptrCsvComplexArray = stringsToCvsComplexArray(result->pstrValues, result->m * result->n, TRUE, &ierr);
 
-                  switch(ierr)
-                  {
-                        case STRINGTOCOMPLEX_NOT_A_NUMBER:
-                        case STRINGTOCOMPLEX_NO_ERROR:
+                    if (ptrCsvComplexArray == NULL)
+                    {
+                        freeCsvResult(result);
+                        if (filename) {FREE(filename); filename = NULL;}
+                        if (conversion) {FREE(conversion); conversion = NULL;}
+                        if (ierr == STRINGTOCOMPLEX_ERROR)
                         {
-                            // See if matrix is real, or complex
-                            int i;
-                            bIsReal = csv_isreal(dvalscomplex, result->m , result->n );
-                            if ( bIsReal )
+                            Scierror(999,_("%s: can not convert data.\n"), fname);
+                        }
+                        else
+                        {
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                        }
+                        return 0;
+                    }
+
+                    switch(ierr)
+                    {
+                    case STRINGTOCOMPLEX_NOT_A_NUMBER:
+                    case STRINGTOCOMPLEX_NO_ERROR:
+                        {
+                            if (ptrCsvComplexArray->isComplex)
                             {
-                                // Copy the real entries into an array of doubles.
-                                dRealValues = (double*)MALLOC(sizeof(double) * result->m*result->n);
-                                for (i = 0; i < result->m*result->n; i++)
-                                {
-                                    dRealValues[i] = dvalscomplex[i].r;
-                                }
-                                sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dRealValues);
-                                FREE(dRealValues);
-                                dRealValues = NULL;
+                                sciErr = createComplexMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart, ptrCsvComplexArray->imagPart);
                             }
                             else
                             {
-                                sciErr = createComplexZMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, dvalscomplex);
+                                sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart);
                             }
-                          FREE(dvalscomplex);
-                          dvalscomplex = NULL;
-
+                            freeCsvComplexArray(ptrCsvComplexArray);
+                            ptrCsvComplexArray = NULL;
                         }
                         break;
 
-                        case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
+                    case STRINGTOCOMPLEX_MEMORY_ALLOCATION:
                         {
-                          Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
                         }
-                        default:
-                        case STRINGTOCOMPLEX_ERROR:
+                    default:
+                    case STRINGTOCOMPLEX_ERROR:
                         {
-                          Scierror(999,_("%s: can not convert data.\n"), fname);
+                            Scierror(999,_("%s: can not convert data.\n"), fname);
                         }
-                  }
+                    }
                 }
 
                 if(sciErr.iErr)
                 {
-                        freeCsvResult(result);
-                        if (filename) {FREE(filename); filename = NULL;}
-                        if (conversion) {FREE(conversion); conversion = NULL;}
-                        printError(&sciErr, 0);
-                        return 0;
+                    freeCsvResult(result);
+                    if (filename) {FREE(filename); filename = NULL;}
+                    if (conversion) {FREE(conversion); conversion = NULL;}
+                    printError(&sciErr, 0);
+                    return 0;
                 }
                 else
                 {
                     LhsVar(1) = Rhs + 1;
-                    
+
                     if (Lhs == 2)
                     {
                         /* Workaround bug ticket 194 and bug 8688 */
@@ -298,34 +288,34 @@ int sci_csv_read(char *fname)
                             if (conversion) {FREE(conversion); conversion = NULL;}
                             SciError(17);
                             return 0;
-                        }                        
+                        }
                     }
                     C2F(putlhsvar)();
                 }
             }
             break;
 
-            case CSV_READ_FILE_NOT_EXIST:
+        case CSV_READ_FILE_NOT_EXIST:
             {
                 Scierror(999,_("%s: %s does not exist.\n"), fname, filename);
             }
             break;
 
-            case CSV_READ_MOPEN_ERROR:
+        case CSV_READ_MOPEN_ERROR:
             {
                 Scierror(999,_("%s: can not open file %s.\n"), fname, filename);
             }
             break;
 
-            case CSV_READ_MEMORY_ALLOCATION:
+        case CSV_READ_MEMORY_ALLOCATION:
             {
                 Scierror(999,_("%s: Memory allocation error.\n"), fname);
             }
             break;
 
-            case CSV_READ_READLINES_ERROR:
-            case CSV_READ_COLUMNS_ERROR:
-            case CSV_READ_ERROR:
+        case CSV_READ_READLINES_ERROR:
+        case CSV_READ_COLUMNS_ERROR:
+        case CSV_READ_ERROR:
             {
                 Scierror(999,_("%s: can not read file %s.\n"), fname, filename);
             }

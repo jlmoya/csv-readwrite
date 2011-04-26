@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 #ifndef __GW_CSV_HELPERS_H__
 #define __GW_CSV_HELPERS_H__
 
@@ -27,12 +27,12 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
                                        int *m, int *n, int *iErr);
 
 int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
-                                       const char *fname,
-                                       int *m, int *n, int *iErr);
-                                       
+                                            const char *fname,
+                                            int *m, int *n, int *iErr);
+
 double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
-                                   const char *fname, int *iErr);
-                                       
+                                     const char *fname, int *iErr);
+
 
 int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings);
 
@@ -41,6 +41,5 @@ int csv_isColumnVector(void* _pvCtx, int _iVar);
 int csv_isScalar(void* _pvCtx, int _iVar);
 int csv_isDoubleScalar(void* _pvCtx, int _iVar);
 int csv_isEmpty(void* _pvCtx, int _iVar);
-int csv_isreal(doublecomplex *dvalscomplex, int m , int n );
 
 #endif /* __GW_CSV_HELPERS_H__ */

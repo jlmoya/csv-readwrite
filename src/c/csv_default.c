@@ -80,7 +80,7 @@ int setCsvDefaultDecimal(const char *decimal)
         (strcmp(decimal, CSV_DECIMAL_MODE_2) == 0))
     {
         if (strcmp(decimal, getCsvDefaultSeparator()) == 0) return 1;
-        defaultCsvDecimal = strdup(decimal);    
+        defaultCsvDecimal = strdup(decimal);
         if (defaultCsvDecimal == NULL) return 1;
         return 0;
     }
@@ -132,7 +132,7 @@ static int initializeCsvDefaultValues(void)
     {
         defaultCsvConversion = strdup(DEFAULT_CSV_CONVERSION);
     }
-    
+
     if (defaultCsvPrecision == NULL)
     {
         defaultCsvPrecision = strdup(DEFAULT_CSV_PRECISION);

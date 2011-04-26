@@ -41,14 +41,14 @@ static char **getStringsFromLines(const char **lines, int sizelines,
                                   int m, int n);
 static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines);
 static char *stripCharacters(const char *line);
-static char **replaceStrings(const char **lines, int nbLines, 
+static char **replaceStrings(const char **lines, int nbLines,
                              const char **toreplace, int sizetoreplace);
 static char **extractComments(const char **lines, int nbLines, const char *regexpcomments,
                               int *nbcomments, int *iErr);
-static char **removeComments(const char **lines, int nbLines, 
+static char **removeComments(const char **lines, int nbLines,
                              const char *regexpcomments, int *nbNewLine, int *iErr);
 /* ========================================================================== */
-csvResult* csv_read(const char *filename, const char *separator, const char *decimal, 
+csvResult* csv_read(const char *filename, const char *separator, const char *decimal,
                     const char **toreplace, int sizetoreplace, const char *regexpcomments)
 {
     char *expandedFilename = NULL;
@@ -549,7 +549,7 @@ static char **extractComments(const char **lines, int nbLines,
                 pComments = (char **)REALLOC(pComments, sizeof(char*) * (*nbcomments));
             }
 
-            if (pComments == NULL) 
+            if (pComments == NULL)
             {
                 *nbcomments = 0;
                 *iErr = 1;
@@ -562,7 +562,7 @@ static char **extractComments(const char **lines, int nbLines,
     return pComments;
 }
 /* ========================================================================== */
-static char **removeComments(const char **lines, int nbLines, 
+static char **removeComments(const char **lines, int nbLines,
                              const char *regexpcomments, int *newNbLines, int *iErr)
 {
     char **pLinesCleaned = NULL;

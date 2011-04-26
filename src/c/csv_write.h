@@ -26,7 +26,7 @@ csvWriteError csv_write_double(const char *filename,
                                const char *precisionFormat,
                                const char **headersLines,
                                int nbHeadersLines);
-                               
+
 csvWriteError csv_write_complex(const char *filename,
                                const double *pdValuesReal,
                                const double *pdValuesImag,

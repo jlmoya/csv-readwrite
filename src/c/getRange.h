@@ -12,19 +12,21 @@
 #define __GETRANGE_H__
 
 #include "doublecomplex.h"
+#include "csv_complex.h"
 
 // Extract the strings in pStrsValues which are in the range.
 char **getRangeAsString(const char **pStrsValues,
                         int nbRows, int nbCols,
-                        const int *iRange, 
-                        int *returnedNbRows, int *returnedNbCols);
-                        
-
-// Extract the double complexes in pComplex which are in the range.
-doublecomplex *getRangeAsComplex(const doublecomplex *pComplex,
-                        int nbRows, int nbCols, 
                         const int *iRange,
                         int *returnedNbRows, int *returnedNbCols);
+
+
+// Extract the double complexes in pComplex which are in the range.
+csv_complexArray *getRangeAsCsvComplexArray(const csv_complexArray *pComplex,
+                        int nbRows, int nbCols,
+                        const int *iRange,
+                        int *returnedNbRows, int *returnedNbCols);
+
 
 // Returns 1 if the range is valid, returns 0 if not.
 int isValidRange(const int *range, int sizeArray);

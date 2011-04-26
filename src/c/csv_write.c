@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 
 #if defined(__linux__)
 #define _GNU_SOURCE /* Bug 5673 fix: avoid dependency on GLIBC_2.7 */
@@ -37,9 +37,9 @@
 #define ComplexStr "i"
 #define EMPTY_STRING ""
 #if _MSC_VER
-    #define MODEWFD "wt"
+#define MODEWFD "wt"
 #else
-    #define MODEWFD "w"
+#define MODEWFD "w"
 #endif
 #define EOL "\n"
 /* ========================================================================== */
@@ -87,7 +87,7 @@ csvWriteError csv_write_double(const char *filename,
     wcfopen(fd , filename, MODEWFD);
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
-        
+
     if ((headersLines) && (nbHeadersLines > 0))
     {
         for (i = 0; i < nbHeadersLines; i++)
@@ -143,14 +143,14 @@ csvWriteError csv_write_double(const char *filename,
 }
 /* ========================================================================== */
 csvWriteError csv_write_complex(const char *filename,
-                               const double *pdValuesReal,
-                               const double *pdValuesImag,
-                               int m, int n,
-                               const char *separator,
-                               const char *decimal,
-                               const char *precisionFormat,
-                               const char **headersLines,
-                               int nbHeadersLines)
+                                const double *pdValuesReal,
+                                const double *pdValuesImag,
+                                int m, int n,
+                                const char *separator,
+                                const char *decimal,
+                                const char *precisionFormat,
+                                const char **headersLines,
+                                int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
@@ -219,7 +219,7 @@ csvWriteError csv_write_complex(const char *filename,
                     strcpy(StringValue, InfString);
                 }
             }
-            
+
             if (ISNAN(pdValuesImag[i + m*j]))
             {
                 strcat(StringValue, PlusStr);
@@ -239,10 +239,10 @@ csvWriteError csv_write_complex(const char *filename,
                 {
                     strcat(StringValue, LessStr);
                 }
-                
+
                 sprintf(buffer, precisionFormat, fabs(pdValuesImag[i + m*j]));
                 result = csv_strsubst(buffer, getCsvDefaultDecimal(), decimal);
-                
+
                 if (result)
                 {
                     strcat(StringValue, result);
@@ -251,7 +251,7 @@ csvWriteError csv_write_complex(const char *filename,
                 }
                 else
                 {
-                    
+
                     sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, fabs(pdValuesImag[i + m*j]));
                     strcat(StringValue, buffer);
                 }
@@ -299,12 +299,12 @@ csvWriteError csv_write_string(const char *filename,
     if (separator == NULL) return CSV_WRITE_ERROR;
 
     if (strcmp(separator, decimal) == 0) return CSV_WRITE_SEPARATOR_DECIMAL_EQUAL;
-        
+
     expandedFilename = expandPathVariable((char*)filename);
     wcfopen(fd , filename, MODEWFD);
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
-        
+
     if ((headersLines) && (nbHeadersLines > 0))
     {
         for (i = 0; i < nbHeadersLines; i++)

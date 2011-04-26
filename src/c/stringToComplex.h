@@ -12,6 +12,7 @@
 #define __STRINGTOCOMPLEX_H__
 
 #include "doublecomplex.h"
+#include "csv_complex.h"
 #include "BOOL.h"
 
 typedef enum {
@@ -21,13 +22,9 @@ typedef enum {
     STRINGTOCOMPLEX_ERROR = 3
 } stringToComplexError;
 
-doublecomplex *stringsToComplexs(const char **pSTRs, int nbElements,
+csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
                        BOOL bConvertByNAN,
                        stringToComplexError *ierr);
-                       
-doublecomplex stringToComplex(const char *pSTR,
-                       BOOL bConvertByNAN,
-                       stringToComplexError *ierr);
-                       
+
 #endif /* __STRINGTOCOMPLEX_H__ */
 /* ========================================================================== */

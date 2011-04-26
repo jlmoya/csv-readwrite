@@ -20,206 +20,214 @@
 /* ========================================================================== */
 void getSubIndices(const int *iRange, int * R1, int * R2, int * C1, int * C2 )
 {
-	*R1 = iRange[0];
-	*C1 = iRange[1];
-	*R2 = iRange[2];
-	*C2 = iRange[3];
+    *R1 = iRange[0];
+    *C1 = iRange[1];
+    *R2 = iRange[2];
+    *C2 = iRange[3];
 
-	return;
+    return;
 }
 /* ========================================================================== */
 int isValidRange(const int *iRange, int sizeArray)
 {
-	int i = 0;
-	int R1, C1, R2, C2;
+    int i = 0;
+    int R1, C1, R2, C2;
 
-	if (iRange == NULL) {
-		return 0;
-	}
+    if (iRange == NULL)
+    {
+        return 0;
+    }
 
-	getSubIndices(iRange, &R1, &R2, &C1, &C2 );
+    getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
-	if (sizeArray != SIZE_ARRAY_RANGE) {
-		return 0;
-	}
+    if (sizeArray != SIZE_ARRAY_RANGE)
+    {
+        return 0;
+    }
 
-	if (R1 <= 0) {
-		return 0;
-	}
-	if (R2 <= 0) {
-		return 0;
-	}
-	if (C1 <= 0) {
-		return 0;
-	}
-	if (C2 <= 0) {
-		return 0;
-	}
+    if (R1 <= 0)
+    {
+        return 0;
+    }
+    if (R2 <= 0)
+    {
+        return 0;
+    }
+    if (C1 <= 0)
+    {
+        return 0;
+    }
+    if (C2 <= 0)
+    {
+        return 0;
+    }
+    if (R1 > R2)
+    {
+        return 0;
+    }
+    if (C1 > C2)
+    {
+        return 0;
+    }
 
-	if (R1 > R2) {
-		return 0;
-	}
-	if (C1 > C2) {
-		return 0;
-	}
-
-	return 1;
+    return 1;
 }
 /* ========================================================================== */
 char **getRangeAsString(const char **pStrsValues,
-						int nbRows, int nbCols,
-						const int *iRange,
-						int *returnedNbRows, int *returnedNbCols)
+                        int nbRows, int nbCols,
+                        const int *iRange,
+                        int *returnedNbRows, int *returnedNbCols)
 {
-	if (isValidRange(iRange, SIZE_ARRAY_RANGE))
-	{
-		char **newStrArray = NULL;
-		int sizeRange = getSizeRange(iRange, nbRows, nbCols);
-		int R1, C1, R2, C2;
+    if (isValidRange(iRange, SIZE_ARRAY_RANGE))
+    {
+        char **newStrArray = NULL;
+        int sizeRange = getSizeRange(iRange, nbRows, nbCols);
+        int R1, C1, R2, C2;
 
-		getSubIndices(iRange, &R1, &R2, &C1, &C2 );
+        getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
-		*returnedNbRows = getSizeRows(iRange, nbRows);
-		*returnedNbCols = getSizeCols(iRange, nbCols);
+        *returnedNbRows = getSizeRows(iRange, nbRows);
+        *returnedNbCols = getSizeCols(iRange, nbCols);
 
-		newStrArray = (char**)MALLOC(sizeof(char*) * sizeRange);
-		if (newStrArray == NULL)
-		{
-			*returnedNbCols = 0;
-			*returnedNbRows = 0;
-		}
-		else
-		{
-			int i = 0;
-			int j = 0;
-			int k = 0;
+        newStrArray = (char**)MALLOC(sizeof(char*) * sizeRange);
+        if (newStrArray == NULL)
+        {
+            *returnedNbCols = 0;
+            *returnedNbRows = 0;
+        }
+        else
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
 
-			if ( C2 > nbCols )
-			{
-				C2 = nbCols;
-			}
-			if ( R2 > nbRows )
-			{
-				R2 = nbRows;
-			}
+            if ( C2 > nbCols )
+            {
+                C2 = nbCols;
+            }
+            if ( R2 > nbRows )
+            {
+                R2 = nbRows;
+            }
 
-			for ( j = C1-1 ; j < C2 ; j++)
-			{
-				for (i = R1-1 ; i < R2 ; i++ )
-				{
-					newStrArray[k] = strdup(pStrsValues[i + nbRows*j]);
-					k++;
-				}
-			}
-		}
-		return newStrArray;
-	}
-	return NULL;
+            for ( j = C1-1 ; j < C2 ; j++)
+            {
+                for (i = R1-1 ; i < R2 ; i++ )
+                {
+                    newStrArray[k] = strdup(pStrsValues[i + nbRows*j]);
+                    k++;
+                }
+            }
+        }
+        return newStrArray;
+    }
+    return NULL;
 }
 /* ========================================================================== */
-doublecomplex *getRangeAsComplex(const doublecomplex *pComplex,
-								 int nbRows, int nbCols,
-								 const int *iRange,
-								 int *returnedNbRows, int *returnedNbCols)
+csv_complexArray *getRangeAsCsvComplexArray(const csv_complexArray *pComplex,
+                                            int nbRows, int nbCols,
+                                            const int *iRange,
+                                            int *returnedNbRows, int *returnedNbCols)
 {
-	if (isValidRange(iRange, SIZE_ARRAY_RANGE))
-	{
-		doublecomplex *newComplexArray = NULL;
-		int sizeRange = getSizeRange(iRange, nbRows, nbCols);
-		int R1, C1, R2, C2;
-		doublecomplex source;
-	
-		getSubIndices(iRange, &R1, &R2, &C1, &C2 );
+    if (isValidRange(iRange, SIZE_ARRAY_RANGE))
+    {
+        csv_complexArray *newComplexArray = NULL;
+        int sizeRange = getSizeRange(iRange, nbRows, nbCols);
+        int R1 = 0, C1 = 0, R2 = 0, C2 = 0;
+        doublecomplex source;
 
-		*returnedNbRows = getSizeRows(iRange, nbRows);
-		*returnedNbCols = getSizeCols(iRange, nbCols);
+        getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
-		newComplexArray = (doublecomplex*)MALLOC(sizeof(doublecomplex) * sizeRange);
-		if (newComplexArray == NULL)
-		{
-			*returnedNbCols = 0;
-			*returnedNbRows = 0;
-		}
-		else
-		{
-			int i = 0;
-			int j = 0;
-			int k = 0;
+        *returnedNbRows = getSizeRows(iRange, nbRows);
+        *returnedNbCols = getSizeCols(iRange, nbCols);
 
-			if ( C2 > nbCols )
-			{
-				C2 = nbCols;
-			}
-			if ( R2 > nbRows )
-			{
-				R2 = nbRows;
-			}
+        newComplexArray = createCsvComplexArrayEmpty(sizeRange);
+        if (newComplexArray == NULL)
+        {
+            *returnedNbCols = 0;
+            *returnedNbRows = 0;
+        }
+        else
+        {
+            int i = 0;
+            int j = 0;
+            int k = 0;
 
-			for ( j = C1-1 ; j < C2 ; j++)
-			{
-				for (i = R1-1 ; i < R2 ; i++ )
-				{
-					source = pComplex[i + nbRows*j];
-					newComplexArray[k].r = source.r;
-					newComplexArray[k].i = source.i;
-					k++;
-				}
-			}
-		}
+            if ( C2 > nbCols )
+            {
+                C2 = nbCols;
+            }
+            if ( R2 > nbRows )
+            {
+                R2 = nbRows;
+            }
 
-		return newComplexArray;
-	}
-	return NULL;
+            for ( j = C1-1 ; j < C2 ; j++)
+            {
+                for (i = R1-1 ; i < R2 ; i++ )
+                {
+                    newComplexArray->realPart[k] = pComplex->realPart[i + nbRows * j];
+                    newComplexArray->imagPart[k] = pComplex->imagPart[i + nbRows * j];
+                    k++;
+                }
+            }
+        }
+
+        return newComplexArray;
+    }
+    return NULL;
 }
 /* ========================================================================== */
 static int getSizeRange(const int *iRange, int nbRows, int nbCols)
 {
-	int sizeRange;
-	if (iRange)
-	{
-		sizeRange = getSizeRows(iRange, nbRows) * getSizeCols(iRange, nbCols);
-	}
-	else
-	{
-		sizeRange = 0;
-	}
-	return sizeRange;
+    int sizeRange;
+    if (iRange)
+    {
+        sizeRange = getSizeRows(iRange, nbRows) * getSizeCols(iRange, nbCols);
+    }
+    else
+    {
+        sizeRange = 0;
+    }
+    return sizeRange;
 }
 /* ========================================================================== */
 static int getSizeRows(const int *iRange, int nbRows)
 {
-	int sizeRows = 0;
-	int R1, R2, C1, C2;
+    int sizeRows = 0;
+    int R1, R2, C1, C2;
 
-	getSubIndices(iRange, &R1, &R2, &C1, &C2 );
+    getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
-	if (iRange == NULL) {
-		return 0;
-	}
-	if ( R2 > nbRows )
-	{
-		R2 = nbRows;
-	}
-	sizeRows = R2 - R1 + 1;
-	return sizeRows;
+    if (iRange == NULL)
+    {
+        return 0;
+    }
+    if ( R2 > nbRows )
+    {
+        R2 = nbRows;
+    }
+    sizeRows = R2 - R1 + 1;
+    return sizeRows;
 }
 /* ========================================================================== */
 static int getSizeCols(const int *iRange, int nbCols)
 {
-	int sizeCols = 0;
-	int R1, R2, C1, C2;
+    int sizeCols = 0;
+    int R1, R2, C1, C2;
 
-	getSubIndices(iRange, &R1, &R2, &C1, &C2 );
+    getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
-	if (iRange == NULL) {
-		return 0;
-	}
-	if ( C2 > nbCols )
-	{
-		C2 = nbCols;
-	}
-	sizeCols = C2 - C1 + 1;
+    if (iRange == NULL)
+    {
+        return 0;
+    }
+    if ( C2 > nbCols )
+    {
+        C2 = nbCols;
+    }
+    sizeCols = C2 - C1 + 1;
 
-	return sizeCols;
+    return sizeCols;
 }
 /* ========================================================================== */

@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 #include <string.h>
 #include <stdio.h>
 #include "stack-c.h"
@@ -79,21 +79,21 @@ int sci_csv_write(char *fname)
     {
         if (csv_isDoubleScalar(pvApiCtx, 5))
         {
-            #define FORMAT_FIELDVALUESTR "%%.%dlg"
+#define FORMAT_FIELDVALUESTR "%%.%dlg"
             int iFormatValue = (int) csv_getArgumentAsScalarDouble(pvApiCtx, 5, fname, &iErr);
             if (iErr)
             {
                 if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
                 return 0;
             }
-        
+
             if ((iFormatValue < 1) || (iFormatValue > 17))
             {
                 Scierror(999,_("%s: Wrong value for input argument #%d: A double (value 1 to 17) expected.\n"), fname, 5);
                 if (pHeadersLines) { freeArrayOfString(pHeadersLines, nbHeadersLines); pHeadersLines = NULL;}
                 return 0;
             }
-        
+
             precisionFormat = (char*)MALLOC(sizeof(char) * ((int)strlen(FORMAT_FIELDVALUESTR)+1));
             if (precisionFormat == NULL)
             {
@@ -237,32 +237,32 @@ int sci_csv_write(char *fname)
     if (pStringValues)
     {
         csvError = csv_write_string(filename,
-                                    pStringValues, m1, n1,
-                                    separator,
-                                    decimal,
-                                    pHeadersLines, nbHeadersLines);
+            pStringValues, m1, n1,
+            separator,
+            decimal,
+            pHeadersLines, nbHeadersLines);
     }
     else
     {
         if (bIsComplex)
         {
             csvError = csv_write_complex(filename,
-                                    pDoubleValuesReal,
-                                    pDoubleValuesImag,
-                                    m1, n1,
-                                    separator,
-                                    decimal,
-                                    precisionFormat,
-                                    pHeadersLines, nbHeadersLines);
+                pDoubleValuesReal,
+                pDoubleValuesImag,
+                m1, n1,
+                separator,
+                decimal,
+                precisionFormat,
+                pHeadersLines, nbHeadersLines);
         }
         else
         {
             csvError = csv_write_double(filename,
-                                    pDoubleValuesReal, m1, n1,
-                                    separator,
-                                    decimal,
-                                    precisionFormat,
-                                    pHeadersLines, nbHeadersLines);
+                pDoubleValuesReal, m1, n1,
+                separator,
+                decimal,
+                precisionFormat,
+                pHeadersLines, nbHeadersLines);
         }
     }
 
@@ -298,7 +298,7 @@ int sci_csv_write(char *fname)
         }
         break;
     }
-    
+
     if (filename) {FREE(filename); filename = NULL;}
 
     return 0;

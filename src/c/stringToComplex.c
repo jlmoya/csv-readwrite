@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,28 +31,32 @@
 #define ComplexI "i"
 /* ========================================================================== */
 #ifndef _MSC_VER
-  #ifndef strnicmp
-    #define strnicmp strncasecmp
-  #endif
-#else  
-    #define stricmp _stricmp
+#ifndef strnicmp
+#define strnicmp strncasecmp
+#endif
+#else
+#define stricmp _stricmp
 #endif
 #ifdef _MSC_VER
-  #undef strnicmp
-  #define strnicmp _strnicmp
+#undef strnicmp
+#define strnicmp _strnicmp
 #endif
 /* ========================================================================== */
+static doublecomplex stringToComplex(const char *pSTR,
+                                     BOOL bConvertByNAN,
+                                     stringToComplexError *ierr);
 static int ParseNumber(const char* tx);
 static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN, double *real, double *imag);
 static char *midstring(const char *tx, int pos, int nb);
 static char *leftstring(const char *tx, int pos);
 static BOOL is_unit_imaginary (const char *src, double *im);
 /* ========================================================================== */
-doublecomplex *stringsToComplexs(const char **pSTRs, int nbElements,
-                                 BOOL bConvertByNAN,
-                                 stringToComplexError *ierr)
+csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
+                                           BOOL bConvertByNAN,
+                                           stringToComplexError *ierr)
 {
-    doublecomplex *dComplexValues = NULL;
+    csv_complexArray *pCsvComplexArray = NULL;
+
     *ierr = STRINGTOCOMPLEX_ERROR;
     if (nbElements <= 0) return NULL;
     if (pSTRs == NULL)
@@ -61,26 +65,32 @@ doublecomplex *stringsToComplexs(const char **pSTRs, int nbElements,
     }
     else
     {
-        dComplexValues = (doublecomplex*)MALLOC(sizeof(doublecomplex) * nbElements);
-        if (dComplexValues)
+        pCsvComplexArray = createCsvComplexArrayEmpty(nbElements);
+        if (pCsvComplexArray)
         {
             int i = 0;
             for (i = 0; i < nbElements; i++)
             {
-                dComplexValues[i] = stringToComplex(pSTRs[i], bConvertByNAN, ierr);
+                doublecomplex dComplexValue = stringToComplex(pSTRs[i], bConvertByNAN, ierr);
                 if (*ierr != STRINGTOCOMPLEX_NO_ERROR)
                 {
-                    FREE(dComplexValues);
-                    return (dComplexValues = NULL);
+                    freeCsvComplexArray(pCsvComplexArray);
+                    return NULL;
+                }
+                else
+                {
+                    pCsvComplexArray->realPart[i] = dComplexValue.r;
+                    pCsvComplexArray->imagPart[i] = dComplexValue.i;
                 }
             }
+            cleanImagPartCsvComplexArray(pCsvComplexArray);
         }
         else
         {
             *ierr = STRINGTOCOMPLEX_MEMORY_ALLOCATION;
         }
     }
-    return dComplexValues;
+    return pCsvComplexArray;
 }
 /* ========================================================================== */
 doublecomplex stringToComplex(const char *pSTR,
@@ -131,7 +141,7 @@ doublecomplex stringToComplex(const char *pSTR,
             }
 
             /* Case: "i", "+i", "-i", and with "j"  */
-            if (is_unit_imaginary (pStrWithOutBlanks, &imag)) 
+            if (is_unit_imaginary (pStrWithOutBlanks, &imag))
             {
                 *ierr = STRINGTODOUBLE_NO_ERROR;
                 dComplexValue.r = 0.;
@@ -150,7 +160,7 @@ doublecomplex stringToComplex(const char *pSTR,
     return dComplexValue;
 }
 /* ========================================================================== */
-static int ParseNumber(const char* tx) 
+static int ParseNumber(const char* tx)
 {
     int lookahead = 0;
     int len = 0;
@@ -158,7 +168,7 @@ static int ParseNumber(const char* tx)
     lookahead = len;
     while (isdigit(tx[len])) len++;
     lookahead = len;
-    if (tx[lookahead] == '.') 
+    if (tx[lookahead] == '.')
     {
         lookahead++;
         len = 0;
@@ -166,10 +176,10 @@ static int ParseNumber(const char* tx)
         lookahead += len;
     }
     if ((tx[lookahead] == 'E') || (tx[lookahead] == 'e') ||
-        (tx[lookahead] == 'D') || (tx[lookahead] == 'd')) 
+        (tx[lookahead] == 'D') || (tx[lookahead] == 'd'))
     {
         lookahead++;
-        if ((tx[lookahead] == '+') || (tx[lookahead] == '-')) 
+        if ((tx[lookahead] == '+') || (tx[lookahead] == '-'))
         {
             lookahead++;
         }
@@ -180,7 +190,7 @@ static int ParseNumber(const char* tx)
     return lookahead;
 }
 /* ========================================================================== */
-static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN, double *real, double *imag) 
+static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN, double *real, double *imag)
 {
     stringToComplexError ierr = 0;
     char *rnum_string = NULL;
@@ -215,13 +225,13 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
             {
                 inum_string[strlen(inum_string) - 1] = 0;
             }
-            if (strcmp(inum_string, "+") == 0) 
+            if (strcmp(inum_string, "+") == 0)
             {
                 FREE(inum_string);
                 inum_string = strdup("+1");
             }
 
-            if (strcmp(inum_string, "-") == 0) 
+            if (strcmp(inum_string, "-") == 0)
             {
                 FREE(inum_string);
                 inum_string = strdup("-1");
@@ -339,21 +349,21 @@ static BOOL is_unit_imaginary (const char *src, double *im)
     char *modifiedSrc = csv_strsubst(src, ComplexScilab, ComplexI);
     BOOL isUnitImag = FALSE;
 
-    if (*modifiedSrc == LessChar) 
+    if (*modifiedSrc == LessChar)
     {
         *im = -1.0;
         modifiedSrc++;
-    } 
-    else 
+    }
+    else
     {
         *im = +1.0;
         if (*modifiedSrc == PlusChar) modifiedSrc++;
     }
 
-    if ((*modifiedSrc == ComplexCharI || *modifiedSrc == ComplexCharJ) && modifiedSrc[1] == 0) 
+    if ((*modifiedSrc == ComplexCharI || *modifiedSrc == ComplexCharJ) && modifiedSrc[1] == 0)
     {
         isUnitImag = TRUE;
-    } 
+    }
 
     if (modifiedSrc)
     {
