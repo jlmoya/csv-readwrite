@@ -14,6 +14,8 @@
 #include "doublecomplex.h"
 #include "csv_complex.h"
 
+#define SIZE_RANGE_SUPPORTED 4
+
 // Extract the strings in pStrsValues which are in the range.
 char **getRangeAsString(const char **pStrsValues,
                         int nbRows, int nbCols,

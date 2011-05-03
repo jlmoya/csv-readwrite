@@ -29,7 +29,6 @@
 /* ========================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
-#define SIZE_RANGE_SUPPORTED 4
 /* ========================================================================== */
 int sci_csv_textscan(char *fname)
 {
@@ -49,7 +48,6 @@ int sci_csv_textscan(char *fname)
     char *decimal = NULL;
     char *conversion = NULL;
 
-    BOOL bIsReal;
     double * dRealValues = NULL;
 
     int *iRange = NULL;

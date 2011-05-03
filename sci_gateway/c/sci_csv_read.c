@@ -23,6 +23,7 @@
 #include "csv_default.h"
 #include "csv_complex.h"
 #include "gw_csv_helpers.h"
+#include "getRange.h"
 /* ==================================================================== */
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
@@ -38,6 +39,8 @@ int sci_csv_read(char *fname)
     char *separator = NULL;
     char *decimal = NULL;
     char *conversion = NULL;
+    int *iRange = NULL;
+    int haveRange = 0;
 
     char **toreplace = NULL;
     int nbElementsToReplace = 0;
@@ -46,20 +49,69 @@ int sci_csv_read(char *fname)
 
     csvResult *result = NULL;
 
-    BOOL bIsReal;
     double *dRealValues = NULL;
 
-    CheckRhs(1, 6);
+    CheckRhs(1, 7);
     CheckLhs(1, 2);
 
-    if (Rhs == 6)
+    if (Rhs == 7)
     {
-        regexp = csv_getArgumentAsString(pvApiCtx, 6, fname, &iErr);
+        int m7 = 0, n7 = 0;
+
+        iRange = csv_getArgumentAsMatrixofIntFromDouble(pvApiCtx, 7, fname, &m7, &n7, &iErr);
+        if (iErr) return 0;
+
+        if ((m7 * n7 != SIZE_RANGE_SUPPORTED) )
+        {
+            if (iRange) {FREE(iRange); iRange = NULL;}
+            Scierror(999,_("%s: Wrong size for input argument #%d: Four entries expected.\n"), fname, 7);
+            return 0;
+        }
+
+        if ((m7 != 1) && (n7 != 1))
+        {
+            if (iRange) {FREE(iRange); iRange = NULL;}
+            Scierror(999,_("%s: Wrong size for input argument #%d: A column or row vector expected.\n"), fname, 7);
+            return 0;
+        }
+
+        if (isValidRange(iRange, m7 * n7))
+        {
+            haveRange = 1;
+        }
+        else
+        {
+            if (iRange) {FREE(iRange); iRange = NULL;}
+            Scierror(999,_("%s: Wrong value for input argument #%d: Unconsistent range.\n"), fname, 7);
+            return 0;
+        }
+    }
+
+
+    if (Rhs >= 6)
+    {
+        regexp = csv_getArgumentAsStringWithEmptyManagement(pvApiCtx, 6, fname, getCsvDefaultCommentsRegExp(), &iErr);
+        if (regexp)
+        {
+            if (strcmp(regexp, "") == 0)
+            {
+                FREE(regexp);
+                regexp = NULL;
+            }
+        }
         if (iErr) return 0;
     }
     else
     {
-        regexp = NULL;
+        regexp = strdup(getCsvDefaultCommentsRegExp());
+        if (regexp)
+        {
+            if (strcmp(regexp, "") == 0)
+            {
+                FREE(regexp);
+                regexp = NULL;
+            }
+        }
     }
 
     if (Rhs >= 5)
@@ -188,19 +240,53 @@ int sci_csv_read(char *fname)
             {
                 if (strcmp(conversion, CONVTOSTR) == 0)
                 {
-                    /* Workaround bug ticket 194 and bug 8688 */
-                    if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+                    if (haveRange)
                     {
-                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                        int newM = 0;
+                        int newN = 0;
+
+                        char **pStrRange = getRangeAsString(result->pstrValues, result->m, result->n, iRange, &newM, &newN);
+                        if (pStrRange)
+                        {
+                            /* Workaround bug ticket 194 andbug 8688 */
+                            if (csv_checkSpaceInStackForString(Rhs + 1, newM, newN, pStrRange))
+                            {
+                                sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
+                                freeArrayOfString(pStrRange, newM * newN);
+                            }
+                            else
+                            {
+                                freeArrayOfString(pStrRange, newM * newN);
+                                freeCsvResult(result);
+                                if (filename) {FREE(filename); filename = NULL;}
+                                if (conversion) {FREE(conversion); conversion = NULL;}
+                                if (iRange) { FREE(iRange); iRange = NULL;}
+                                SciError(17);
+                                return 0;
+                            }
+                        }
+                        else
+                        {
+                            Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                        }
                     }
                     else
                     {
-                        freeCsvResult(result);
-                        if (filename) {FREE(filename); filename = NULL;}
-                        if (conversion) {FREE(conversion); conversion = NULL;}
-                        SciError(17);
-                        return 0;
+                        /* Workaround bug ticket 194 and bug 8688 */
+                        if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
+                        {
+                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
+                        }
+                        else
+                        {
+                            freeCsvResult(result);
+                            if (filename) {FREE(filename); filename = NULL;}
+                            if (conversion) {FREE(conversion); conversion = NULL;}
+                            SciError(17);
+                            return 0;
+                        }
                     }
+
                 }
                 else /* to double */
                 {
@@ -228,16 +314,42 @@ int sci_csv_read(char *fname)
                     case STRINGTOCOMPLEX_NOT_A_NUMBER:
                     case STRINGTOCOMPLEX_NO_ERROR:
                         {
-                            if (ptrCsvComplexArray->isComplex)
+                            if (haveRange)
                             {
-                                sciErr = createComplexMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart, ptrCsvComplexArray->imagPart);
+                                int newM = 0;
+                                int newN = 0;
+                                csv_complexArray *csvComplexRange = getRangeAsCsvComplexArray(ptrCsvComplexArray, result->m, result->n, iRange, &newM, &newN);
+                                if (csvComplexRange)
+                                {
+                                    if (csvComplexRange->isComplex)
+                                    {
+                                        sciErr = createComplexMatrixOfDouble(pvApiCtx, Rhs + 1, newM, newN, ptrCsvComplexArray->realPart, ptrCsvComplexArray->imagPart);
+                                    }
+                                    else
+                                    {
+                                        sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, newM, newN, csvComplexRange->realPart);
+                                    }
+                                    freeCsvComplexArray(csvComplexRange);
+                                    csvComplexRange = NULL;
+                                }
+                                else
+                                {
+                                    Scierror(999,_("%s: Memory allocation error.\n"), fname);
+                                }
                             }
                             else
                             {
-                                sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart);
+                                if (ptrCsvComplexArray->isComplex)
+                                {
+                                    sciErr = createComplexMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart, ptrCsvComplexArray->imagPart);
+                                }
+                                else
+                                {
+                                    sciErr = createMatrixOfDouble(pvApiCtx, Rhs + 1, result->m, result->n, ptrCsvComplexArray->realPart);
+                                }
+                                freeCsvComplexArray(ptrCsvComplexArray);
+                                ptrCsvComplexArray = NULL;
                             }
-                            freeCsvComplexArray(ptrCsvComplexArray);
-                            ptrCsvComplexArray = NULL;
                         }
                         break;
 

@@ -31,7 +31,7 @@ void getSubIndices(const int *iRange, int * R1, int * R2, int * C1, int * C2 )
 int isValidRange(const int *iRange, int sizeArray)
 {
     int i = 0;
-    int R1, C1, R2, C2;
+    int R1 = 0, C1 = 0, R2 = 0, C2 = 0;
 
     if (iRange == NULL)
     {
@@ -134,7 +134,6 @@ csv_complexArray *getRangeAsCsvComplexArray(const csv_complexArray *pComplex,
         csv_complexArray *newComplexArray = NULL;
         int sizeRange = getSizeRange(iRange, nbRows, nbCols);
         int R1 = 0, C1 = 0, R2 = 0, C2 = 0;
-        doublecomplex source;
 
         getSubIndices(iRange, &R1, &R2, &C1, &C2 );
 
@@ -162,12 +161,17 @@ csv_complexArray *getRangeAsCsvComplexArray(const csv_complexArray *pComplex,
                 R2 = nbRows;
             }
 
-            for ( j = C1-1 ; j < C2 ; j++)
+            newComplexArray->isComplex = pComplex->isComplex;
+
+            for ( j = C1 - 1 ; j < C2 ; j++)
             {
-                for (i = R1-1 ; i < R2 ; i++ )
+                for (i = R1 - 1 ; i < R2 ; i++)
                 {
-                    newComplexArray->realPart[k] = pComplex->realPart[i + nbRows * j];
-                    newComplexArray->imagPart[k] = pComplex->imagPart[i + nbRows * j];
+                    newComplexArray->realPart[k] = pComplex->realPart[i + (nbRows * j)];
+                    if (pComplex->isComplex)
+                    {
+                        newComplexArray->imagPart[k] = pComplex->imagPart[i + (nbRows * j)];
+                    }
                     k++;
                 }
             }

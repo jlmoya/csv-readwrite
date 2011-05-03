@@ -41,7 +41,6 @@
 #else
 #define MODEWFD "w"
 #endif
-#define EOL "\n"
 /* ========================================================================== */
 #ifndef signbit
 static int signbit(double x)
@@ -93,7 +92,7 @@ csvWriteError csv_write_double(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, EOL);
+            fprintf(fd, getCsvDefaultEOL());
         }
     }
 
@@ -135,7 +134,7 @@ csvWriteError csv_write_double(const char *filename,
             }
             if (j + 1 < n) fprintf(fd, separator);
         }
-        fprintf(fd, EOL);
+        fprintf(fd, getCsvDefaultEOL());
     }
 
     fclose(fd);
@@ -176,7 +175,7 @@ csvWriteError csv_write_complex(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, EOL);
+            fprintf(fd, getCsvDefaultEOL());
         }
     }
 
@@ -275,7 +274,7 @@ csvWriteError csv_write_complex(const char *filename,
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, StringValue);
             if (j + 1 < n) fprintf(fd, separator);
         }
-        fprintf(fd, EOL);
+        fprintf(fd, getCsvDefaultEOL());
     }
 
     fclose(fd);
@@ -310,7 +309,7 @@ csvWriteError csv_write_string(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, EOL);
+            fprintf(fd, getCsvDefaultEOL());
         }
     }
 
@@ -339,7 +338,7 @@ csvWriteError csv_write_string(const char *filename,
             }
             if (j + 1 < n) fprintf(fd, separator);
         }
-        fprintf(fd, EOL);
+        fprintf(fd, getCsvDefaultEOL());
     }
 
     fclose(fd);

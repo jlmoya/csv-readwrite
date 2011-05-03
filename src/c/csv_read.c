@@ -1,13 +1,13 @@
 /*
- *  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
- *
- *  This file must be used under the terms of the CeCILL.
- *  This source file is licensed as described in the file COPYING, which
- *  you should have received as part of this distribution.  The terms
- *  are also available at
- *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
- *
- */
+*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*
+*  This file must be used under the terms of the CeCILL.
+*  This source file is licensed as described in the file COPYING, which
+*  you should have received as part of this distribution.  The terms
+*  are also available at
+*  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+*
+*/
 
 #include <string.h>
 #include <stdio.h>
@@ -135,6 +135,26 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
         int iErr = 0;
 
         pComments = extractComments(lines, nblines, regexpcomments, &nbComments, &iErr);
+
+        if ((iErr == CAN_NOT_COMPILE_PATTERN) || (iErr == DELIMITER_NOT_ALPHANUMERIC)) 
+        {
+            result = (csvResult*)(MALLOC(sizeof(csvResult)));
+            if (result)
+            {
+                if ((iErr == CAN_NOT_COMPILE_PATTERN) || (iErr == DELIMITER_NOT_ALPHANUMERIC)) 
+                {
+                    iErr = CSV_READ_REGEXP_ERROR;
+                }
+                result->err = iErr;
+                result->m = 0;
+                result->n = 0;
+                result->pstrValues = NULL;
+                result->pstrComments = NULL;
+                result->nbComments = 0;
+            }
+            return result;
+        }
+
         if (pComments)
         {
             char **pCleanedLines = NULL;
@@ -148,6 +168,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
                 lines = pCleanedLines;
                 nblines = nbCleanedLines;
             }
+
         }
     }
 
@@ -537,6 +558,13 @@ static char **extractComments(const char **lines, int nbLines,
         int Output_Start = 0;
         int Output_End = 0;
         pcre_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
+
+        if ( (answer == CAN_NOT_COMPILE_PATTERN) || (answer == DELIMITER_NOT_ALPHANUMERIC))
+        {
+            *nbcomments = 0;
+            *iErr = answer;
+            return NULL;
+        }
         if ( answer == PCRE_FINISHED_OK )
         {
             (*nbcomments)++;

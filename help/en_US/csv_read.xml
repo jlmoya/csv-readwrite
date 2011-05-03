@@ -36,8 +36,8 @@
       M = csv_read(filename, separator, decimal)
       M = csv_read(filename, separator, decimal, conversion)
       M = csv_read(filename, separator, decimal, conversion, substitute)
-      M = csv_read(filename, separator, decimal, conversion, substitute, range, rexgepcomments)
-      [M, comments] = csv_read(filename, separator, decimal, conversion, substitute, range, rexgepcomments)
+      M = csv_read(filename, separator, decimal, conversion, substitute, rexgepcomments, range)
+      [M, comments] = csv_read(filename, separator, decimal, conversion, substitute, rexgepcomments, range)
     </synopsis>
   </refsynopsisdiv>
 
@@ -101,6 +101,13 @@
         </listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term>rexgepcomments</term>
+
+        <listitem>
+          <para>a string: a regexp to remove lines which match. (default: [])</para>
+        </listitem>
+      </varlistentry>
 
       <varlistentry>
         <term>range</term>
@@ -114,14 +121,6 @@
             where (R1,C1) is the upper left corner of the data to
             be read and (R2,C2) is the lower right corner.
           </para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>rexgepcomments</term>
-
-        <listitem>
-          <para>a string: a regexp to remove lines which match.</para>
         </listitem>
       </varlistentry>
 
