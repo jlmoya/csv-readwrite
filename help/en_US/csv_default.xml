@@ -45,7 +45,7 @@
 
         <listitem>
           <para>
-            a 4-by-2 matrix of strings, the values of all the fields.
+            a 6-by-2 matrix of strings, the values of all the fields.
             The first column contains the available fields, while the second column
             contains the current values.
           </para>
@@ -59,7 +59,7 @@
           <para>
             a 1-by-1 matrix of strings, the name of the field to get or set. 
             The available values of <literal>field</literal> are "separator", 
-            "decimal", "conversion" and "precision".
+            "decimal", "conversion", "precision", "regexp", "eol".
           </para>
         </listitem>
       </varlistentry>
@@ -176,9 +176,24 @@
                 precision: Optional number that specifies the maximum number of characters printed for all or part of the output field, or the minimum number of digits printed for integer values.
               </para>
             </listitem>
+
           </itemizedlist>
         </para>
       </listitem>
+      
+      <listitem>
+        <para>field = "regexp": regular expression used to extract comments of the <literal>csv_read</literal>function.</para>
+        <para>by default, this value is '' (no regexp).</para>
+      </listitem>
+
+      <listitem>
+        <para>
+          field = "eol": end of line used to write lines of the <literal>csv_write</literal>function.</para>
+          <para>Possible values are "linux", "windows", "macos9".</para>
+          <para>by default, this value is platform-dependant.</para>
+      </listitem>
+
+      
     </itemizedlist>
 
     </para>

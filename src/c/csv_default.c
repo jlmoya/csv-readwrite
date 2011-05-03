@@ -20,6 +20,12 @@
 #define DEFAULT_CSV_SEPARATOR ","
 #define DEFAULT_CSV_DECIMAL "."
 #define DEFAULT_CSV_PRECISION "%.17lg"
+#define DEFAULT_CSV_COMMENTS_REGEXP ""
+#ifdef _MSC_VER
+#define DEFAULT_CSV_EOL "\r\n"
+#else
+#define DEFAULT_CSV_EOL "\n"
+#endif
 #define CSV_DECIMAL_MODE_1 DEFAULT_CSV_DECIMAL
 #define CSV_DECIMAL_MODE_2 ","
 #define DEFAULT_CSV_CONVERSION "double"
@@ -30,6 +36,8 @@ static char *defaultCsvSeparator = NULL;
 static char *defaultCsvDecimal = NULL;
 static char *defaultCsvConversion = NULL;
 static char *defaultCsvPrecision = NULL;
+static char *defaultCsvCommentsRegExp = NULL;
+static char *defaultCsvEOL = NULL;
 /* ========================================================================== */
 static int initializeCsvDefaultValues(void);
 /* ========================================================================== */
@@ -57,6 +65,18 @@ const char *getCsvDefaultPrecision(void)
     return defaultCsvPrecision;
 }
 /* ========================================================================== */
+const char *getCsvDefaultCommentsRegExp(void)
+{
+    initializeCsvDefaultValues();
+    return defaultCsvCommentsRegExp;
+}
+/* ========================================================================== */
+const char *getCsvDefaultEOL(void)
+{
+    initializeCsvDefaultValues();
+    return defaultCsvEOL;
+}
+/* ========================================================================== */
 int setCsvDefaultSeparator(const char *separator)
 {
     if (initializeCsvDefaultValues()) return 1;
@@ -64,6 +84,7 @@ int setCsvDefaultSeparator(const char *separator)
 
     if (strcmp(separator, getCsvDefaultDecimal()) == 0) return 1;
 
+    if (defaultCsvSeparator) FREE(defaultCsvSeparator);
     defaultCsvSeparator = strdup(separator);
     if (defaultCsvSeparator == NULL) return 1;
 
@@ -80,6 +101,7 @@ int setCsvDefaultDecimal(const char *decimal)
         (strcmp(decimal, CSV_DECIMAL_MODE_2) == 0))
     {
         if (strcmp(decimal, getCsvDefaultSeparator()) == 0) return 1;
+        if (defaultCsvDecimal) FREE(defaultCsvDecimal);
         defaultCsvDecimal = strdup(decimal);
         if (defaultCsvDecimal == NULL) return 1;
         return 0;
@@ -137,11 +159,23 @@ static int initializeCsvDefaultValues(void)
     {
         defaultCsvPrecision = strdup(DEFAULT_CSV_PRECISION);
     }
+    
+    if (defaultCsvCommentsRegExp == NULL)
+    {
+        defaultCsvCommentsRegExp = strdup(DEFAULT_CSV_COMMENTS_REGEXP);
+    }
+    
+    if (defaultCsvEOL == NULL)
+    {
+        defaultCsvEOL = strdup(DEFAULT_CSV_EOL);
+    }
 
     if ((defaultCsvSeparator == NULL) ||
         (defaultCsvDecimal == NULL) ||
         (defaultCsvConversion == NULL) ||
-        (defaultCsvPrecision == NULL))
+        (defaultCsvPrecision == NULL) ||
+        (defaultCsvCommentsRegExp == NULL) ||
+        (defaultCsvEOL == NULL))
     {
         return 1;
     }
@@ -155,6 +189,48 @@ int setCsvDefaultReset(void)
     if (defaultCsvDecimal) {FREE(defaultCsvDecimal); defaultCsvDecimal = NULL;}
     if (defaultCsvConversion) {FREE(defaultCsvConversion); defaultCsvConversion = NULL;}
     if (defaultCsvPrecision) {FREE(defaultCsvPrecision); defaultCsvPrecision = NULL;}
+    if (defaultCsvCommentsRegExp) {FREE(defaultCsvCommentsRegExp); defaultCsvCommentsRegExp = NULL;}
+    if (defaultCsvEOL) {FREE(defaultCsvEOL); defaultCsvEOL = NULL;}        
     return initializeCsvDefaultValues();
+}
+/* ========================================================================== */
+int setCsvDefaultCommentsRegExp(const char *commentsRegExp)
+{
+    if (initializeCsvDefaultValues()) return 1;
+    if (commentsRegExp == NULL) return 1;
+        
+    if (strcmp(commentsRegExp, getCsvDefaultCommentsRegExp()) == 0) return 1;
+
+    if (defaultCsvCommentsRegExp) 
+    {
+        FREE(defaultCsvCommentsRegExp);
+        defaultCsvCommentsRegExp = NULL;
+    }
+    
+    defaultCsvCommentsRegExp = strdup(commentsRegExp);
+    
+    if (defaultCsvDecimal == NULL) return 1;
+
+    return 0;
+}
+/* ========================================================================== */
+int setCsvDefaultEOL(const char *eol)
+{
+    if (initializeCsvDefaultValues()) return 1;
+    if (eol == NULL) return 1;
+
+    if (strcmp(eol, getCsvDefaultEOL()) == 0) return 1;
+
+    if (defaultCsvEOL) 
+    {
+        FREE(defaultCsvEOL);
+        defaultCsvEOL = NULL;
+    }
+
+    defaultCsvEOL = strdup(eol);
+    
+    if (defaultCsvEOL == NULL) return 1;
+
+    return 0;
 }
 /* ========================================================================== */

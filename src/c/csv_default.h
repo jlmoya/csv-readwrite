@@ -15,11 +15,15 @@ const char *getCsvDefaultSeparator(void);
 const char *getCsvDefaultDecimal(void);
 const char *getCsvDefaultConversion(void);
 const char *getCsvDefaultPrecision(void);
+const char *getCsvDefaultCommentsRegExp(void);
+const char *getCsvDefaultEOL(void);
 
 int setCsvDefaultSeparator(const char *separator);
 int setCsvDefaultDecimal(const char *decimal);
 int setCsvDefaultConversion(const char *conversion);
 int setCsvDefaultPrecision(const char *precision);
+int setCsvDefaultCommentsRegExp(const char *commentsRegExp);
+int setCsvDefaultEOL(const char *eol);
 
 int setCsvDefaultReset(void);
 

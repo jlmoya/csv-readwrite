@@ -28,9 +28,18 @@
 #define DECIMAL_FIELDNAME "decimal"
 #define CONVERSION_FIELDNAME "conversion"
 #define PRECISION_FIELDNAME "precision"
+#define COMMENTSREGEXP_FIELDNAME "regexp"
+#define EOL_FIELDNAME "eol"
 #define RESET_PARAMATERS "reset"
 /* ========================================================================== */
-#define NUMBER_FIELD 4
+#define MACOS9_EOL_STRING "macos9"
+#define MACOS9_EOL "\r"
+#define WINDOWS_EOL_STRING "windows"
+#define WINDOWS_EOL "\r\n"
+#define LINUX_EOL_STRING "linux"
+#define LINUX_EOL "\n"
+/* ========================================================================== */
+#define NUMBER_FIELD 6
 /* ========================================================================== */
 static int sci_csv_default_no_rhs(char *fname);
 static int sci_csv_default_one_rhs(char *fname);
@@ -57,27 +66,55 @@ int sci_csv_default(char *fname)
 static int sci_csv_default_no_rhs(char *fname)
 {
     int sizeArray = NUMBER_FIELD * 2;
-    char **array = (char**)MALLOC(sizeof(char*) * sizeArray);
+    char **arrayOut = (char**)MALLOC(sizeof(char*) * sizeArray);
 
-    if (array)
+    if (arrayOut)
     {
         SciErr sciErr;
 
         int nbRows = NUMBER_FIELD;
         int nbCols = 2;
+        const char *currentEol = getCsvDefaultEOL();
 
-        array[0] = strdup(SEPARATOR_FIELDNAME);
-        array[1] = strdup(DECIMAL_FIELDNAME);
-        array[2] = strdup(CONVERSION_FIELDNAME);
-        array[3] = strdup(PRECISION_FIELDNAME);
+        arrayOut[0] = strdup(SEPARATOR_FIELDNAME);
+        arrayOut[1] = strdup(DECIMAL_FIELDNAME);
+        arrayOut[2] = strdup(CONVERSION_FIELDNAME);
+        arrayOut[3] = strdup(PRECISION_FIELDNAME);
+        arrayOut[4] = strdup(COMMENTSREGEXP_FIELDNAME);
+        arrayOut[5] = strdup(EOL_FIELDNAME);
 
-        array[4] = strdup(getCsvDefaultSeparator());
-        array[5] = strdup(getCsvDefaultDecimal());
-        array[6] = strdup(getCsvDefaultConversion());
-        array[7] = strdup(getCsvDefaultPrecision());
+        arrayOut[6] = strdup(getCsvDefaultSeparator());
+        arrayOut[7] = strdup(getCsvDefaultDecimal());
+        arrayOut[8] = strdup(getCsvDefaultConversion());
+        arrayOut[9] = strdup(getCsvDefaultPrecision());
+        arrayOut[10] = strdup(getCsvDefaultCommentsRegExp());
 
-        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, nbRows, nbCols, array);
-        freeArrayOfString(array, sizeArray);
+        if (currentEol)
+        {
+            if (strcmp(currentEol, MACOS9_EOL) == 0)
+            {
+                arrayOut[11] = strdup(MACOS9_EOL_STRING);
+            }
+            else if (strcmp(currentEol, WINDOWS_EOL) == 0)
+            {
+                arrayOut[11] = strdup(WINDOWS_EOL_STRING);
+            }
+            else if (strcmp(currentEol, LINUX_EOL) == 0)
+            {
+                arrayOut[11] = strdup(LINUX_EOL_STRING);
+            }
+            else
+            {
+                arrayOut[11] = strdup("ERROR");
+            }
+        }   
+        else
+        {
+            arrayOut[11] = strdup("ERROR");
+        }
+
+        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, nbRows, nbCols, arrayOut);
+        freeArrayOfString(arrayOut, sizeArray);
         if(sciErr.iErr)
         {
             printError(&sciErr, 0);
@@ -121,6 +158,37 @@ static int sci_csv_default_one_rhs(char *fname)
     {
         fieldvalue = strdup(getCsvDefaultPrecision());
     }
+    else if (strcmp(fieldname, COMMENTSREGEXP_FIELDNAME) == 0)
+    {
+        fieldvalue = strdup(getCsvDefaultCommentsRegExp());
+    }
+    else if (strcmp(fieldname, EOL_FIELDNAME) == 0)
+    {
+        const char *currentEol = getCsvDefaultEOL();
+        if (currentEol)
+        {
+            if (strcmp(currentEol, MACOS9_EOL) == 0)
+            {
+                fieldvalue = strdup(MACOS9_EOL_STRING);
+            }
+            else if (strcmp(currentEol, WINDOWS_EOL) == 0)
+            {
+                fieldvalue = strdup(WINDOWS_EOL_STRING);
+            }
+            else if (strcmp(currentEol, LINUX_EOL) == 0)
+            {
+                fieldvalue = strdup(LINUX_EOL_STRING);
+            }
+            else
+            {
+                fieldvalue = strdup("ERROR");
+            }
+        }   
+        else
+        {
+            fieldvalue = strdup("ERROR");
+        }
+    }
     else if (strcmp(fieldname, RESET_PARAMATERS) == 0)
     {
         if (fieldname) {FREE(fieldname); fieldname = NULL;}
@@ -136,7 +204,7 @@ static int sci_csv_default_one_rhs(char *fname)
     }
     else
     {
-        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME);
+        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' , '%s', '%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME, COMMENTSREGEXP_FIELDNAME, EOL_FIELDNAME);
         if (fieldname) {FREE(fieldname); fieldname = NULL;}
         return 0;
     }
@@ -237,9 +305,32 @@ static int sci_csv_default_two_rhs(char *fname)
     {
         resultSet = setCsvDefaultPrecision(fieldvalue);
     }
+    else if (strcmp(fieldname, COMMENTSREGEXP_FIELDNAME) == 0)
+    {
+        resultSet = setCsvDefaultCommentsRegExp(fieldvalue);
+    }
+    else if (strcmp(fieldname, EOL_FIELDNAME) == 0)
+    {
+        if (strcmp(fieldvalue, MACOS9_EOL_STRING) == 0)
+        {
+            resultSet = setCsvDefaultEOL(MACOS9_EOL);
+        }
+        else if (strcmp(fieldvalue, WINDOWS_EOL_STRING) == 0)
+        {
+            resultSet = setCsvDefaultEOL(WINDOWS_EOL);
+        }
+        else if (strcmp(fieldvalue, LINUX_EOL_STRING) == 0)
+        {
+            resultSet = setCsvDefaultEOL(LINUX_EOL);
+        }
+        else
+        {
+            resultSet = 1;
+        }
+    }
     else
     {
-        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' ,'%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME, PRECISION_FIELDNAME);
+        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' ,'%s' , '%s', '%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME, PRECISION_FIELDNAME, COMMENTSREGEXP_FIELDNAME, EOL_FIELDNAME);
         if (fieldname) {FREE(fieldname); fieldname = NULL;}
         if (fieldvalue) {FREE(fieldvalue); fieldvalue = NULL;}
         return 0;
