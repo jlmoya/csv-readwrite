@@ -7,14 +7,10 @@
 //  are also available at
 //  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
-
-
 // <-- JVM NOT MANDATORY -->
-
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
 exec(fullfile(path,"myassert_checkequal.sci"));
 exec(fullfile(path,"myassert_checkfilesequal.sci"));
-
 filename = fullfile(path, "csv_regexp.csv");
 [y, x] = csv_read(filename, [], [], [], [], "/\/\//");
 ref_x = ["// tata"; ..
@@ -24,6 +20,5 @@ ref_x = ["// tata"; ..
 ref_y = [    1.    0.    0.    0.    0.  ; ..
              0.    1.    0.    0.    0.  ; ..
              0.    0.    1.    0.    0.];
-
 myassert_checkequal (ref_x , x);
 myassert_checkequal (ref_y , y);

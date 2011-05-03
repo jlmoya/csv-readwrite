@@ -94,7 +94,7 @@ r = csv_read(fullfile(path,"S_1.csv"), "|", ".", "string");
 myassert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_1.csv"), "|", ".", "double");
-ref = [complex(%nan,%nan) , 2, complex(%nan,%nan); complex(%nan,%nan), 3, complex(%nan,%nan)];
+ref = [%nan , 2, %nan; %nan, 3, %nan];
 myassert_checkequal ( r , ref);
 // =============================================================================
 filename = fullfile(path,"datas.csv");

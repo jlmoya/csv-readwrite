@@ -31,7 +31,15 @@ expected = [
     "decimal"    "."
     "conversion" "double"
     "precision"  "%.17lg"
+    "regexp" ""
 ];
+
+if getos() == "Windows" then
+  expected = [expected; "eol" "windows"];
+else
+  expected = [expected; "eol" "linux"];
+end
+
 assert_equal ( allvalues , expected );
 // Get the value of the "precision" field
 value = csv_default("precision");

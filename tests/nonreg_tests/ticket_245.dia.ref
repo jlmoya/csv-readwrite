@@ -19,7 +19,7 @@ path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
 exec(fullfile(path,"myassert_checkequal.sci"));
 a = csv_stringtodouble("3.14159e-10+inf");
 myassert_checkequal ( isnan(a) , %t );
-myassert_checkequal ( execstr("r = a = csv_stringtodouble(""3.14159e-10+inf"", %f);", "errcatch") , 999 );
+myassert_checkequal ( execstr("a = csv_stringtodouble(""3.14159e-10+inf"", %f);", "errcatch") , 999 );
 myassert_checkequal ( lasterror() , msprintf(_("%s: can not convert data.\n"), "csv_stringtodouble") );
 a = csv_stringtodouble("6+3*I");
 myassert_checkequal ( isnan(a) , %t );

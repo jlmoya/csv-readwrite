@@ -20,7 +20,7 @@ exec(fullfile(path,"myassert_checkequal.sci"));
 exec(fullfile(path,"myassert_checkerror.sci"));
 //
 // Read only rows/columns in range
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [2 1 3 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [], [2 1 3 2] );
 expected = [
 0.10000000000000001 1.1000000000000001
 0.10000000000000001 0.10000000000000001
@@ -28,14 +28,14 @@ expected = [
 myassert_checkequal ( r , expected );
 //
 //  Not symetric range
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [2 1 2 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [], [2 1 2 2] );
 expected = [
 0.10000000000000001 1.1000000000000001
 ];
 myassert_checkequal ( r , expected );
 //
 // Read complex doubles
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [2 1 3 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [], [2 1 3 2] );
 expected = [
 "0.10000000000000001" "1.1000000000000001"
 "0.10000000000000001" "0.10000000000000001"
@@ -43,30 +43,30 @@ expected = [
 myassert_checkequal ( r , expected );
 //
 // Not symetric range
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [2 1 2 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [], [2 1 2 2] );
 expected = [
 "0.10000000000000001" "1.1000000000000001"
 ];
 myassert_checkequal ( r , expected );
 //
 // Unconsistent range: C2 < C1
-instr = "r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [2 3 3 2] );";
-myassert_checkerror ( instr , "csv_read: Wrong value for input argument #6: Unconsistent range." );
+instr = "r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [], [2 3 3 2] );";
+myassert_checkerror ( instr , "csv_read: Wrong value for input argument #7: Unconsistent range." );
 //
 // Unconsistent range: R2 < R1
-instr = "r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [3 1 2 2] );";
-myassert_checkerror ( instr , "csv_read: Wrong value for input argument #6: Unconsistent range." );
+instr = "r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [], [3 1 2 2] );";
+myassert_checkerror ( instr , "csv_read: Wrong value for input argument #7: Unconsistent range." );
 //
 // Non-integer indice
-instr="r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [2 1 1.5 2] );";
-myassert_checkerror ( instr , "csv_read: Wrong value for input argument #6: A matrix of double, with integer values, expected." );
+instr="r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [], [2 1 1.5 2] );";
+myassert_checkerror ( instr , "csv_read: Wrong value for input argument #7: A matrix of double, with integer values, expected." );
 //
 // Infinite indice
-instr="r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [2 1 %inf 2] );";
-myassert_checkerror ( instr , "csv_read: Wrong value for input argument #6: A matrix of double, with integer values, expected." );
+instr="r = csv_read(fullfile(path,""K_1.csv""), [], [], ""string"" , [] , [], [2 1 %inf 2] );";
+myassert_checkerror ( instr , "csv_read: Wrong value for input argument #7: A matrix of double, with integer values, expected." );
 //
 // Row indice larger than actual number of rows: string case
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [2 1 999 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [], [2 1 999 2] );
 expected = [
 "0.10000000000000001" "1.1000000000000001"
 "0.10000000000000001" "0.10000000000000001"
@@ -74,7 +74,7 @@ expected = [
 myassert_checkequal ( r , expected );
 //
 // Column indice larger than actual number of columns: string case
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [2 1 3 999] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "string" , [] , [], [2 1 3 999] );
 expected = [
 "0.10000000000000001" "1.1000000000000001"
 "0.10000000000000001" "0.10000000000000001"
@@ -82,20 +82,20 @@ expected = [
 myassert_checkequal ( r , expected );
 //
 // Row indice larger than actual number of rows: double case
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [3 1 999 2] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [], [3 1 999 2] );
 expected = [
 0.10000000000000001 0.10000000000000001
 ];
 myassert_checkequal ( r , expected );
 //
 // Column indice larger than actual number of columns: double case
-r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [2 2 3 999] );
+r = csv_read(fullfile(path,"K_1.csv"), [], [], "double" , [] , [], [2 2 3 999] );
 expected = [
 1.1000000000000001
 0.10000000000000001
 ];
 myassert_checkequal ( r , expected );
-// r = csv_read(fullfile(path,"complexdata.csv"), [], [], "double" , [] , [2 1 3 2] );
+// r = csv_read(fullfile(path,"complexdata.csv"), [], [], "double" , [] , [], [2 1 3 2] );
 // Fails due to ticket #360
 // TODO : range of doubles complex 
 // TODO : Row indice larger than actual number of rows: complex double case
