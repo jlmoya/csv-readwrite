@@ -8,7 +8,6 @@
 *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 *
 */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -56,7 +55,6 @@ csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
                                            stringToComplexError *ierr)
 {
     csv_complexArray *pCsvComplexArray = NULL;
-
     *ierr = STRINGTOCOMPLEX_ERROR;
     if (nbElements <= 0) return NULL;
     if (pSTRs == NULL)
@@ -107,7 +105,7 @@ doublecomplex stringToComplex(const char *pSTR,
     {
         double real = 0.;
         double imag = 0.;
-        char * pStrWithOutBlanks = csv_strsubst((char*)pSTR, " ", "");
+        char * pStrWithOutBlanks = csv_strsubst(pSTR, " ", "");
 
         if (pStrWithOutBlanks)
         {
@@ -164,6 +162,10 @@ static int ParseNumber(const char* tx)
 {
     int lookahead = 0;
     int len = 0;
+
+    if (tx[len] == NULL) return lookahead;
+    if (tx[len] < 0) return lookahead; 
+
     if ((tx[len] == '+') || (tx[len] == '-'))  len++;
     lookahead = len;
     while (isdigit(tx[len])) len++;
