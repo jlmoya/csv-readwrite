@@ -141,7 +141,7 @@ doublecomplex stringToComplex(const char *pSTR,
             /* Case: "i", "+i", "-i", and with "j"  */
             if (is_unit_imaginary (pStrWithOutBlanks, &imag))
             {
-                *ierr = STRINGTODOUBLE_NO_ERROR;
+                *ierr = (stringToComplexError)STRINGTODOUBLE_NO_ERROR;
                 dComplexValue.r = 0.;
                 dComplexValue.i = imag;
             }
@@ -194,6 +194,7 @@ static int ParseNumber(const char* tx)
 /* ========================================================================== */
 static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN, double *real, double *imag)
 {
+    stringToDoubleError ierrDouble = 0;
     stringToComplexError ierr = 0;
     char *rnum_string = NULL;
     char *inum_string = NULL;
@@ -201,10 +202,10 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
     BOOL haveImagI = FALSE;
     char *modifiedTxt = NULL;
 
-    *real = stringToDouble(tx, FALSE, &ierr);
+    *real = stringToDouble(tx, FALSE, &ierrDouble);
     *imag = 0;
 
-    if (ierr != STRINGTODOUBLE_NO_ERROR)
+    if (ierrDouble != STRINGTODOUBLE_NO_ERROR)
     {
         modifiedTxt = csv_strsubst(tx, ComplexScilab, ComplexI);
         lnum = ParseNumber(modifiedTxt);
@@ -248,7 +249,8 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
 
         if (strcmp(inum_string, "") == 0)
         {
-            *imag = stringToDouble(rnum_string, bConvertByNAN, &ierr);
+            *imag = stringToDouble(rnum_string, bConvertByNAN, &ierrDouble);
+            ierr = (stringToComplexError)(ierrDouble);
             *real = 0.;
         }
         else

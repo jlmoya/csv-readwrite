@@ -134,7 +134,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
     {
         int iErr = 0;
 
-        pComments = extractComments(lines, nblines, regexpcomments, &nbComments, &iErr);
+        pComments = extractComments((const char**)lines, nblines, (const char*)regexpcomments, &nbComments, &iErr);
 
         if ((iErr == CAN_NOT_COMPILE_PATTERN) || (iErr == DELIMITER_NOT_ALPHANUMERIC)) 
         {
@@ -161,7 +161,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
             int nbCleanedLines = 0;
             int i = 0;
 
-            pCleanedLines = removeComments(lines, nblines, regexpcomments, &nbCleanedLines, &iErr);
+            pCleanedLines = removeComments((const char**)lines, nblines, (const char*)regexpcomments, &nbCleanedLines, &iErr);
             if (pCleanedLines)
             {
                 FREE(lines);
@@ -174,7 +174,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
 
     if (toreplace && (sizetoreplace > 0))
     {
-        replacedInLines = replaceStrings(lines, nblines, toreplace, sizetoreplace);
+        replacedInLines = replaceStrings((const char**)lines, nblines, toreplace, sizetoreplace);
         if (replacedInLines)
         {
             freeArrayOfString(lines, nblines);
@@ -182,7 +182,7 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
         }
     }
 
-    result = csv_textscan(lines, nblines, separator, decimal);
+    result = csv_textscan((const char**)lines, nblines, (const char*)separator, (const char*)decimal);
     if (lines)
     {
         freeArrayOfString(lines, nblines);
@@ -225,7 +225,7 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
     /* remove last lines empty (bug 7003 in scilab)*/
     cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
 
-    nbColumns = getNumbersOfColumnsInLines(cleanedLines, nbLines, separator);
+    nbColumns = getNumbersOfColumnsInLines((const char **)cleanedLines, nbLines, separator);
     if (nbColumns == 0)
     {
         result = (csvResult*)(MALLOC(sizeof(csvResult)));
@@ -245,7 +245,7 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
         nbRows = nbLines;
     }
 
-    cellsStrings = getStringsFromLines(cleanedLines, nbLines, separator, decimal, nbColumns, nbRows);
+    cellsStrings = getStringsFromLines((const char **)cleanedLines, nbLines, separator, decimal, nbColumns, nbRows);
     if (cleanedLines)
     {
         freeArrayOfString(cleanedLines, nbLines);

@@ -92,7 +92,7 @@ csvWriteError csv_write_double(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, getCsvDefaultEOL());
+            fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
 
@@ -132,9 +132,9 @@ csvWriteError csv_write_double(const char *filename,
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, InfString);
                 }
             }
-            if (j + 1 < n) fprintf(fd, separator);
+            if (j + 1 < n) fprintf(fd, "%s", separator);
         }
-        fprintf(fd, getCsvDefaultEOL());
+        fprintf(fd, "%s", getCsvDefaultEOL());
     }
 
     fclose(fd);
@@ -175,7 +175,7 @@ csvWriteError csv_write_complex(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, getCsvDefaultEOL());
+            fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
 
@@ -272,9 +272,9 @@ csvWriteError csv_write_complex(const char *filename,
                 strcat(StringValue, ComplexStr);
             }
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, StringValue);
-            if (j + 1 < n) fprintf(fd, separator);
+            if (j + 1 < n) fprintf(fd, "%s", separator);
         }
-        fprintf(fd, getCsvDefaultEOL());
+        fprintf(fd, "%s", getCsvDefaultEOL());
     }
 
     fclose(fd);
@@ -309,7 +309,7 @@ csvWriteError csv_write_string(const char *filename,
         for (i = 0; i < nbHeadersLines; i++)
         {
             fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
-            fprintf(fd, getCsvDefaultEOL());
+            fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
 
@@ -336,9 +336,9 @@ csvWriteError csv_write_string(const char *filename,
                     fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, pStrValues[i + m*j]);
                 }
             }
-            if (j + 1 < n) fprintf(fd, separator);
+            if (j + 1 < n) fprintf(fd, "%s", separator);
         }
-        fprintf(fd, getCsvDefaultEOL());
+        fprintf(fd, "%s", getCsvDefaultEOL());
     }
 
     fclose(fd);
