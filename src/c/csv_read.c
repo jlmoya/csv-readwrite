@@ -39,7 +39,7 @@ static int getNumbersOfColumnsInLine(const char *line, const char *separator);
 static char **getStringsFromLines(const char **lines, int sizelines,
                                   const char *separator, const char *decimal,
                                   int m, int n);
-static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines);
+static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines);
 static char *stripCharacters(const char *line);
 static char **replaceStrings(const char **lines, int nbLines,
                              const char **toreplace, int sizetoreplace);
@@ -223,7 +223,7 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
     }
 
     /* remove last lines empty (bug 7003 in scilab)*/
-    cleanedLines = removeEmptyLinesAtTheEnd((char**)lines, &nbLines);
+    cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
 
     nbColumns = getNumbersOfColumnsInLines(cleanedLines, nbLines, separator);
     if (nbColumns == 0)
@@ -410,11 +410,15 @@ static char **getStringsFromLines(const char **lines, int sizelines,
             {
                 if (decimal)
                 {
-                    results[i + n * j] = lineStrings[j];
+                    results[i + n * j] = strdup(lineStrings[j]);
                 }
                 else
                 {
                     results[i + n * j] = csv_strsubst(lineStrings[j], decimal, getCsvDefaultDecimal());
+                }
+
+                if (lineStrings[j])
+                {
                     FREE(lineStrings[j]);
                     lineStrings[j] = NULL;
                 }
@@ -424,7 +428,7 @@ static char **getStringsFromLines(const char **lines, int sizelines,
     return results;
 }
 /* ========================================================================== */
-static char **removeEmptyLinesAtTheEnd(char **lines, int *sizelines)
+static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
 {
     char **returnedLines = lines;
     int nbLinesToRemove = 0;

@@ -168,7 +168,6 @@ int sci_csv_textscan(char *fname)
     }
 
     nbLines = m1 * n1;
-
     result = csv_textscan(text, nbLines, separator, decimal);
 
     if (text)
