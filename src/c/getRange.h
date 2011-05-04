@@ -33,14 +33,5 @@ csv_complexArray *getRangeAsCsvComplexArray(const csv_complexArray *pComplex,
 // Returns 1 if the range is valid, returns 0 if not.
 int isValidRange(const int *range, int sizeArray);
 
-// Returns the number of entries in the range
-int getSizeRange(const int *iRange, int maxRows, int maxCols);
-
-// Returns the number of rows in the range
-int getSizeRows(const int *iRange, int maxRows);
-
-// Returns the number of columns in the range
-int getSizeCols(const int *iRange, int maxCols);
-
 #endif /* __GETRANGE_H__ */
 /* ========================================================================== */

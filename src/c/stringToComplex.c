@@ -258,8 +258,8 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
             double dReal = 0.;
             double dImag = 0.;
 
-            stringToComplexError ierrReal = 0;
-            stringToComplexError ierrImag = 0;
+            stringToDoubleError ierrReal = 0;
+            stringToDoubleError ierrImag = 0;
             dReal = stringToDouble(rnum_string, FALSE, &ierrReal);
             dImag = stringToDouble(inum_string, FALSE, &ierrImag);
 

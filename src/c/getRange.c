@@ -9,7 +9,7 @@
 *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 *
 */
-
+#include <string.h>
 #include "MALLOC.h"
 #include "getRange.h"
 #ifdef _MSC_VER
@@ -17,6 +17,10 @@
 #endif
 /* ========================================================================== */
 #define SIZE_ARRAY_RANGE 4
+/* ========================================================================== */
+static int getSizeRange(const int *iRange, int nbRows, int nbCols);
+static int getSizeRows(const int *iRange, int nbRows);
+static int getSizeCols(const int *iRange, int nbCols);
 /* ========================================================================== */
 void getSubIndices(const int *iRange, int * R1, int * R2, int * C1, int * C2 )
 {
