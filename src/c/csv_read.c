@@ -246,6 +246,11 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
     }
 
     cellsStrings = getStringsFromLines(cleanedLines, nbLines, separator, decimal, nbColumns, nbRows);
+    if (cleanedLines)
+    {
+        freeArrayOfString(cleanedLines, nbLines);
+        cleanedLines = NULL;
+    }
 
     if (cellsStrings)
     {
@@ -430,8 +435,9 @@ static char **getStringsFromLines(const char **lines, int sizelines,
 /* ========================================================================== */
 static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
 {
-    char **returnedLines = lines;
+    char **returnedLines = NULL;
     int nbLinesToRemove = 0;
+
     if (lines)
     {
         int i = 0;
@@ -460,22 +466,19 @@ static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
 
             if (nbLinesToRemove > 0)
             {
-                returnedLines = (char **)REALLOC(lines, sizeof(char *) * (*sizelines - nbLinesToRemove));
-                if (returnedLines)
+                *sizelines = *sizelines - nbLinesToRemove;
+            }
+            returnedLines = (char **)MALLOC(sizeof(char *) * (*sizelines));
+            if (returnedLines)
+            {
+                for (i = 0; i < *sizelines; i++)
                 {
-                    *sizelines = *sizelines - nbLinesToRemove;
-                }
-                else
-                {
-                    returnedLines = lines;
+                    returnedLines[i] = strdup(lines[i]);
                 }
             }
         }
-        else
-        {
-            returnedLines = lines;
-        }
     }
+
     return returnedLines;
 }
 /* ========================================================================== */
