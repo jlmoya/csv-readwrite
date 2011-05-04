@@ -16,69 +16,49 @@
 #include "strdup_windows.h"
 #endif
 /* ========================================================================== */
-char *csv_strsubst(const char* input_string,
-              const char* string_to_search,
-              const char* replacement_string)
+char *csv_strsubst(const char *input_string, const char *string_to_search, const char *replacement_string) 
 {
-    char *occurrence_str = NULL, *result_str = NULL;
+    char *result = NULL, *r = NULL;
+    const char *p = NULL, *q = NULL;
 
-
-    char *replacedString = NULL;
-    int count = 0, len = 0;
+    size_t string_to_searchlen = 0;
+    size_t count = 0, resultlen = 0, replacement_stringlen = 0;
 
     if (input_string == NULL) return NULL;
+    if (string_to_search == NULL) return strdup(input_string);
+    if (replacement_string == NULL) return strdup(input_string);
 
-    if (string_to_search == NULL || replacement_string == NULL)
-    {
-        return strdup(input_string);
-    }
+    string_to_searchlen = strlen(string_to_search);
+    replacement_stringlen = strlen(replacement_string);
 
-    occurrence_str = strstr (input_string, string_to_search);
-    if (occurrence_str == NULL)
+    if (string_to_searchlen != replacement_stringlen) 
     {
-        return strdup(input_string);
-    }
-
-    if (strlen (replacement_string) > strlen (string_to_search))
-    {
-        count = 0;
-        len = (int)strlen (string_to_search);
-        if (len)
+        for (count = 0, p = input_string; (q = strstr(p, string_to_search)) != NULL; p = q + string_to_searchlen)
         {
-            occurrence_str = (char*)input_string;
-            while(occurrence_str != NULL && *occurrence_str != '\0')
-            {
-                occurrence_str = strstr (occurrence_str, string_to_search);
-                if (occurrence_str != NULL)
-                {
-                    occurrence_str += len;
-                    count++;
-                }
-            }
+            count++;
         }
-        len = count * ((int)strlen(replacement_string) - (int)strlen(string_to_search)) + (int)strlen(input_string);
-    }
-    else len = (int)strlen(input_string);
-
-    replacedString = MALLOC (sizeof(char)*(len + 1));
-    if (replacedString == NULL) return NULL;
-
-    occurrence_str = (char*)input_string;
-    result_str = replacedString;
-    len = (int)strlen (string_to_search);
-    while(*occurrence_str != '\0')
+        resultlen = p - input_string + strlen(p) + count * (replacement_stringlen - string_to_searchlen);
+    } 
+    else
     {
-        if (*occurrence_str == string_to_search[0] && strncmp (occurrence_str, string_to_search, len) == 0)
-        {
-            const char *N = NULL;
-            N = replacement_string;
-            while (*N != '\0') *result_str++ = *N++;
-            occurrence_str += len;
-        }
-        else *result_str++ = *occurrence_str++;
+        resultlen = strlen(input_string);
     }
-    *result_str = '\0';
 
-    return replacedString;
+    if (resultlen + 1 > 0) result = (char*)CALLOC(resultlen + 1, sizeof(char));
+    if (result)
+    {
+        for (r = result, p = input_string; (q = strstr(p, string_to_search)) != NULL; p = q + string_to_searchlen) 
+        {
+
+            ptrdiff_t l = q - p;
+            memcpy(r, p, l);
+            r += l;
+            memcpy(r, replacement_string, replacement_stringlen);
+            r += replacement_stringlen;
+        }
+        strcpy(r, p);
+    }
+
+    return result;
 }
 /* ========================================================================== */
