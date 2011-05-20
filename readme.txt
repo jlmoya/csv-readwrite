@@ -3,13 +3,13 @@ CSV read/write toolbox
 Purpose
 -------
 
-The purpose of this module is to read and write 
-Comma Separated Values (CSV) data files. 
-The goal of this toolbox is to improve the flexibility, consistency and speed of 
-CSV reading and writing with respect to Scilab built-in 
-write_csv and read_csv functions. 
+The purpose of this module is to read and write
+Comma Separated Values (CSV) data files.
+The goal of this toolbox is to improve the flexibility, consistency and speed of
+CSV reading and writing with respect to Scilab built-in
+write_csv and read_csv functions.
 
-On a 1000-by-1000 matrix, we observed a 73x improvement of the 
+On a 1000-by-1000 matrix, we observed a 73x improvement of the
 speed in writing and 3x improvement in reading.
 
 Features
@@ -34,6 +34,7 @@ Licence
 This toolbox is released under the CeCILL_V2 licence :
 
 http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+
 
 
 
