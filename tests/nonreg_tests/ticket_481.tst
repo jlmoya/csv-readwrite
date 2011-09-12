@@ -1,0 +1,35 @@
+// Copyright (C) 2011 - DIGITEO - Allan CORNET
+//
+// This file must be used under the terms of the CeCILL.
+// This source file is licensed as described in the file COPYING, which
+// you should have received as part of this distribution.  The terms
+// are also available at
+// http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+//
+//
+// <-- JVM NOT MANDATORY -->
+
+// <-- Non-regression test for bug 481 -->
+//
+// <-- URL -->
+//  http://forge.scilab.org/index.php/p/csv-readwrite/issues/481/
+//
+// <-- Short Description -->
+// csv_read crashed Scilab, if there were negative values in file.
+
+path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
+exec(fullfile(path,"myassert_checkequal.sci"));
+exec(fullfile(path,"myassert_checkerror.sci"));
+
+neg = [ -1 -2 -3; -4 -5 -6; -7 -8 -9];
+
+// Write to file
+negFile = fullfile(TMPDIR,"neg.csv");
+csv_write (neg , negFile);
+
+// Read from file
+n = csv_read(negFile);
+
+myassert_checkequal(n, neg);
+
+

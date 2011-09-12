@@ -351,20 +351,24 @@ static char *leftstring(const char *tx, int pos)
 static BOOL is_unit_imaginary (const char *src, double *im)
 {
     char *modifiedSrc = csv_strsubst(src, ComplexScilab, ComplexI);
+    char *nextChar = NULL;
     BOOL isUnitImag = FALSE;
 
     if (*modifiedSrc == LessChar)
     {
         *im = -1.0;
-        modifiedSrc++;
+        nextChar = modifiedSrc + 1;
     }
     else
     {
         *im = +1.0;
-        if (*modifiedSrc == PlusChar) modifiedSrc++;
+        if (*modifiedSrc == PlusChar) 
+        {
+            nextChar = modifiedSrc + 1;
+        }
     }
 
-    if ((*modifiedSrc == ComplexCharI || *modifiedSrc == ComplexCharJ) && modifiedSrc[1] == 0)
+    if ((nextChar == ComplexCharI || nextChar == ComplexCharJ) && nextChar[1] == 0)
     {
         isUnitImag = TRUE;
     }

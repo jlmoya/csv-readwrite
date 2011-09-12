@@ -1,5 +1,9 @@
 changelog of the csv_readwrite
 
+csv_readwrite (0.5)
+    * Fixed ticket #481: csv_read crashed Scilab, if there were negative
+      values in file
+
 csv_readwrite (0.4)
     * This version requires Scilab 5.3.2
     * csv_stringtodouble manages %i format for complex numbers.
