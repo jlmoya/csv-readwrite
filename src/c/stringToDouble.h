@@ -20,6 +20,16 @@
 #define PosInfString "+Inf"
 #define NegNanString "-Nan" /* no sense but used by some users */
 #define PosNanString "+Nan" /* no sense but used by some users */
+#define ScilabNanString "%nan"
+#define ScilabInfString "%inf"
+#define ScilabNegInfString "-%inf"
+#define ScilabPosInfString "+%inf"
+#define ScilabNegNanString "-%nan" /* no sense but used by some users */
+#define ScilabPosNanString "+%nan" /* no sense but used by some users */
+#define ScilabPiString "%pi"
+#define ScilabNegPiString "-%pi"
+#define ScilabPosPiString "+%pi"
+
 
 typedef enum {
     STRINGTODOUBLE_NO_ERROR = 0,
@@ -27,10 +37,6 @@ typedef enum {
     STRINGTODOUBLE_NOT_A_NUMBER = 2,
     STRINGTODOUBLE_ERROR = 3
 } stringToDoubleError;
-
-double *stringsToDoubles(const char **pSTRs, int nbElements,
-                       BOOL bConvertByNAN,
-                       stringToDoubleError *ierr);
 
 double stringToDouble(const char *pSTR,
                        BOOL bConvertByNAN,

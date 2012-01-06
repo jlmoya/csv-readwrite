@@ -18,8 +18,7 @@
 // The csv_read function always returns complex entries.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 r = csv_read(fullfile(path,"K_1.csv"), [], [], "double");
-myassert_checkequal ( isreal(r) , %t );
+assert_checkequal ( isreal(r) , %t );
 

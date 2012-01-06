@@ -248,22 +248,8 @@ int sci_csv_read(char *fname)
                         char **pStrRange = getRangeAsString(result->pstrValues, result->m, result->n, iRange, &newM, &newN);
                         if (pStrRange)
                         {
-                            /* Workaround bug ticket 194 andbug 8688 */
-                            if (csv_checkSpaceInStackForString(Rhs + 1, newM, newN, pStrRange))
-                            {
-                                sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
-                                freeArrayOfString(pStrRange, newM * newN);
-                            }
-                            else
-                            {
-                                freeArrayOfString(pStrRange, newM * newN);
-                                freeCsvResult(result);
-                                if (filename) {FREE(filename); filename = NULL;}
-                                if (conversion) {FREE(conversion); conversion = NULL;}
-                                if (iRange) { FREE(iRange); iRange = NULL;}
-                                SciError(17);
-                                return 0;
-                            }
+                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, newM, newN, pStrRange);
+                            freeArrayOfString(pStrRange, newM * newN);
                         }
                         else
                         {
@@ -272,21 +258,8 @@ int sci_csv_read(char *fname)
                     }
                     else
                     {
-                        /* Workaround bug ticket 194 and bug 8688 */
-                        if (csv_checkSpaceInStackForString(Rhs + 1, result->m, result->n, result->pstrValues))
-                        {
-                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
-                        }
-                        else
-                        {
-                            freeCsvResult(result);
-                            if (filename) {FREE(filename); filename = NULL;}
-                            if (conversion) {FREE(conversion); conversion = NULL;}
-                            SciError(17);
-                            return 0;
-                        }
+                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, result->m, result->n, result->pstrValues);
                     }
-
                 }
                 else /* to double */
                 {
@@ -371,6 +344,7 @@ int sci_csv_read(char *fname)
                     if (filename) {FREE(filename); filename = NULL;}
                     if (conversion) {FREE(conversion); conversion = NULL;}
                     printError(&sciErr, 0);
+                    Scierror(17,_("%s: Memory allocation error.\n"), fname);
                     return 0;
                 }
                 else
@@ -379,28 +353,17 @@ int sci_csv_read(char *fname)
 
                     if (Lhs == 2)
                     {
-                        /* Workaround bug ticket 194 and bug 8688 */
-                        if (csv_checkSpaceInStackForString(Rhs + 2, result->nbComments, 1, result->pstrComments))
-                        {
-                            sciErr = createMatrixOfString(pvApiCtx, Rhs + 2, result->nbComments, 1, result->pstrComments);
-                            if(sciErr.iErr)
-                            {
-                                freeCsvResult(result);
-                                if (filename) {FREE(filename); filename = NULL;}
-                                if (conversion) {FREE(conversion); conversion = NULL;}
-                                printError(&sciErr, 0);
-                                return 0;
-                            }
-                            LhsVar(2) = Rhs + 2;
-                        }
-                        else
+                        sciErr = createMatrixOfString(pvApiCtx, Rhs + 2, result->nbComments, 1, result->pstrComments);
+                        if(sciErr.iErr)
                         {
                             freeCsvResult(result);
                             if (filename) {FREE(filename); filename = NULL;}
                             if (conversion) {FREE(conversion); conversion = NULL;}
-                            SciError(17);
+                            printError(&sciErr, 0);
+                            Scierror(17, _("%s: Memory allocation error.\n"), fname);
                             return 0;
                         }
+                        LhsVar(2) = Rhs + 2;
                     }
                     C2F(putlhsvar)();
                 }

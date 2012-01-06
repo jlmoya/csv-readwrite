@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
 *  Copyright (C) 2011 - DIGITEO - Michael Baudin
 *
 *  This file must be used under the terms of the CeCILL.
@@ -421,30 +421,5 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
     *n = n_;
 
     return iReturnedArray;
-}
-/* ========================================================================== */
-int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings)
-{
-    int iNewPos = Top - Rhs + _iVar;
-    int iAddr   = *Lstk(iNewPos);
-    int iMemSize = 0;
-    int iFreeSpace = 0;
-
-    int iLens = 0;
-    int i = 0;
-
-    for (i = 0; i < m * n; i++)
-    {
-        iLens = iLens + (int)strlen(pstStrings[i]) + 1;
-    }
-
-    iMemSize = iLens + 2;
-    iFreeSpace = iadr(*Lstk(Bot)) - (iadr(iAddr));
-
-    if (iMemSize > iFreeSpace)
-    {
-        return 0;
-    }
-    return 1;
 }
 /* ========================================================================== */

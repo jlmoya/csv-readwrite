@@ -17,15 +17,17 @@
 // <-- Short Description -->
 // extends format to digit in csv_default and csv_write
 
- if csv_default("precision") <>  "%.17lg" then pause, end
- if csv_default("precision","%.17lg") <> %T then pause, end
+
+ assert_checkequal(csv_default("precision"), "%.17lg");
+ assert_checkequal(csv_default("precision","%.17lg") , %T);
  
- if csv_default("precision",4) <> %T then pause, end
- if csv_default("precision") <> "%.4lg" then pause, end
+ assert_checkequal(csv_default("precision",4), %T);
+ assert_checkequal(csv_default("precision"), "%.4lg");
  
  M = rand(2,3);
  filename = fullfile(TMPDIR, "datas.csv");
  csv_write(M, filename,[],[],"%.8e");
  csv_write(M, filename,[],[],8);
- if execstr("csv_write(M, filename,[],[],19)", "errcatch") <> 999 then pause, end
+ 
+ assert_checkequal(execstr("csv_write(M, filename,[],[],19)", "errcatch"), 999);
  

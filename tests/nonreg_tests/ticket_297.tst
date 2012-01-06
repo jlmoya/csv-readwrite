@@ -18,7 +18,6 @@
 // The csv_textscan function does not take range as a row matrix.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 //
 // Read only rows/columns in range
@@ -38,5 +37,5 @@ expected = [
  18 25 32 39
  19 26 33 40
 ];
-myassert_checkequal ( A , expected );
+assert_checkequal ( A , expected );
 

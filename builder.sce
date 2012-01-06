@@ -1,5 +1,5 @@
 //
-//  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+//  Copyright (C) 2010 - 2012 - DIGITEO - Allan CORNET
 //
 //  This file must be used under the terms of the CeCILL.
 //  This source file is licensed as described in the file COPYING, which
@@ -21,12 +21,12 @@ toolbox_dir   = get_absolute_file_path("builder.sce");
 try
     v = getversion("scilab");
 catch
-    error(gettext("Scilab 5.3 or more is required."));
+    error(gettext("Scilab 5.4 or more is required."));
 end
 
-if v(2) < 3 then
-    // new API in scilab 5.3
-    error(gettext('Scilab 5.3 or more is required.'));
+if v(2) < 4 then
+    // new API in scilab 5.4
+    error(gettext('Scilab 5.4 or more is required.'));
 end
 clear v;
 

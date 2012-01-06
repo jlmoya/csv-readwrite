@@ -24,13 +24,15 @@ function builder_gateway()
                      "csv_write","sci_csv_write"; ..
                      "csv_textscan","sci_csv_textscan"; ..
                      "csv_stringtodouble","sci_csv_stringtodouble"; ..
-                     "csv_default","sci_csv_default"];
+                     "csv_default","sci_csv_default"; ..
+					 "csv_isnum", "sci_csv_isnum"];
 
   src_functions = ["sci_csv_read.c", ..
                    "sci_csv_write.c", ..
                    "sci_csv_textscan.c", ..
                    "sci_csv_stringtodouble.c", ..
                    "sci_csv_default.c", ..
+				   "sci_csv_isnum.c", ..
                    "gw_csv_helpers.c"];
 
   tbx_build_gateway("csvreadwrite_c", ..

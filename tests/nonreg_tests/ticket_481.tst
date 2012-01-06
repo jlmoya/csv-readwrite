@@ -18,8 +18,6 @@
 // csv_read crashed Scilab, if there were negative values in file.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
-exec(fullfile(path,"myassert_checkerror.sci"));
 
 neg = [ -1 -2 -3; -4 -5 -6; -7 -8 -9];
 
@@ -30,6 +28,6 @@ csv_write (neg , negFile);
 // Read from file
 n = csv_read(negFile);
 
-myassert_checkequal(n, neg);
+assert_checkequal(n, neg);
 
 

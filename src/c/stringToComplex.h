@@ -22,6 +22,10 @@ typedef enum {
     STRINGTOCOMPLEX_ERROR = 3
 } stringToComplexError;
 
+doublecomplex stringToComplex(const char *pSTR,
+    BOOL bConvertByNAN,
+    stringToComplexError *ierr);
+
 csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
                        BOOL bConvertByNAN,
                        stringToComplexError *ierr);

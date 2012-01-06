@@ -18,7 +18,6 @@
 // The text_scan function does not extract the correct range.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 
 //
@@ -39,7 +38,7 @@ expected = [
  18 25 32 39
  19 26 33 40
 ];
-myassert_checkequal ( A , expected );
+assert_checkequal ( A , expected );
 //
 // Extract range as string.
 A = csv_textscan ( Astr,[],[],"string",[2 3 5 6]' );
@@ -49,7 +48,7 @@ expected = [
 "18","25","32","39";
 "19","26","33","40"
 ];
-myassert_checkequal ( A , expected );
+assert_checkequal ( A , expected );
 //
 // Extract a non-symetrical range.
 A = csv_textscan ( Astr,[],[],"string",[2 3 5 5]' );
@@ -59,7 +58,7 @@ expected = [
 "18","25","32";
 "19","26","33"
 ];
-myassert_checkequal ( A , expected );
+assert_checkequal ( A , expected );
 //
 // Extract a non-symetrical range.
 A = csv_textscan ( Astr,[],[],"double",[2 3 5 5]' );
@@ -69,5 +68,5 @@ expected = [
 18 25 32
 19 26 33
 ];
-myassert_checkequal ( A , expected );
+assert_checkequal ( A , expected );
 

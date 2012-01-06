@@ -12,7 +12,6 @@
 // <-- JVM NOT MANDATORY -->
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 // =============================================================================
 Mstr = [
@@ -22,16 +21,16 @@ Mstr = [
 ];
 //
 r = csv_read(fullfile(path,"M_1.csv"),[],[],"string");
-myassert_checkequal (r,Mstr);
+assert_checkequal (r,Mstr);
 //
 r = csv_read(fullfile(path,"M_2.csv"), ascii(9), [], "string");
-myassert_checkequal (r,Mstr);
+assert_checkequal (r,Mstr);
 //
 r = csv_read(fullfile(path,"M_3.csv"), " ", ",", "string");
-myassert_checkequal (r,Mstr);
+assert_checkequal (r,Mstr);
 //
 r = csv_read(fullfile(path,"M_4.csv"), ";", ",", "string");
-myassert_checkequal (r,Mstr);
+assert_checkequal (r,Mstr);
 // =============================================================================
 Nstr = [
 "Nan"   "1"    "Nan"
@@ -39,16 +38,16 @@ Nstr = [
 ];
 //
 r = csv_read(fullfile(path,"N_1.csv"), [], [], "string");
-myassert_checkequal (r,Nstr);
+assert_checkequal (r,Nstr);
 //
 r = csv_read(fullfile(path,"N_2.csv"), ascii(9), [], "string");
-myassert_checkequal (r,Nstr);
+assert_checkequal (r,Nstr);
 //
 r = csv_read(fullfile(path,"N_3.csv"), " ", ",", "string");
-myassert_checkequal (r,Nstr);
+assert_checkequal (r,Nstr);
 //
 r = csv_read(fullfile(path,"N_4.csv"), ";", ",", "string");
-myassert_checkequal (r,Nstr);
+assert_checkequal (r,Nstr);
 // =============================================================================
 Kstr = [
 "1.1000000000000001" "0.10000000000000001"
@@ -62,16 +61,16 @@ Kstr2 = [
 ];
 //
 r = csv_read(fullfile(path,"K_1.csv"), [], [], "string");
-myassert_checkequal (r,Kstr);
+assert_checkequal (r,Kstr);
 //
 r = csv_read(fullfile(path,"K_2.csv"), ascii(9), [], "string");
-myassert_checkequal (r,Kstr);
+assert_checkequal (r,Kstr);
 //
 r = csv_read(fullfile(path,"K_3.csv"), " ", ",", "string");
-myassert_checkequal (r,Kstr2);
+assert_checkequal (r,Kstr2);
 //
 r = csv_read(fullfile(path,"K_4.csv"), ";", ",", "string");
-myassert_checkequal (r,Kstr2);
+assert_checkequal (r,Kstr2);
 // =============================================================================
 S = [
   "Allan",                  "2", "CORNET";
@@ -79,27 +78,27 @@ S = [
 ];
 //
 r = csv_read(fullfile(path,"S_1.csv"), "|", [], "string");
-myassert_checkequal (r,S);
+assert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_2.csv"), ascii(9), [], "string");
-myassert_checkequal (r,S);
+assert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_3.csv"), "!", ",", "string");
-myassert_checkequal (r,S);
+assert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_4.csv"), ";", ",", "string");
-myassert_checkequal (r,S);
+assert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_1.csv"), "|", ".", "string");
-myassert_checkequal (r,S);
+assert_checkequal (r,S);
 //
 r = csv_read(fullfile(path,"S_1.csv"), "|", ".", "double");
 ref = [%nan , 2, %nan; %nan, 3, %nan];
-myassert_checkequal ( r , ref);
+assert_checkequal ( r , ref);
 // =============================================================================
 filename = fullfile(path,"datas.csv");
 N = csv_read(filename,",",".","double",["Nan", "0"]);
 expected = [%inf, 0];
-myassert_checkequal ( N , expected );
+assert_checkequal ( N , expected );
 // =============================================================================
 

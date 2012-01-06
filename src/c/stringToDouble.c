@@ -8,11 +8,16 @@
 *  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 *
 */
-
+/* ========================================================================== */
+#if defined(__linux__)
+#define _GNU_SOURCE             /* avoid dependency on GLIBC_2.7 */
+#endif
+/* ========================================================================== */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "core_math.h" /* M_PI */
 #include "stringToDouble.h"
 #include "MALLOC.h"
 #include "csv_default.h"
@@ -20,6 +25,7 @@
 #include "strdup_windows.h"
 #endif
 #include "nan.h"
+#include "inf.h"
 /* ========================================================================== */
 #ifndef _MSC_VER
 #ifndef stricmp
@@ -31,52 +37,6 @@
 /* ========================================================================== */
 #define DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT "%lg"
 /* ========================================================================== */
-static double returnINF(BOOL bPositive);
-/* ========================================================================== */
-double *stringsToDoubles(const char **pSTRs, int nbElements,
-                         BOOL bConvertByNAN, stringToDoubleError *ierr)
-{
-    double *dValues = NULL;
-
-    *ierr = STRINGTODOUBLE_ERROR;
-    if (nbElements <= 0) return NULL;
-
-    if (pSTRs == NULL)
-    {
-        *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
-    }
-    else
-    {
-        dValues = (double*)MALLOC(sizeof(double) * nbElements);
-        if (dValues)
-        {
-            int i = 0;
-            for (i = 0; i < nbElements; i++)
-            {
-                dValues[i] = stringToDouble(pSTRs[i], bConvertByNAN, ierr);
-                if (*ierr != STRINGTODOUBLE_NO_ERROR)
-                {
-                    FREE(dValues);
-                    return (dValues = NULL);
-                }
-            }
-        }
-        else
-        {
-            *ierr = STRINGTODOUBLE_MEMORY_ALLOCATION;
-        }
-    }
-    return dValues;
-}
-/* ========================================================================== */
-static double returnINF(BOOL bPositive)
-{
-    double v = 0 - 0;
-    double p = 10;
-    if (!bPositive) p = -10;
-    return (double) p / (double)v;
-}
-/* ========================================================================== */
 double stringToDouble(const char *pSTR,
                       BOOL bConvertByNAN,
                       stringToDoubleError *ierr)
@@ -86,17 +46,27 @@ double stringToDouble(const char *pSTR,
     if (pSTR)
     {
         if ((stricmp(pSTR, NanString) == 0) || (stricmp(pSTR, NegNanString) == 0) ||
-            (stricmp(pSTR, PosNanString) == 0))
+            (stricmp(pSTR, PosNanString) == 0) || (stricmp(pSTR, ScilabPosNanString) == 0) ||
+            (stricmp(pSTR, ScilabNanString) == 0) || (stricmp(pSTR, ScilabNegNanString) == 0))
         {
             dValue = returnNAN();
         }
-        else if ((stricmp(pSTR, InfString) == 0) || (stricmp(pSTR, PosInfString) == 0))
+        else if ((stricmp(pSTR, InfString) == 0) || (stricmp(pSTR, PosInfString) == 0) ||
+            (stricmp(pSTR, ScilabInfString) == 0) || (stricmp(pSTR, ScilabPosInfString) == 0))
         {
             dValue = returnINF(TRUE);
         }
-        else if (stricmp(pSTR, NegInfString) == 0)
+        else if ((stricmp(pSTR, NegInfString) == 0) || (stricmp(pSTR, ScilabNegInfString) == 0))
         {
             dValue = returnINF(FALSE);
+        }
+        else if ((stricmp(pSTR, ScilabPiString) == 0) || (stricmp(pSTR, ScilabPosPiString) == 0))
+        {
+            dValue = M_PI;
+        }
+        else if (stricmp(pSTR, ScilabNegPiString) == 0)
+        {
+            dValue = -M_PI;
         }
         else
         {

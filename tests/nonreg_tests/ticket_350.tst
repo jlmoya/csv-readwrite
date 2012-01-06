@@ -18,9 +18,9 @@
 // The csv_stringtodouble function always returns complex doubles.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
+
 
 r = csv_stringtodouble("12");
-myassert_checkequal ( isreal(r) , %t );
+assert_checkequal ( isreal(r) , %t );
 
 

@@ -18,7 +18,6 @@
 // The substitute option does not work.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 //
 filename = fullfile(TMPDIR,"ticket281.csv");
@@ -32,10 +31,10 @@ substitute = [
 mputl(content,filename);
 M = csv_read(filename,[],[],"string",substitute);
 expected = "Inf";
-myassert_checkequal ( M , expected );
+assert_checkequal ( M , expected );
 M = csv_read(filename,[],[],"double",substitute);
 expected=%inf;
-myassert_checkequal ( M , expected );
+assert_checkequal ( M , expected );
 //
 // Try with 3 replacements
 filename = fullfile(TMPDIR,"ticket281.csv");
@@ -50,10 +49,10 @@ substitute = [
 mputl(content,filename);
 M = csv_read(filename,[],[],"string",substitute);
 expected = "Inf";
-myassert_checkequal ( M , expected );
+assert_checkequal ( M , expected );
 M = csv_read(filename,[],[],"double",substitute);
 expected=%inf;
-myassert_checkequal ( M , expected );
+assert_checkequal ( M , expected );
 //
 //
 
@@ -78,6 +77,6 @@ mclose(fd);
 
 substitute=["Nan","%nan";"Infinity","%inf";"I","%i"];
 M = csv_read ( filename , [] , [] , "string" , substitute );
-myassert_checkequal ( M , expected );
+assert_checkequal ( M , expected );
 
 

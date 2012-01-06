@@ -9,7 +9,8 @@
 //
 demopath = get_absolute_file_path("csv_readwrite.dem.gateway.sce");
 subdemolist = [
-"csv_readwrite.dem", "csv_readwrite.dem.sce"; ..
-"benchmark", "benchmark.sce"; ..
+"csv_readwrite basic demos", "csv_readwrite.dem.sce"; ..
+"benchmark csv read/write", "benchmark_1.sce"; ..
+"benchmark csv_isnum", "benchmark_2.sce"; ..
 ];
 subdemolist(:,2) = demopath + subdemolist(:,2)

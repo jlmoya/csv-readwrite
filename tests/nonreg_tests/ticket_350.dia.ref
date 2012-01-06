@@ -1,4 +1,4 @@
-// Copyright (C) 2008 - 2010 - Michael Baudin
+// Copyright (C) 2010 - 2011 - DIGITEO - Michael Baudin
 //
 // This file must be used under the terms of the CeCILL.
 // This source file is licensed as described in the file COPYING, which
@@ -16,6 +16,5 @@
 // <-- Short Description -->
 // The csv_stringtodouble function always returns complex doubles.
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 r = csv_stringtodouble("12");
-myassert_checkequal ( isreal(r) , %t );
+assert_checkequal ( isreal(r) , %t );

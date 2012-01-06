@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
 *
 *  This file must be used under the terms of the CeCILL.
 *  This source file is licensed as described in the file COPYING, which
@@ -33,8 +33,6 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
 double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
                                      const char *fname, int *iErr);
 
-
-int csv_checkSpaceInStackForString(int _iVar, const int m, const int n,  const char **pstStrings);
 
 int csv_isRowVector(void* _pvCtx, int _iVar);
 int csv_isColumnVector(void* _pvCtx, int _iVar);

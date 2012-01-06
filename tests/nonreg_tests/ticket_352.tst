@@ -18,7 +18,6 @@
 // The csv_textscan function always returned complex matrices.
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
 
 //
 // Read only rows/columns in range
@@ -41,7 +40,7 @@ expected = [
 6 13 20 27 34 41 48 55
 +0 -0 %inf -%inf %nan 1.D+308 1.e-308 1.e-323
 ];
-myassert_checkequal ( isreal(A) , %t );
+assert_checkequal ( isreal(A) , %t );
 
 //
 // Read only rows/columns in range
@@ -61,5 +60,5 @@ expected = [
  18 25 32 39
  19 26 33 40
 ];
-myassert_checkequal ( isreal(A) , %t );
+assert_checkequal ( isreal(A) , %t );
 

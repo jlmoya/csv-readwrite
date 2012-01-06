@@ -12,8 +12,6 @@
 // <-- JVM NOT MANDATORY -->
 
 path = fullfile(csv_getToolboxPath(),"tests","unit_tests");
-exec(fullfile(path,"myassert_checkequal.sci"));
-exec(fullfile(path,"myassert_checkfilesequal.sci"));
 
 filename = fullfile(path, "csv_regexp.csv");
 [y, x] = csv_read(filename, [], [], [], [], "/\/\//");
@@ -25,5 +23,5 @@ ref_y = [    1.    0.    0.    0.    0.  ; ..
              0.    1.    0.    0.    0.  ; ..
              0.    0.    1.    0.    0.];
 
-myassert_checkequal (ref_x , x);
-myassert_checkequal (ref_y , y);
+assert_checkequal (ref_x , x);
+assert_checkequal (ref_y , y);

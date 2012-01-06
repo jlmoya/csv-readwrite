@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
 *
 *  This file must be used under the terms of the CeCILL.
 *  This source file is licensed as described in the file COPYING, which
@@ -41,9 +41,6 @@
 #define strnicmp _strnicmp
 #endif
 /* ========================================================================== */
-static doublecomplex stringToComplex(const char *pSTR,
-                                     BOOL bConvertByNAN,
-                                     stringToComplexError *ierr);
 static int ParseNumber(const char* tx);
 static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN, double *real, double *imag);
 static char *midstring(const char *tx, int pos, int nb);
@@ -51,8 +48,8 @@ static char *leftstring(const char *tx, int pos);
 static BOOL is_unit_imaginary (const char *src, double *im);
 /* ========================================================================== */
 csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
-                                           BOOL bConvertByNAN,
-                                           stringToComplexError *ierr)
+    BOOL bConvertByNAN,
+    stringToComplexError *ierr)
 {
     csv_complexArray *pCsvComplexArray = NULL;
     *ierr = STRINGTOCOMPLEX_ERROR;
@@ -92,8 +89,8 @@ csv_complexArray *stringsToCvsComplexArray(const char **pSTRs, int nbElements,
 }
 /* ========================================================================== */
 doublecomplex stringToComplex(const char *pSTR,
-                              BOOL bConvertByNAN,
-                              stringToComplexError *ierr)
+    BOOL bConvertByNAN,
+    stringToComplexError *ierr)
 {
     doublecomplex dComplexValue;
     *ierr = STRINGTOCOMPLEX_ERROR;
@@ -141,7 +138,7 @@ doublecomplex stringToComplex(const char *pSTR,
             /* Case: "i", "+i", "-i", and with "j"  */
             if (is_unit_imaginary (pStrWithOutBlanks, &imag))
             {
-                *ierr = (stringToComplexError)STRINGTODOUBLE_NO_ERROR;
+                *ierr = STRINGTOCOMPLEX_NO_ERROR;
                 dComplexValue.r = 0.;
                 dComplexValue.i = imag;
             }
@@ -205,7 +202,30 @@ static stringToComplexError ParseComplexValue(const char *tx, BOOL bConvertByNAN
     *real = stringToDouble(tx, FALSE, &ierrDouble);
     *imag = 0;
 
-    if (ierrDouble != STRINGTODOUBLE_NO_ERROR)
+    /* test on strlen(tx) > 1 to remove case 'e' */
+    if ((int)strlen(tx) < 2)
+    {
+        if (ierrDouble == STRINGTODOUBLE_NO_ERROR)
+        {
+            ierr = (stringToComplexError) ierrDouble;
+        }
+        else 
+        {
+            if (bConvertByNAN)
+            {
+                ierrDouble = STRINGTOCOMPLEX_NOT_A_NUMBER;
+                *real = returnNAN();
+                *imag = 0;
+            }
+            else
+            {
+                *real = 0;
+                *imag = 0;
+                ierr = (stringToComplexError) ierrDouble;
+            }
+        }
+    }
+    else if (ierrDouble != STRINGTODOUBLE_NO_ERROR) 
     {
         modifiedTxt = csv_strsubst(tx, ComplexScilab, ComplexI);
         lnum = ParseNumber(modifiedTxt);
@@ -354,7 +374,12 @@ static BOOL is_unit_imaginary (const char *src, double *im)
     char *nextChar = NULL;
     BOOL isUnitImag = FALSE;
 
-    if (*modifiedSrc == LessChar)
+    if (modifiedSrc == NULL)
+    {
+        return isUnitImag;
+    }
+
+    if (modifiedSrc[0] == LessChar)
     {
         *im = -1.0;
         nextChar = modifiedSrc + 1;
@@ -362,15 +387,22 @@ static BOOL is_unit_imaginary (const char *src, double *im)
     else
     {
         *im = +1.0;
-        if (*modifiedSrc == PlusChar) 
+        if (modifiedSrc[0] == PlusChar) 
         {
             nextChar = modifiedSrc + 1;
         }
+        else
+        {
+            nextChar = modifiedSrc;
+        }
     }
 
-    if ((nextChar == ComplexCharI || nextChar == ComplexCharJ) && nextChar[1] == 0)
+    if (nextChar)
     {
-        isUnitImag = TRUE;
+        if ((nextChar[0] == ComplexCharI || nextChar[0] == ComplexCharJ) && nextChar[1] == 0)
+        {
+            isUnitImag = TRUE;
+        }
     }
 
     if (modifiedSrc)

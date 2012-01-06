@@ -17,22 +17,6 @@
 // <-- Short Description -->
 // The default precision is insufficient.
 
-//
-// assert_equal --
-//   Returns 1 if the two real matrices computed and expected are equal.
-// Arguments
-//   computed, expected : the two matrices to compare
-//   epsilon : a small number
-//
-function flag = assert_equal ( computed , expected )
-    if computed==expected then
-        flag = 1;
-    else
-        flag = 0;
-    end
-    if flag <> 1 then pause,end
-endfunction
-
 
 function y = writereadcycle(x,filename)
     csv_write(x,filename);
@@ -57,26 +41,26 @@ endfunction
 n=1000;
 filename = fullfile(TMPDIR,"csv_write_M_1.csv");
 tf = checkWriteReadCycle(1,"succ",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(1,"pred",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(0.1,"succ",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(0.1,"pred",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 x = number_properties("huge");
 tf = checkWriteReadCycle(x,"succ",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(x,"pred",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 x = number_properties("tiny");
 tf = checkWriteReadCycle(x,"succ",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(x,"pred",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 x = number_properties("tiniest");
 tf = checkWriteReadCycle(x,"succ",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 tf = checkWriteReadCycle(x,"pred",100,filename);
-assert_equal ( tf , %t );
+assert_checkequal ( tf , %t );
 

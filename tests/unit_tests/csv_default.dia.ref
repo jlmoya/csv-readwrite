@@ -7,21 +7,6 @@
 //  are also available at
 //  http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 //
-//
-// assert_equal --
-//   Returns 1 if the two real matrices computed and expected are equal.
-// Arguments
-//   computed, expected : the two matrices to compare
-//   epsilon : a small number
-//
-function flag = assert_equal ( computed , expected )
-  if computed==expected then
-    flag = 1;
-  else
-    flag = 0;
-  end
-  if flag <> 1 then bugmes();quit;end
-endfunction
 // See all the available fields
 allvalues = csv_default();
 expected = [
@@ -36,14 +21,14 @@ if getos() == "Windows" then
 else
   expected = [expected; "eol" "linux"];
 end
-assert_equal ( allvalues , expected );
+assert_checkequal ( allvalues , expected );
 // Get the value of the "precision" field
 value = csv_default("precision");
-assert_equal ( value , "%.17lg" );
+assert_checkequal ( value , "%.17lg" );
 // Set the value of the "precision" field
 bRes = csv_default("precision","%.17e");
-assert_equal ( bRes , %t );
+assert_checkequal ( bRes , %t );
 // Set the value of the "precision" field to
 // an impossible value
 bRes = csv_default("precision","Ouch!");
-assert_equal ( bRes , %f );
+assert_checkequal ( bRes , %f );

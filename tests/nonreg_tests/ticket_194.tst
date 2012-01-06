@@ -1,4 +1,4 @@
-// Copyright (C) 2008 - 2011 - Allan CORNET
+// Copyright (C) 2008 - 2012 - Allan CORNET
 //
 // This file must be used under the terms of the CeCILL.
 // This source file is licensed as described in the file COPYING, which
@@ -30,7 +30,7 @@ for i= 1:imax
 end
 mclose(fd);
 
-if execstr("M = csv_read(filename,[],[],""string"");", "errcatch") <> 17 then pause, end
+assert_checkequal(execstr("M = csv_read(filename,[],[],""string"");", "errcatch"), 17);
 stacksize('max');
-if execstr("M = csv_read(filename,[],[],""string"");", "errcatch") <> 0 then pause, end
+assert_checkequal(execstr("M = csv_read(filename,[],[],""string"");", "errcatch"), 0);
 clear M

@@ -35,17 +35,19 @@ files_src = ["csv_read.c", ..
              "csv_strsubst.c", ..
              "splitLine.c", ..
              "stringToDouble.c", ..
+             "stringsToDoubles.c", ..
              "stringToComplex.c", ..
              "checkCsvWriteFormat.c", ..
              "getRange.c", ..
              "csv_default.c", ..
              "nan.c", ..
-             "csv_complex.c"];
+             "inf.c", ..
+             "csv_complex.c", ..
+			 "csv_isnum.c"];
 
-functions_c = ["csv_read", "csv_write", "strsubst", "splitLine", "stringToDouble", ..
-               "stringToComplex", "csv_default", "checkCsvWriteFormat", "getRange"];
+libfunctions_c = 'csv_readwrite';
 
-tbx_build_src(functions_c, ..
+tbx_build_src(libfunctions_c, ..
               files_src, ..
               "c", ..             ..
               src_c_path,         ..

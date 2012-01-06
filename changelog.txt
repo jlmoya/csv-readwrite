@@ -1,5 +1,13 @@
 changelog of the csv_readwrite
 
+csv_readwrite (0.6) - January 2012
+    * This version requires Scilab 5.4.0
+    * Factorized code with new code in Scilab.
+    * Uses assert functions for tests.
+    * Add also %pi, %inf, %nan as format for pi, inf and nan number.
+    * Update demos with some benchs.
+    * Add csv_isnum function x10 (or more) faster than isnum scilab function
+
 csv_readwrite (0.5)
     * Fixed ticket #481: csv_read crashed Scilab, if there were negative
       values in file
@@ -57,4 +65,4 @@ csv_readwrite (0.2)
 csv_readwrite (0.1)
     * csv_read, csv_write builtin
 
- -- Author Allan CORNET - DIGITEO - 2010
+ -- Author Allan CORNET - DIGITEO - 2010-2012
