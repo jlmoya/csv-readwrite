@@ -7,6 +7,7 @@ csv_readwrite (0.6) - January 2012
     * Add also %pi, %inf, %nan as format for pi, inf and nan number.
     * Update demos with some benchs.
     * Add csv_isnum function x10 (or more) faster than isnum scilab function
+    * Fixed ticket #637: module did not start in -NWNI mide
 
 csv_readwrite (0.5)
     * Fixed ticket #481: csv_read crashed Scilab, if there were negative
