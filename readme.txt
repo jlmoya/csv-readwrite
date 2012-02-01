@@ -25,7 +25,7 @@ Features
 Authors
 -------
 
-Copyright (C) 2010 - 2011 - DIGITEO - Allan Cornet
+Copyright (C) 2010 - 2012 - DIGITEO - Allan Cornet
 Copyright (C) 2011 - DIGITEO - Michael Baudin
 
 Licence

@@ -34,22 +34,22 @@
 #endif
 /* ========================================================================== */
 static int getNumbersOfColumnsInLines(const char **lines, int sizelines,
-                                      const char *separator);
+    const char *separator);
 static int getNumbersOfColumnsInLine(const char *line, const char *separator);
 static char **getStringsFromLines(const char **lines, int sizelines,
-                                  const char *separator, const char *decimal,
-                                  int m, int n);
+    const char *separator, const char *decimal,
+    int m, int n);
 static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines);
 static char *stripCharacters(const char *line);
 static char **replaceStrings(const char **lines, int nbLines,
-                             const char **toreplace, int sizetoreplace);
+    const char **toreplace, int sizetoreplace);
 static char **extractComments(const char **lines, int nbLines, const char *regexpcomments,
-                              int *nbcomments, int *iErr);
+    int *nbcomments, int *iErr);
 static char **removeComments(const char **lines, int nbLines,
-                             const char *regexpcomments, int *nbNewLine, int *iErr);
+    const char *regexpcomments, int *nbNewLine, int *iErr);
 /* ========================================================================== */
 csvResult* csv_read(const char *filename, const char *separator, const char *decimal,
-                    const char **toreplace, int sizetoreplace, const char *regexpcomments)
+    const char **toreplace, int sizetoreplace, const char *regexpcomments)
 {
     char *expandedFilename = NULL;
     csvResult *result = NULL;
@@ -305,7 +305,7 @@ void freeCsvResult(csvResult *result)
 }
 /* ========================================================================== */
 static int getNumbersOfColumnsInLines(const char **lines, int sizelines,
-                                      const char *separator)
+    const char *separator)
 {
     int previousNbColumns = 0;
     int NbColumns = 0;
@@ -367,9 +367,9 @@ static int getNumbersOfColumnsInLine(const char *line, const char *separator)
 }
 /* ========================================================================== */
 static char **getStringsFromLines(const char **lines, int sizelines,
-                                  const char *separator,
-                                  const char *decimal,
-                                  int m, int n)
+    const char *separator,
+    const char *decimal,
+    int m, int n)
 {
     char **results = NULL;
 
@@ -555,7 +555,7 @@ static char **replaceStrings(const char **lines, int nbLines, const char **torep
 }
 /* ========================================================================== */
 static char **extractComments(const char **lines, int nbLines,
-                              const char *regexpcomments, int *nbcomments, int *iErr)
+    const char *regexpcomments, int *nbcomments, int *iErr)
 {
     char **pComments = NULL;
     int i = 0;
@@ -598,7 +598,7 @@ static char **extractComments(const char **lines, int nbLines,
 }
 /* ========================================================================== */
 static char **removeComments(const char **lines, int nbLines,
-                             const char *regexpcomments, int *newNbLines, int *iErr)
+    const char *regexpcomments, int *newNbLines, int *iErr)
 {
     char **pLinesCleaned = NULL;
 

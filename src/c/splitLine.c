@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
 *
 *  This file must be used under the terms of the CeCILL.
 *  This source file is licensed as described in the file COPYING, which
@@ -11,10 +11,12 @@
 
 #include <string.h>
 #include "splitLine.h"
+#include "csv_strsubst.h"
 #include "MALLOC.h"
 /* ==================================================================== */
 char **splitLine(const char *str, const char *sep, int *toks, char meta)
 {
+#define emptyfield "__EMPTY_FIELD_CSV__" 
     char **retstr = NULL;
     const char *idx = NULL;
     const char *end = NULL;
@@ -24,22 +26,54 @@ char **splitLine(const char *str, const char *sep, int *toks, char meta)
     int curr_str = 0;
     char last_char = 0xFF;
 
+    char tokenstring_to_search[64] = ",,";
+    char tokenreplacement_string[64] = ",,";
+    char *substitutedstring = NULL;
+
+    sprintf(tokenstring_to_search, "%s%s", sep, sep);
+    sprintf(tokenreplacement_string, "%s%s%s", sep, emptyfield, sep);
+    substitutedstring = csv_strsubst(str, tokenstring_to_search, tokenreplacement_string);
+    if (strncmp(substitutedstring, sep, strlen(sep)) == 0)
+    {
+        char *tmp = NULL;
+        int l = strlen(substitutedstring) + strlen(emptyfield) + strlen(sep) + 1;
+        tmp = (char*)MALLOC(sizeof(char) * l);
+        sprintf(tmp, "%s%s%s", emptyfield, sep, &substitutedstring[1]);
+        FREE(substitutedstring);
+        substitutedstring = tmp;
+    }
+
+    if (substitutedstring[strlen(substitutedstring) - 1] == sep[0])
+    {
+        char *tmp = NULL;
+        int l = strlen(substitutedstring) + strlen(emptyfield) + 1;
+        tmp = (char*)MALLOC(sizeof(char) * l);
+        sprintf(tmp, "%s%s", substitutedstring, emptyfield);
+        FREE(substitutedstring);
+        substitutedstring = tmp;
+
+    }
+
     sep_end = sep + strlen(sep);
-    end = str + strlen(str);
+    end = substitutedstring + strlen(substitutedstring);
 
     sep_idx = sep;
-    idx = str;
+    idx = substitutedstring;
 
-    if (strstr(str, sep) == NULL)
+    if (strstr(substitutedstring, sep) == NULL)
     {
         *toks = 0;
+        FREE(substitutedstring);
+        substitutedstring = NULL;
         return NULL;
     }
 
-    retstr = (char **) MALLOC((sizeof(char *) * (int)strlen(str)));
+    retstr = (char **) MALLOC((sizeof(char *) * (int)strlen(substitutedstring)));
     if (retstr == NULL)
     {
         *toks = 0;
+        FREE(substitutedstring);
+        substitutedstring = NULL;
         return NULL;
     }
 
@@ -51,26 +85,34 @@ char **splitLine(const char *str, const char *sep, int *toks, char meta)
             {
                 if(len > 0)
                 {
-                    if(curr_str < (int)strlen(str))
+                    if(curr_str < (int)strlen(substitutedstring))
                     {
                         retstr[curr_str] = (char *) MALLOC((sizeof(char) * len) + 1);
 
                         if(retstr[curr_str] == NULL)
                         {
                             *toks = 0;
+                            FREE(substitutedstring);
+                            substitutedstring = NULL;
                             return NULL;
                         }
                         memcpy(retstr[curr_str], (idx - len), len);
                         retstr[curr_str][len] = 0;
+                        if (strcmp(retstr[curr_str], emptyfield) == 0)
+                        {
+                            strcpy(retstr[curr_str], "");
+                        }
                         len = 0;
                         curr_str++;
                         last_char = *idx;
                         idx++;
                     }
 
-                    if(curr_str >= (int)strlen(str))
+                    if(curr_str >= (int)strlen(substitutedstring))
                     {
                         *toks = curr_str + 1;
+                        FREE(substitutedstring);
+                        substitutedstring = NULL;
                         return retstr;
                     }
                 }
@@ -101,14 +143,30 @@ char **splitLine(const char *str, const char *sep, int *toks, char meta)
         if(retstr[curr_str] == NULL)
         {
             *toks = 0;
+            if (substitutedstring)
+            {
+                FREE(substitutedstring);
+                substitutedstring = NULL;
+            }
             return NULL;
         }
 
         memcpy(retstr[curr_str], (idx - len), len);
         retstr[curr_str][len] = 0;
+        if (strcmp(retstr[curr_str], emptyfield) == 0)
+        {
+            strcpy(retstr[curr_str], "");
+        }
 
         *toks = curr_str + 1;
     }
+
+    if (substitutedstring)
+    {
+        FREE(substitutedstring);
+        substitutedstring = NULL;
+    }
+
     return retstr;
 }
 /* ==================================================================== */

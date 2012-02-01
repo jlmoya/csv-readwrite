@@ -279,8 +279,16 @@ mputl(CSV, filename);
 [M, comments] = csv_read(filename, [], [], [], [], '/\/\//')
 </programlisting>
 
-
   </refsection>
+<para> Empty field are managed by csv_read </para>
+<programlisting role="example">
+  csv_write(['1','','3';'','','6'], TMPDIR + "/example.csv")
+  csv_read(TMPDIR + "/example.csv", [], [], "string")
+  csv_read(TMPDIR + "/example.csv", [], [], "double")
+</programlisting>
+<refsection>
+  
+</refsection>
 
   <refsection>
     <title>See Also</title>
@@ -294,7 +302,7 @@ mputl(CSV, filename);
     <title>Authors</title>
 
     <para>
-      Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+      Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
     </para>
     <para>
       Copyright (C) 2011 - DIGITEO - Michael Baudin
