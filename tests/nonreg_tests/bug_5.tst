@@ -1,5 +1,5 @@
 //
-//  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+//  Copyright (C) 2010 - 2012 - DIGITEO - Allan CORNET
 //
 //  This file must be used under the terms of the CeCILL.
 //  This source file is licensed as described in the file COPYING, which
@@ -12,24 +12,24 @@
 r1_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_5.csv", ",", [], "string");
 r1_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_5.csv", ",", ".", "double");
 // =============================================================================
-if size(r1_string, "c") <> size(r1_double, "c") then pause, end
-if size(r1_string, "r") <> size(r1_double, "r") then pause, end
+assert_checkequal(size(r1_string, "c"), size(r1_double, "c"));
+assert_checkequal(size(r1_string, "r"), size(r1_double, "r"));
 // =============================================================================
-if size(r1_string, "c") <> 1 then pause, end
-if size(r1_string, "r") <> 372 then pause, end
+assert_checkequal(size(r1_string, "c"), 1);
+assert_checkequal(size(r1_string, "r"), 372);
 // =============================================================================
-if r1_string(1) <> "0" then pause, end
-if r1_double(1) <> 0 then pause, end
+assert_checkequal(r1_string(1), "0");
+assert_checkequal(r1_double(1), 0);
 // =============================================================================
-if r1_string(2) <> "-0" then pause, end
-if r1_double(2) <> 0 then pause, end
+assert_checkequal(r1_string(2), "-0");
+assert_checkequal(r1_double(2), 0);
 // =============================================================================
-if r1_string(3) <> "1e-308" then pause, end
-if r1_double(3) <> 1e-308 then pause, end
+assert_checkequal(r1_string(3), "1e-308");
+assert_checkequal(r1_double(3), 1e-308);
 // =============================================================================
-if r1_string(4) <> "1e308" then pause, end
-if r1_double(4) <> 1e308 then pause, end
+assert_checkequal(r1_string(4), "1e308");
+assert_checkequal(r1_double(4), 1e308);
 // =============================================================================
-if r1_string(372) <> "0.001236" then pause, end
-if r1_double(372) <> 0.001236 then pause, end
+assert_checkequal(r1_string(372), "0.001236");
+assert_checkequal(r1_double(372), 0.001236);
 // =============================================================================

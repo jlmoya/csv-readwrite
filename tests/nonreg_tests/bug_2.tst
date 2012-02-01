@@ -1,5 +1,5 @@
 //
-//  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+//  Copyright (C) 2010 - 2012 - DIGITEO - Allan CORNET
 //
 //  This file must be used under the terms of the CeCILL.
 //  This source file is licensed as described in the file COPYING, which
@@ -11,10 +11,11 @@
 // =============================================================================
 r_string = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_2.csv", ",", [], "string");
 r_double = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/bug_2.csv", ",", ".", "double");
-if size(r_string, "c") <> size(r_double, "c") then pause, end
-if size(r_string, "r") <> size(r_double, "r") then pause, end
-if size(r_string, "c") <> 100 then pause, end
-if size(r_string, "r") <> 100 then pause, end
-if r_string(100, 100) <> '1' then pause,end
-if ~and(r_double == eye(100,100)) then pause,end
+// =============================================================================
+assert_checkequal(size(r_string, "c"), size(r_double, "c"));
+assert_checkequal(size(r_string, "r"), size(r_double, "r"));
+assert_checkequal(size(r_string, "c"), 100);
+assert_checkequal(size(r_string, "r"), 100);
+assert_checkequal(r_string(100, 100), '1');
+assert_checkequal(and(r_double == eye(100,100)), %T);
 // =============================================================================
