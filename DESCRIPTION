@@ -1,0 +1,92 @@
+
+Toolbox: csv_readwrite
+
+Title: csv_readwrite
+
+Summary: Fast functions to read and write csv files
+
+Version: 0.6
+
+Author: Allan CORNET
+ Michael Baudin
+
+Maintainer: Allan Cornet <allan.cornet@scilab.org>
+
+Category: Data Handling
+
+Entity: Scilab - DIGITEO
+
+WebSite: http://forge.scilab.org/index.php/p/csv-readwrite/
+
+URL: http://atoms.scilab.org/toolboxes/csv_readwrite/0.6
+
+License: CeCILL
+
+ScilabVersion: >= 5.4
+
+Depends: 
+
+Date: 2012-02-01 12:06:01
+
+Description: Purpose
+ -------
+ 
+ The purpose of this module is to read and write 
+ Comma Separated Values (CSV) data files. 
+ The goal of this toolbox is to improve the flexibility, consistency and speed of
+ 
+ CSV reading and writing with respect to Scilab built-in 
+ write_csv and read_csv functions. 
+ 
+ On some large data files, we observed a 100x improvement of the 
+ speed.
+ 
+ Features
+ --------
+ 
+  * csv_default : Get or set defaults for csv files.
+  * csv_getToolboxPath : Returns the path to the current module.
+  * csv_read : Read comma-separated value file
+  * csv_stringtodouble : Convert a matrix of strings to a matrix of doubles.
+  * csv_textscan : Read comma-separated value in a matrix of strings
+  * csv_write : Write comma-separated value file
+  * csv_isnum: Check if a string represents a number
+ 
+ 
+ To compare speed:
+ 
+ with optimized functions:
+ stacksize('max');
+ M = ones(1000, 1000);
+ tic();
+ csv_write(M, TMPDIR + "/csv_write_1.csv");
+ toc()
+ 
+ tic();
+ r = csv_read(TMPDIR + "/csv_write_1.csv")
+ toc()
+ 
+ 
+ with default scilab functions (be patient):
+ stacksize('max');
+ M = ones(1000, 1000);
+ tic();
+ write_csv(M, TMPDIR + "/csv_write_1.csv");
+ toc()
+ 
+ tic();
+ r = read_csv(TMPDIR + "/csv_write_1.csv")
+ toc()
+ 
+ 
+ csv_readwrite (0.6) - February 2012
+  * This version requires Scilab 5.4.0
+  * Factorized code with new code in Scilab.
+  * Uses assert functions for tests.
+  * Add also %pi, %inf, %nan as format for pi, inf and nan number.
+  * Update demos with some benchs.
+  * Add csv_isnum function x10 (or more) faster than isnum scilab function
+  * Fixed ticket #637: module did not start in -NWNI mode
+  * Fixed ticket #644: csv_read did not support empty fields
+ 
+ 
