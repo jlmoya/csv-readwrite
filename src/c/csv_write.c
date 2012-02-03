@@ -26,6 +26,7 @@
 #include "csv_strsubst.h"
 #include "expandPathVariable.h"
 #include "csv_default.h"
+#include "utftolatin.h"
 /* ========================================================================== */
 #define DEFAULT_CSV_WRITE_STRING_FORMAT "%s"
 #define DEFAULT_CSV_WRITE_DOUBLE_FORMAT "%.lg"
@@ -61,17 +62,28 @@ static int signbit(double x)
 }
 #endif /* signbit */
 /* ========================================================================== */
+static int doConvertToLatin(void)
+{
+    char *encoding = getCsvDefaultEncoding();
+    if (encoding)
+    {
+        return (strcmp(encoding, "iso-latin") == 0) ? 1 : 0;
+    }
+    return 0;
+}
+/* ========================================================================== */
 csvWriteError csv_write_double(const char *filename,
-                               const double *pdValues, int m, int n,
-                               const char *separator,
-                               const char *decimal,
-                               const char *precisionFormat,
-                               const char **headersLines,
-                               int nbHeadersLines)
+    const double *pdValues, int m, int n,
+    const char *separator,
+    const char *decimal,
+    const char *precisionFormat,
+    const char **headersLines,
+    int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
     char *expandedFilename = NULL;
+    int isIsoLatin = 0;
 
     if (filename == NULL) return CSV_WRITE_ERROR;
     if (pdValues == NULL) return CSV_WRITE_ERROR;
@@ -87,11 +99,29 @@ csvWriteError csv_write_double(const char *filename,
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
 
+    isIsoLatin = doConvertToLatin();
+
     if ((headersLines) && (nbHeadersLines > 0))
     {
         for (i = 0; i < nbHeadersLines; i++)
         {
-            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            if (isIsoLatin)
+            {
+                char *converted = utftolatin(headersLines[i]);
+                if (converted)
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, converted);
+                    FREE(converted);
+                }
+                else
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+                }
+            }
+            else
+            {
+                fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            }
             fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
@@ -142,18 +172,19 @@ csvWriteError csv_write_double(const char *filename,
 }
 /* ========================================================================== */
 csvWriteError csv_write_complex(const char *filename,
-                                const double *pdValuesReal,
-                                const double *pdValuesImag,
-                                int m, int n,
-                                const char *separator,
-                                const char *decimal,
-                                const char *precisionFormat,
-                                const char **headersLines,
-                                int nbHeadersLines)
+    const double *pdValuesReal,
+    const double *pdValuesImag,
+    int m, int n,
+    const char *separator,
+    const char *decimal,
+    const char *precisionFormat,
+    const char **headersLines,
+    int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
     char *expandedFilename = NULL;
+    int isIsoLatin = 0;
 
     if (filename == NULL) return CSV_WRITE_ERROR;
     if (pdValuesReal == NULL) return CSV_WRITE_ERROR;
@@ -170,11 +201,30 @@ csvWriteError csv_write_complex(const char *filename,
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
 
+    isIsoLatin = doConvertToLatin();
+
     if ((headersLines) && (nbHeadersLines > 0))
     {
         for (i = 0; i < nbHeadersLines; i++)
         {
-            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            if (isIsoLatin)
+            {
+                char *converted = utftolatin(headersLines[i]);
+                if (converted)
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, converted);
+                    FREE(converted);
+                    converted = NULL;
+                }
+                else
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+                }
+            }
+            else
+            {
+                fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            }
             fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
@@ -250,7 +300,6 @@ csvWriteError csv_write_complex(const char *filename,
                 }
                 else
                 {
-
                     sprintf(buffer, DEFAULT_CSV_WRITE_DOUBLE_FORMAT, fabs(pdValuesImag[i + m*j]));
                     strcat(StringValue, buffer);
                 }
@@ -282,15 +331,16 @@ csvWriteError csv_write_complex(const char *filename,
 }
 /* ========================================================================== */
 csvWriteError csv_write_string(const char *filename,
-                               const char **pStrValues, int m, int n,
-                               const char *separator,
-                               const char *decimal,
-                               const char **headersLines,
-                               int nbHeadersLines)
+    const char **pStrValues, int m, int n,
+    const char *separator,
+    const char *decimal,
+    const char **headersLines,
+    int nbHeadersLines)
 {
     FILE  *fd = NULL;
     int i = 0, j = 0;
     char *expandedFilename = NULL;
+    int isIsoLatin = 0;
 
     if (filename == NULL) return CSV_WRITE_ERROR;
     if (pStrValues == NULL) return CSV_WRITE_ERROR;
@@ -304,11 +354,30 @@ csvWriteError csv_write_string(const char *filename,
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if ( fd == (FILE *)NULL ) return CSV_WRITE_FOPEN_ERROR;
 
+    isIsoLatin = doConvertToLatin();
+
     if ((headersLines) && (nbHeadersLines > 0))
     {
         for (i = 0; i < nbHeadersLines; i++)
         {
-            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            if (isIsoLatin)
+            {
+                char *converted = utftolatin(headersLines[i]);
+                if (converted)
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, converted);
+                    FREE(converted);
+                    converted = NULL;
+                }
+                else
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+                }
+            }
+            else
+            {
+                fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, headersLines[i]);
+            }
             fprintf(fd, "%s", getCsvDefaultEOL());
         }
     }
@@ -319,7 +388,24 @@ csvWriteError csv_write_string(const char *filename,
         {
             if (decimal == NULL)
             {
-                fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, pStrValues[i + m*j]);
+                if (isIsoLatin)
+                {
+                    char *converted = utftolatin(pStrValues[i + m*j]);
+                    if (converted)
+                    {
+                        fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, converted);
+                        FREE(converted);
+                        converted = NULL;
+                    }
+                    else
+                    {
+                        fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, pStrValues[i + m*j]);
+                    }
+                }
+                else
+                {
+                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, pStrValues[i + m*j]);
+                }
             }
             else
             {
@@ -327,7 +413,24 @@ csvWriteError csv_write_string(const char *filename,
                 result = csv_strsubst((char*)(pStrValues[i + m*j]), getCsvDefaultDecimal(), decimal);
                 if (result)
                 {
-                    fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
+                    if (isIsoLatin)
+                    {
+                        char *converted = utftolatin(result);
+                        if (converted)
+                        {
+                            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, converted);
+                            FREE(converted);
+                            converted = NULL;
+                        }
+                        else
+                        {
+                            fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
+                        }
+                    }
+                    else
+                    {
+                        fprintf(fd, DEFAULT_CSV_WRITE_STRING_FORMAT, result);
+                    }
                     FREE(result);
                     result = NULL;
                 }
@@ -345,3 +448,4 @@ csvWriteError csv_write_string(const char *filename,
     return CSV_WRITE_NO_ERROR;
 }
 /* ========================================================================== */
+

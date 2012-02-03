@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 2010-2011 - DIGITEO - Allan CORNET
+*  Copyright (C) 2010-2012 - DIGITEO - Allan CORNET
 *
 *  This file must be used under the terms of the CeCILL.
 *  This source file is licensed as described in the file COPYING, which

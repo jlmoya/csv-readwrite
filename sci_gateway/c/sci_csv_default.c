@@ -30,6 +30,7 @@
 #define PRECISION_FIELDNAME "precision"
 #define COMMENTSREGEXP_FIELDNAME "regexp"
 #define EOL_FIELDNAME "eol"
+#define ENCODING_FIELDNAME "encoding"
 #define RESET_PARAMATERS "reset"
 /* ========================================================================== */
 #define MACOS9_EOL_STRING "macos9"
@@ -39,7 +40,7 @@
 #define LINUX_EOL_STRING "linux"
 #define LINUX_EOL "\n"
 /* ========================================================================== */
-#define NUMBER_FIELD 6
+#define NUMBER_FIELD 7
 /* ========================================================================== */
 static int sci_csv_default_no_rhs(char *fname);
 static int sci_csv_default_one_rhs(char *fname);
@@ -82,36 +83,39 @@ static int sci_csv_default_no_rhs(char *fname)
         arrayOut[3] = strdup(PRECISION_FIELDNAME);
         arrayOut[4] = strdup(COMMENTSREGEXP_FIELDNAME);
         arrayOut[5] = strdup(EOL_FIELDNAME);
+        arrayOut[6] = strdup(ENCODING_FIELDNAME);
 
-        arrayOut[6] = strdup(getCsvDefaultSeparator());
-        arrayOut[7] = strdup(getCsvDefaultDecimal());
-        arrayOut[8] = strdup(getCsvDefaultConversion());
-        arrayOut[9] = strdup(getCsvDefaultPrecision());
-        arrayOut[10] = strdup(getCsvDefaultCommentsRegExp());
+        arrayOut[7] = strdup(getCsvDefaultSeparator());
+        arrayOut[8] = strdup(getCsvDefaultDecimal());
+        arrayOut[9] = strdup(getCsvDefaultConversion());
+        arrayOut[10] = strdup(getCsvDefaultPrecision());
+        arrayOut[11] = strdup(getCsvDefaultCommentsRegExp());
 
         if (currentEol)
         {
             if (strcmp(currentEol, MACOS9_EOL) == 0)
             {
-                arrayOut[11] = strdup(MACOS9_EOL_STRING);
+                arrayOut[12] = strdup(MACOS9_EOL_STRING);
             }
             else if (strcmp(currentEol, WINDOWS_EOL) == 0)
             {
-                arrayOut[11] = strdup(WINDOWS_EOL_STRING);
+                arrayOut[12] = strdup(WINDOWS_EOL_STRING);
             }
             else if (strcmp(currentEol, LINUX_EOL) == 0)
             {
-                arrayOut[11] = strdup(LINUX_EOL_STRING);
+                arrayOut[12] = strdup(LINUX_EOL_STRING);
             }
             else
             {
-                arrayOut[11] = strdup("ERROR");
+                arrayOut[12] = strdup("ERROR");
             }
         }   
         else
         {
-            arrayOut[11] = strdup("ERROR");
+            arrayOut[12] = strdup("ERROR");
         }
+        
+        arrayOut[13] = strdup(getCsvDefaultEncoding());
 
         sciErr = createMatrixOfString(pvApiCtx, Rhs + 1, nbRows, nbCols, arrayOut);
         freeArrayOfString(arrayOut, sizeArray);
@@ -188,6 +192,10 @@ static int sci_csv_default_one_rhs(char *fname)
         {
             fieldvalue = strdup("ERROR");
         }
+    }
+    else if (strcmp(fieldname, ENCODING_FIELDNAME) == 0)
+    {
+      fieldvalue = strdup(getCsvDefaultEncoding());
     }
     else if (strcmp(fieldname, RESET_PARAMATERS) == 0)
     {
@@ -328,9 +336,24 @@ static int sci_csv_default_two_rhs(char *fname)
             resultSet = 1;
         }
     }
+    else if (strcmp(fieldname, ENCODING_FIELDNAME) == 0)
+    {
+        if (strcmp(fieldvalue, "utf-8") == 0)
+        {
+            resultSet = setCsvDefaultEncoding(fieldvalue);
+        }
+        else if (strcmp(fieldvalue, "iso-latin") == 0)
+        {
+            resultSet = setCsvDefaultEncoding(fieldvalue);
+        }
+        else
+        {
+            resultSet = 1;
+        }
+    }
     else
     {
-        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' ,'%s' , '%s', '%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME, PRECISION_FIELDNAME, COMMENTSREGEXP_FIELDNAME, EOL_FIELDNAME);
+        Scierror(999,_("%s: Wrong value for input argument #%d: '%s', '%s' ,'%s' , '%s', '%s', '%s' or '%s' expected.\n"), fname, 1, SEPARATOR_FIELDNAME, DECIMAL_FIELDNAME, CONVERSION_FIELDNAME, PRECISION_FIELDNAME, COMMENTSREGEXP_FIELDNAME, EOL_FIELDNAME, ENCODING_FIELDNAME);
         if (fieldname) {FREE(fieldname); fieldname = NULL;}
         if (fieldvalue) {FREE(fieldvalue); fieldvalue = NULL;}
         return 0;

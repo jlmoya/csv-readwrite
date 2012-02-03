@@ -1,5 +1,5 @@
 //
-//  Copyright (C) 2010 - 2011 - DIGITEO - Allan CORNET
+//  Copyright (C) 2010 - 2012 - DIGITEO - Allan CORNET
 //
 //  This file must be used under the terms of the CeCILL.
 //  This source file is licensed as described in the file COPYING, which
@@ -43,7 +43,9 @@ files_src = ["csv_read.c", ..
              "nan.c", ..
              "inf.c", ..
              "csv_complex.c", ..
-			 "csv_isnum.c"];
+             "csv_isnum.c", ..
+             "latintoutf.c", ..
+             "utftolatin.c"];
 
 libfunctions_c = 'csv_readwrite';
 
