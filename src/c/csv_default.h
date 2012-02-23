@@ -18,6 +18,7 @@ const char *getCsvDefaultPrecision(void);
 const char *getCsvDefaultCommentsRegExp(void);
 const char *getCsvDefaultEOL(void);
 const char *getCsvDefaultEncoding(void);
+const char *getCsvDefaultCsvIgnoreBlankLine(void);
 
 int setCsvDefaultSeparator(const char *separator);
 int setCsvDefaultDecimal(const char *decimal);
@@ -26,6 +27,7 @@ int setCsvDefaultPrecision(const char *precision);
 int setCsvDefaultCommentsRegExp(const char *commentsRegExp);
 int setCsvDefaultEOL(const char *eol);
 int setCsvDefaultEncoding(const char *encoding);
+int setCsvDefaultCsvIgnoreBlankLine(const char *blankMode);
 
 int setCsvDefaultReset(void);
 

@@ -59,7 +59,7 @@
           <para>
             a 1-by-1 matrix of strings, the name of the field to get or set. 
             The available values of <literal>field</literal> are "separator", 
-            "decimal", "conversion", "precision", "regexp", "eol".
+            "decimal", "conversion", "precision", "regexp", "eol", "encoding", "blank".
           </para>
         </listitem>
       </varlistentry>
@@ -191,6 +191,20 @@
           field = "eol": end of line used to write lines of the <literal>csv_write</literal>function.</para>
           <para>Possible values are "linux", "windows", "macos9".</para>
           <para>by default, this value is platform-dependant.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+          field = "encoding":</para>
+          <para>Possible values are "utf-8", "iso-latin".</para>
+          <para>by default, this value is "utf-8".</para>
+      </listitem>
+
+      <listitem>
+        <para>
+          field = "blank": remove all blank lines before to parse text</para>
+          <para>Possible values are "on", "off".</para>
+          <para>by default, this value is "off".</para>
       </listitem>
 
       

@@ -47,6 +47,7 @@ static char **extractComments(const char **lines, int nbLines, const char *regex
     int *nbcomments, int *iErr);
 static char **removeComments(const char **lines, int nbLines,
     const char *regexpcomments, int *nbNewLine, int *iErr);
+static char **removeAllBlankLines(const char **lines, int *sizelines);
 /* ========================================================================== */
 csvResult* csv_read(const char *filename, const char *separator, const char *decimal,
     const char **toreplace, int sizetoreplace, const char *regexpcomments)
@@ -222,8 +223,25 @@ csvResult* csv_textscan(const char **lines, int numberOfLines, const char *separ
         return result;
     }
 
-    /* remove last lines empty (bug 7003 in scilab)*/
-    cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
+    // ticket 472
+    {
+        const char *blankMode = getCsvDefaultCsvIgnoreBlankLine();
+        if (strcmp(blankMode, "on") == 0)
+        {
+            int nbLinesBackup = nbLines;
+            char **tmpLines = removeAllBlankLines(lines, &nbLines);
+            if (tmpLines)
+            {
+                freeArrayOfString(cleanedLines, nbLines);
+                cleanedLines = tmpLines;
+            }
+        }
+        else
+        {
+            /* remove last lines empty (bug 7003 in scilab)*/
+            cleanedLines = removeEmptyLinesAtTheEnd(lines, &nbLines);
+        }
+    }
 
     nbColumns = getNumbersOfColumnsInLines((const char **)cleanedLines, nbLines, separator);
     if (nbColumns == 0)
@@ -479,6 +497,51 @@ static char **removeEmptyLinesAtTheEnd(const char **lines, int *sizelines)
         }
     }
 
+    return returnedLines;
+}
+/* ========================================================================== */
+static char **removeAllBlankLines(const char **lines, int *sizelines)
+{
+    char **returnedLines = NULL;
+    int nbLines = 0;
+    if (lines)
+    {
+        int i = 0;
+        for (i = 0; i < *sizelines; i++)
+        {
+            char *cleanedLine = stripCharacters(lines[i]);
+            if (cleanedLine)
+            {
+                int len = (int) strlen(cleanedLine);
+                FREE(cleanedLine);
+                cleanedLine = NULL;
+                if (len != 0)
+                {
+                    if (nbLines == 0)
+                    {
+                        nbLines++;
+                        returnedLines = (char**)MALLOC(sizeof(char*) * nbLines);
+                    }
+                    else
+                    {
+                        nbLines++;
+                        returnedLines = (char**)REALLOC(returnedLines, sizeof(char*) * nbLines);
+                    }
+
+                    if (returnedLines)
+                    {
+                        returnedLines[nbLines - 1] = strdup(lines[i]);
+                    }
+                    else
+                    {
+                        *sizelines = 0;
+                        return NULL;
+                    }
+                }
+            }
+        }
+        *sizelines = nbLines;
+    }
     return returnedLines;
 }
 /* ========================================================================== */

@@ -3,6 +3,8 @@ changelog of the csv_readwrite
 csv_readwrite (0.7) - 
     * File encoding supported 'utf-8' and 'iso-latin' support by csv_write
     * add 'encoding' field in 'csv_default'
+    * add 'blank' field in 'csv_default'
+    * Fixed ticket #472: allows to remove all blank lines before parsing
 
 csv_readwrite (0.6) - February 2012
     * This version requires Scilab 5.4.0

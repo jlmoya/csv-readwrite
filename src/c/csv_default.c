@@ -34,6 +34,9 @@
 #define DEFAULT_CSV_ENCODING "utf-8"
 #define DEFAULT_CSV_ENCODING_MODE1 "utf-8"
 #define DEFAULT_CSV_ENCODING_MODE2 "iso-latin"
+#define CSV_IGNORE_BLANK_LINE_MODE_1 "off"
+#define CSV_IGNORE_BLANK_LINE_MODE_2 "on"
+#define DEFAULT_IGNORE_BLANK_LINE CSV_IGNORE_BLANK_LINE_MODE_1
 /* ========================================================================== */
 static char *defaultCsvSeparator = NULL;
 static char *defaultCsvDecimal = NULL;
@@ -42,6 +45,7 @@ static char *defaultCsvPrecision = NULL;
 static char *defaultCsvCommentsRegExp = NULL;
 static char *defaultCsvEOL = NULL;
 static char *defaultCsvEncoding = NULL;
+static char *defaultCsvIgnoreBlankLine = NULL;
 /* ========================================================================== */
 static int initializeCsvDefaultValues(void);
 /* ========================================================================== */
@@ -85,6 +89,12 @@ const char *getCsvDefaultEncoding(void)
 {
     initializeCsvDefaultValues();
     return defaultCsvEncoding;
+}
+/* ========================================================================== */
+const char *getCsvDefaultCsvIgnoreBlankLine(void)
+{
+    initializeCsvDefaultValues();
+    return defaultCsvIgnoreBlankLine;
 }
 /* ========================================================================== */
 int setCsvDefaultSeparator(const char *separator)
@@ -148,6 +158,20 @@ int setCsvDefaultPrecision(const char *precision)
     return 1;
 }
 /* ========================================================================== */
+int setCsvDefaultCsvIgnoreBlankLine(const char *blankMode)
+{
+  if (initializeCsvDefaultValues()) return 1;
+  if (blankMode == NULL) return 1;
+  if ((strcmp(blankMode, CSV_IGNORE_BLANK_LINE_MODE_1) == 0) ||
+      (strcmp(blankMode, CSV_IGNORE_BLANK_LINE_MODE_2) == 0))
+  {
+      if (defaultCsvIgnoreBlankLine) FREE(defaultCsvIgnoreBlankLine);
+      defaultCsvIgnoreBlankLine = strdup(blankMode);
+      if (defaultCsvIgnoreBlankLine) return 0;
+  }
+  return 1;  
+}
+/* ========================================================================== */
 static int initializeCsvDefaultValues(void)
 {
     if (defaultCsvSeparator == NULL)
@@ -184,6 +208,11 @@ static int initializeCsvDefaultValues(void)
     {
         defaultCsvEncoding = strdup(DEFAULT_CSV_ENCODING);
     }
+    
+    if (defaultCsvIgnoreBlankLine == NULL)
+    {
+      defaultCsvIgnoreBlankLine =  strdup(DEFAULT_IGNORE_BLANK_LINE);
+    }
 
     if ((defaultCsvSeparator == NULL) ||
         (defaultCsvDecimal == NULL) ||
@@ -191,7 +220,8 @@ static int initializeCsvDefaultValues(void)
         (defaultCsvPrecision == NULL) ||
         (defaultCsvCommentsRegExp == NULL) ||
         (defaultCsvEOL == NULL) ||
-        (defaultCsvEncoding == NULL)) 
+        (defaultCsvEncoding == NULL) ||
+        (defaultCsvIgnoreBlankLine == NULL))
     {
         return 1;
     }
@@ -208,6 +238,7 @@ int setCsvDefaultReset(void)
     if (defaultCsvCommentsRegExp) {FREE(defaultCsvCommentsRegExp); defaultCsvCommentsRegExp = NULL;}
     if (defaultCsvEOL) {FREE(defaultCsvEOL); defaultCsvEOL = NULL;}
     if (defaultCsvEncoding) {FREE(defaultCsvEncoding); defaultCsvEncoding = NULL;}
+    if (defaultCsvIgnoreBlankLine) {FREE(defaultCsvIgnoreBlankLine); defaultCsvIgnoreBlankLine = NULL;}
     return initializeCsvDefaultValues();
 }
 /* ========================================================================== */
