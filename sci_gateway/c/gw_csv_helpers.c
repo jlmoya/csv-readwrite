@@ -11,7 +11,6 @@
 */
 #include <string.h>
 #include "api_scilab.h"
-#include "stack-c.h"
 #include "sci_types.h"
 #include "Scierror.h"
 #include "MALLOC.h"
