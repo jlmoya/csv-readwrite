@@ -32,3 +32,9 @@ REF_str_m = ['','2','3';'4','','6'];
 csv_write(REF_str_m, TMPDIR + "/ticket_644.csv");
 str_m = csv_read(TMPDIR + "/ticket_644.csv", [], [], "string");
 assert_checkequal(str_m, REF_str_m);
+
+
+REF_str_m = ['1','2','3';'4','5',''];
+str_m = csv_read(csv_getToolboxPath() + "tests/nonreg_tests/ticket_644.csv", [], [], "string");
+assert_checkequal(str_m, REF_str_m);
+

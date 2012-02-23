@@ -22,7 +22,7 @@
 #define DEFAULT_CSV_PRECISION "%.17lg"
 #define DEFAULT_CSV_COMMENTS_REGEXP ""
 #ifdef _MSC_VER
-#define DEFAULT_CSV_EOL "\n\r"
+#define DEFAULT_CSV_EOL "\r\n"
 #else
 #define DEFAULT_CSV_EOL "\n"
 #endif
