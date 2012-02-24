@@ -12,6 +12,7 @@ csv_readwrite (0.7) -
     * add 'blank' field in 'csv_default'
     * Fixed ticket #472: allows to remove all blank lines before parsing
       see: csv_default('blank', 'on')
+    * Updated to use api_scilab (version 3)
 
 csv_readwrite (0.6) - February 2012
     * This version requires Scilab 5.4.0

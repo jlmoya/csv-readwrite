@@ -5,7 +5,7 @@ Title: csv_readwrite
 
 Summary: Fast functions to read and write csv files
 
-Version: 0.6
+Version: 0.7
 
 Author: Allan CORNET
  Michael Baudin
@@ -26,7 +26,7 @@ ScilabVersion: >= 5.4
 
 Depends: 
 
-Date: 2012-02-01 12:06:01
+Date: 2012-03-01 12:06:06
 
 Description: Purpose
  -------
@@ -79,14 +79,18 @@ Description: Purpose
  toc()
  
  
- csv_readwrite (0.6) - February 2012
-  * This version requires Scilab 5.4.0
-  * Factorized code with new code in Scilab.
-  * Uses assert functions for tests.
-  * Add also %pi, %inf, %nan as format for pi, inf and nan number.
-  * Update demos with some benchs.
-  * Add csv_isnum function x10 (or more) faster than isnum scilab function
-  * Fixed ticket #637: module did not start in -NWNI mode
-  * Fixed ticket #644: csv_read did not support empty fields
+ csv_readwrite (0.7) - 
+ * Faster conversion as double 
+   (Tested on 5.4-master Windows 64 bits  C2Q 2400 Mhz)
+   Previous version: Reading with csv_read and conversion to double:
+                     Time = 17.76 (s)
+   Current version: Reading with csv_read and conversion to double:
+                     Time = 7.34 (s)
+ * File encoding supported 'utf-8' and 'iso-latin' support by csv_write
+ * add 'encoding' field in 'csv_default'
+ * add 'blank' field in 'csv_default'
+ * Fixed ticket #472: allows to remove all blank lines before parsing
+   see: csv_default('blank', 'on')
+ * Updated to use api_scilab (version 3)
  
  
