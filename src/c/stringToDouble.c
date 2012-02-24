@@ -35,8 +35,6 @@
 #define stricmp _stricmp
 #endif
 /* ========================================================================== */
-#define DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT "%lg"
-/* ========================================================================== */
 double stringToDouble(const char *pSTR,
                       BOOL bConvertByNAN,
                       stringToDoubleError *ierr)
@@ -70,44 +68,39 @@ double stringToDouble(const char *pSTR,
         }
         else
         {
-            double v = 0.;
-
-            int err = sscanf(pSTR, DEFAULT_CSV_DOUBLE_MAX_DIGIT_FORMAT, &v);
-
-            if (err == 1)
+          char *pEnd = NULL;
+          double v = strtod(pSTR, &pEnd);
+          if ((v == 0) && (pEnd == pSTR))
+          {
+            if (bConvertByNAN)
             {
-                double v2 = 0.;
-                char * pEnd = NULL;
-                v2 = strtod(pSTR, &pEnd);
-                if (strcmp(pEnd, "") == 0)
-                {
-                    dValue = v2;
-                }
-                else
-                {
-                    if (bConvertByNAN)
-                    {
-                        dValue = returnNAN();
-                    }
-                    else
-                    {
-                        *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
-                        return (dValue = 0.0);
-                    }
-                }
+              dValue = returnNAN();
             }
             else
             {
-                if (bConvertByNAN)
-                {
-                    dValue = returnNAN();
-                }
-                else
-                {
-                    *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
-                    return (dValue = 0.0);
-                }
+              *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
+              return (dValue = 0.0);
             }
+          }
+          else
+          {
+            if (strcmp(pEnd, "") == 0)
+            {
+              dValue = v;
+            }
+            else
+            {
+              if (bConvertByNAN)
+              {
+                dValue = returnNAN();
+              }
+              else
+              {
+                *ierr = STRINGTODOUBLE_NOT_A_NUMBER;
+                return (dValue = 0.0);
+              }
+            }
+          }
         }
         *ierr = STRINGTODOUBLE_NO_ERROR;
     }
