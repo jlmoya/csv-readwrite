@@ -13,9 +13,9 @@
 #include "localization.h"
 #include "Scierror.h"
 #include "csv_isnum.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 /* ========================================================================== */
-int sci_csv_isnum(char *fname,unsigned long fname_len)
+int sci_csv_isnum(char *fname, void *pvApiCtx)
 {
     SciErr sciErr;
     int *piAddressVarOne = NULL;

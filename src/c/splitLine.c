@@ -12,7 +12,7 @@
 #include <string.h>
 #include "splitLine.h"
 #include "csv_strsubst.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 /* ==================================================================== */
 char **splitLine(const char *str, const char *sep, int *toks, char meta)
 {

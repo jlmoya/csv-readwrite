@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "csv_read.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "freeArrayOfString.h"
 #include "mgetl.h"
 #include "mopen.h"
@@ -25,7 +25,24 @@
 #include "strdup_windows.h"
 #endif
 #include "csv_default.h"
-#include "pcre_private.h"
+#include "pcre2_private.h"
+#include "charEncoding.h"
+/* --- Scilab 2027 port: PCRE1 internal API (pcre_private.h) was replaced by PCRE2.
+   Provide a narrow-char compat shim mapping the old pcre_private() onto pcre2_private(),
+   plus the old error-code names onto the new PCRE2_PRIV_* enum. --- */
+#define PCRE_FINISHED_OK            PCRE2_PRIV_FINISHED_OK
+#define CAN_NOT_COMPILE_PATTERN     PCRE2_PRIV_CAN_NOT_COMPILE_PATTERN
+#define DELIMITER_NOT_ALPHANUMERIC  PCRE2_PRIV_DELIMITER_NOT_ALPHANUMERIC
+static pcre2_error_code pcre_private(char* line, char* pattern, int* start, int* end)
+{
+    pcre2_error_code r;
+    wchar_t* wline = to_wide_string(line);
+    wchar_t* wpat  = to_wide_string(pattern);
+    r = pcre2_private(wline, wpat, start, end, NULL, NULL, NULL);
+    if (wline) { FREE(wline); }
+    if (wpat)  { FREE(wpat); }
+    return r;
+}
 /* ========================================================================== */
 #if _MSC_VER
 #define READ_ONLY_TEXT_MODE "rt"
@@ -627,7 +644,7 @@ static char **extractComments(const char **lines, int nbLines,
     {
         int Output_Start = 0;
         int Output_End = 0;
-        pcre_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
+        pcre2_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
 
         if ( (answer == CAN_NOT_COMPILE_PATTERN) || (answer == DELIMITER_NOT_ALPHANUMERIC))
         {
@@ -672,7 +689,7 @@ static char **removeComments(const char **lines, int nbLines,
     {
         int Output_Start = 0;
         int Output_End = 0;
-        pcre_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
+        pcre2_error_code answer = pcre_private((char*)lines[i], (char*)regexpcomments, &Output_Start, &Output_End);
         if ( answer == PCRE_FINISHED_OK )
         {
             FREE(lines[i]);

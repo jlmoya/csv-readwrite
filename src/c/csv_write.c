@@ -17,7 +17,7 @@
 #include <string.h>
 #include "csv_write.h"
 #include "charEncoding.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "core_math.h"
 #include "BOOL.h"
 #ifdef _MSC_VER

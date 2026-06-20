@@ -13,7 +13,7 @@
 #include "api_scilab.h"
 #include "sci_types.h"
 #include "Scierror.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "csv_write.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
@@ -27,7 +27,7 @@
 /* csv_write(M, filename[, separator, decimal, precision]) */
 /* with M string or double (not complex)
 /* ========================================================================== */
-int sci_csv_write(char *fname)
+int sci_csv_write(char *fname, void *pvApiCtx)
 {
     SciErr sciErr;
     int iErr = 0;

@@ -13,7 +13,7 @@
 #include "Scierror.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "csv_read.h"
 #ifdef _MSC_VER
 #include "strdup_windows.h"
@@ -29,7 +29,7 @@
 /* ==================================================================== */
 /* csv_read(filename, separator, decimal, conversion, substitute, range)*/
 /* ==================================================================== */
-int sci_csv_read(char *fname)
+int sci_csv_read(char *fname, void *pvApiCtx)
 {
     SciErr sciErr;
     int iErr = 0;
@@ -364,7 +364,7 @@ int sci_csv_read(char *fname)
                         }
                         LhsVar(2) = Rhs + 2;
                     }
-                    C2F(putlhsvar)();
+                    PutLhsVar();
                 }
             }
             break;

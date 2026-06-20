@@ -11,7 +11,7 @@
 /* ========================================================================== */
 #include "csv_isnum.h"
 #include "stringToComplex.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 /* ========================================================================== */
 BOOL csv_isNum(const char *pStr)
 {

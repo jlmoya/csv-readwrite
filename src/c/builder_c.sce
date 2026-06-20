@@ -51,7 +51,7 @@ libfunctions_c = 'csv_readwrite';
 
 tbx_build_src(libfunctions_c, ..
               files_src, ..
-              "c", ..             ..
+              "c", ..
               src_c_path,         ..
               LIBS,                 ..
               "",                 ..

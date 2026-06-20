@@ -11,7 +11,7 @@
 
 #include <string.h>
 #include "csv_default.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #ifdef _MSC_VER
 #include "strdup_windows.h"
 #endif

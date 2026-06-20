@@ -13,7 +13,7 @@
 #include "api_scilab.h"
 #include "sci_types.h"
 #include "Scierror.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "Scierror.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
@@ -29,7 +29,7 @@
 #define CONVTOSTR "string"
 #define CONVTODOUBLE "double"
 /* ========================================================================== */
-int sci_csv_textscan(char *fname)
+int sci_csv_textscan(char *fname, void *pvApiCtx)
 {
     SciErr sciErr;
     int iErr = 0;
@@ -304,7 +304,7 @@ int sci_csv_textscan(char *fname)
                 else
                 {
                     LhsVar(1) = Rhs + 1;
-                    C2F(putlhsvar)();
+                    PutLhsVar();
                 }
             }
             break;

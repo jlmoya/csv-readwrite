@@ -13,7 +13,7 @@
 #include "api_scilab.h"
 #include "sci_types.h"
 #include "Scierror.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "localization.h"
 #include "gw_csv_helpers.h"
 #ifdef _MSC_VER

@@ -8,7 +8,7 @@
 #endif
 #include "latintoutf.h"
 #include "charEncoding.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 /* ==================================================================== */
 #ifdef _MSC_VER
 #pragma comment(lib,"oleaut32.lib")

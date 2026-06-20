@@ -14,7 +14,7 @@
 #include <math.h>
 #include "stringToComplex.h"
 #include "stringToDouble.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #ifdef  _MSC_VER
 #include "strdup_windows.h"
 #endif

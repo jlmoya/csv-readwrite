@@ -10,7 +10,7 @@
 */
 /* ========================================================================== */
 #include "stringsToDoubles.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 /* ========================================================================== */
 double *stringsToDoubles(const char **pSTRs, int nbElements,
                          BOOL bConvertByNAN, stringToDoubleError *ierr)

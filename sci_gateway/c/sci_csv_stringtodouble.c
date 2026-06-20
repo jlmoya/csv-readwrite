@@ -13,7 +13,7 @@
 #include "api_scilab.h"
 #include "sci_types.h"
 #include "Scierror.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "Scierror.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
@@ -25,7 +25,7 @@
 #include "gw_csv_helpers.h"
 #include "csv_complex.h"
 /* ========================================================================== */
-int sci_csv_stringtodouble(char *fname)
+int sci_csv_stringtodouble(char *fname, void *pvApiCtx)
 {
     SciErr sciErr;
     int iErr = 0;
@@ -110,7 +110,7 @@ int sci_csv_stringtodouble(char *fname)
     else
     {
         LhsVar(1) = Rhs + 1;
-        C2F(putlhsvar)();
+        PutLhsVar();
     }
 
     return 0;

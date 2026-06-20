@@ -19,7 +19,7 @@
 #include <math.h>
 #include "core_math.h" /* M_PI */
 #include "stringToDouble.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "csv_default.h"
 #ifdef  _MSC_VER
 #include "strdup_windows.h"

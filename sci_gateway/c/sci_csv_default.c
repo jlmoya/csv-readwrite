@@ -13,7 +13,7 @@
 #include "api_scilab.h"
 #include "sci_types.h"
 #include "Scierror.h"
-#include "MALLOC.h"
+#include "sci_malloc.h"
 #include "Scierror.h"
 #include "localization.h"
 #include "freeArrayOfString.h"
@@ -46,7 +46,7 @@ static int sci_csv_default_no_rhs(char *fname);
 static int sci_csv_default_one_rhs(char *fname);
 static int sci_csv_default_two_rhs(char *fname);
 /* ========================================================================== */
-int sci_csv_default(char *fname)
+int sci_csv_default(char *fname, void *pvApiCtx)
 {
     Rhs = Max(0, Rhs);
     CheckRhs(0, 2);
@@ -128,7 +128,7 @@ static int sci_csv_default_no_rhs(char *fname)
         }
 
         LhsVar(1) = Rhs + 1;
-        C2F(putlhsvar)();
+        PutLhsVar();
     }
     else
     {
@@ -213,7 +213,7 @@ static int sci_csv_default_one_rhs(char *fname)
         createEmptyMatrix(pvApiCtx, Rhs + 1);
 
         LhsVar(1) = Rhs + 1;
-        C2F(putlhsvar)();
+        PutLhsVar();
         return 0;
     }
     else
@@ -230,7 +230,7 @@ static int sci_csv_default_one_rhs(char *fname)
     if (fieldvalue) {FREE(fieldvalue); fieldvalue = NULL;}
 
     LhsVar(1) = Rhs + 1;
-    C2F(putlhsvar)();
+    PutLhsVar();
 
     return 0;
 }
@@ -363,7 +363,7 @@ static int sci_csv_default_two_rhs(char *fname)
     if (fieldvalue) {FREE(fieldvalue); fieldvalue = NULL;}
 
     LhsVar(1) = Rhs + 1;
-    C2F(putlhsvar)();
+    PutLhsVar();
 
     return 0;
 }
