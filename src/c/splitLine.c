@@ -10,6 +10,7 @@
 */
 
 #include <string.h>
+#include <stdio.h>
 #include "splitLine.h"
 #include "csv_strsubst.h"
 #include "sci_malloc.h"

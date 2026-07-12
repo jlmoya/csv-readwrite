@@ -2,6 +2,7 @@
 /* Allan CORNET */
 /* DIGITEO 2011 */
 /* ==================================================================== */
+#include <string.h>
 #ifdef _MSC_VER
 #include <windows.h>
 #include "strdup_windows.h"
@@ -16,6 +17,43 @@
 /* ==================================================================== */
 #define LINE_MAX 4096
 #define EMPTYSTR ""
+/* ==================================================================== */
+/* Scilab 2027 port: IsValidUTF8() was never a Scilab/Windows API function
+   (it is called unconditionally on every platform below, not just under
+   _MSC_VER) and does not exist anywhere in current Scilab core either --
+   provide a minimal, self-contained UTF-8 well-formedness check locally. */
+static int IsValidUTF8(const char *str)
+{
+    const unsigned char *bytes = (const unsigned char*)str;
+    if (!bytes)
+    {
+        return 0;
+    }
+    while (*bytes)
+    {
+        if ((bytes[0] & 0x80) == 0x00)
+        {
+            bytes += 1;
+        }
+        else if ((bytes[0] & 0xE0) == 0xC0 && (bytes[1] & 0xC0) == 0x80)
+        {
+            bytes += 2;
+        }
+        else if ((bytes[0] & 0xF0) == 0xE0 && (bytes[1] & 0xC0) == 0x80 && (bytes[2] & 0xC0) == 0x80)
+        {
+            bytes += 3;
+        }
+        else if ((bytes[0] & 0xF8) == 0xF0 && (bytes[1] & 0xC0) == 0x80 && (bytes[2] & 0xC0) == 0x80 && (bytes[3] & 0xC0) == 0x80)
+        {
+            bytes += 4;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 /* ==================================================================== */
 char *latintoutf(char *_inString)
 {

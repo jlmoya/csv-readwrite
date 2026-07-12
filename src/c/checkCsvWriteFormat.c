@@ -10,6 +10,7 @@
  */
 
 #include <string.h>
+#include <ctype.h>
 #include "csv_default.h"
 #include "sci_malloc.h"
 #ifdef _MSC_VER

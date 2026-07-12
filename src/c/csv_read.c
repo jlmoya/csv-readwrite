@@ -73,12 +73,12 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
     csvResult *result = NULL;
     int fd = 0;
     int f_swap = 0;
-    double res = 0.0;
     int errMOPEN = MOPEN_INVALID_STATUS;
-    int errMGETL = MGETL_ERROR;
-    double dErrClose = 0.;
     char **lines = NULL;
     int nblines = 0;
+    wchar_t **wlines = NULL;
+    wchar_t *wExpandedFilename = NULL;
+    wchar_t *wMode = NULL;
     char **replacedInLines = NULL;
     char **pComments = NULL;
     int nbComments = 0;
@@ -105,7 +105,11 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
         return result;
     }
 
-    C2F(mopen)(&fd, expandedFilename, READ_ONLY_TEXT_MODE, &f_swap, &res, &errMOPEN);
+    wExpandedFilename = to_wide_string(expandedFilename);
+    wMode = to_wide_string(READ_ONLY_TEXT_MODE);
+    errMOPEN = mopen(wExpandedFilename, wMode, f_swap, &fd);
+    if (wMode) {FREE(wMode); wMode = NULL;}
+    if (wExpandedFilename) {FREE(wExpandedFilename); wExpandedFilename = NULL;}
     if (expandedFilename) {FREE(expandedFilename); expandedFilename = NULL;}
     if (errMOPEN != MOPEN_NO_ERROR)
     {
@@ -123,18 +127,12 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
         return result;
     }
 
-    lines = mgetl(fd, -1, &nblines, &errMGETL);
+    nblines = mgetl(fd, -1, &wlines);
 
-    C2F(mclose)(&fd, &dErrClose);
+    mclose(fd);
 
-    if (errMGETL != MGETL_NO_ERROR)
+    if (nblines < 0)
     {
-        if (lines)
-        {
-            freeArrayOfString(lines, nblines);
-            lines = NULL;
-        }
-
         result = (csvResult*)(MALLOC(sizeof(csvResult)));
         if (result)
         {
@@ -146,6 +144,29 @@ csvResult* csv_read(const char *filename, const char *separator, const char *dec
             result->nbComments = 0;
         }
         return result;
+    }
+
+    /* Scilab 2027 port: mgetl() now returns wide-char lines (wchar_t**);
+       narrow them to UTF-8 char* so the rest of this (narrow-char) module
+       is unchanged below. */
+    lines = (char**)MALLOC(sizeof(char*) * nblines);
+    if (lines)
+    {
+        int i;
+        for (i = 0; i < nblines; i++)
+        {
+            lines[i] = wide_string_to_UTF8(wlines[i]);
+        }
+    }
+    if (wlines)
+    {
+        int i;
+        for (i = 0; i < nblines; i++)
+        {
+            if (wlines[i]) {FREE(wlines[i]);}
+        }
+        FREE(wlines);
+        wlines = NULL;
     }
 
     if (regexpcomments)

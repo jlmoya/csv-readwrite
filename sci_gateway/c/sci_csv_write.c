@@ -56,7 +56,14 @@ int sci_csv_write(char *fname, void *pvApiCtx)
     int iType1 = 0;
 
     CheckRhs(2, 6);
-    CheckLhs(1, 1);
+    // Scilab 2027 port: the success path below only ever does `LhsVar(1) = 0;`
+    // (this toolbox's void/no-return-value idiom -- it never actually creates
+    // a stack value for output #1), which is only consistent with being
+    // called with zero captured outputs. CheckLhs(1,1) forced exactly one,
+    // which the void success path could never satisfy on return -- matches
+    // the toolbox's own shipped test (tests/unit_tests/csv_readwrite.tst),
+    // which always calls csv_write(x,filename) bare, uncaptured.
+    CheckLhs(0, 1);
 
     if (Rhs > 5)
     {

@@ -16,6 +16,11 @@ function builder_gateway()
   else
     includes_src_c = "-I" + get_absolute_file_path("builder_gateway_c.sce") + "../../src/c";
     includes_src_c = includes_src_c + " -I" + get_absolute_file_path("builder_gateway_c.sce");
+    // Scilab 2027 port: this toolbox's narrow-char API is internally consistent
+    // but passes char** where callees declare const char** (nested-pointer
+    // const mismatch, C-legal but always warns); silence just that one class
+    // so real errors aren't buried under the (large) volume of these warnings.
+    includes_src_c = includes_src_c + " -Wno-incompatible-pointer-types-discards-qualifiers";
  end
 
   WITHOUT_AUTO_PUTLHSVAR = %t;

@@ -24,8 +24,12 @@ catch
     error(gettext("Scilab 5.4 or more is required."));
 end
 
-if v(2) < 4 then
-    // new API in scilab 5.4
+// Scilab 2027+ uses a year-based major version (v(1)=2027, v(2)=minor), so
+// comparing v(2) against the old "5.4" scheme (v(1)=5, v(2)=4) misfires here
+// (v(2)=0 < 4) and incorrectly rejects a perfectly modern Scilab. Compare
+// against v(1) instead: this still rejects genuinely old Scilab (<5.x) while
+// accepting both the legacy 5.x/6.x scheme and the new year-based scheme.
+if v(1) < 5 then
     error(gettext('Scilab 5.4 or more is required.'));
 end
 clear v;
@@ -34,7 +38,7 @@ clear v;
 // =============================================================================
 
 if ~isdef('tbx_build_loader') then
-  error(msprintf(gettext('%s module not installed."), 'modules_manager'));
+  error(msprintf(gettext('%s module not installed.'), 'modules_manager'));
 end
 
 // Action

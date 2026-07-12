@@ -31,7 +31,7 @@ char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const 
     int iType = 0;
     int m = 0, n = 0;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -39,7 +39,7 @@ char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const 
         return NULL;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -49,7 +49,7 @@ char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const 
 
     if (iType != sci_strings)
     {
-        if (isEmptyMatrix(pvApiCtx, piAddressVar))
+        if (isEmptyMatrix(_pvCtx, piAddressVar))
         {
             /* [] equals default value */
             if (defaultValue)
@@ -72,7 +72,7 @@ char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const 
     }
     else
     {
-        *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+        *iErr = checkVarDimension(_pvCtx, piAddressVar, 1, 1);
 
         if (*iErr == 0 )
         {
@@ -81,7 +81,7 @@ char *csv_getArgumentAsStringWithEmptyManagement(void* _pvCtx, int _iVar, const 
             return NULL;
         }
 
-        *iErr = getAllocatedSingleString(pvApiCtx, piAddressVar, &returnedValue);
+        *iErr = getAllocatedSingleString(_pvCtx, piAddressVar, &returnedValue);
         if (*iErr)
         {
             Scierror(999,_("%s: Memory allocation error.\n"), fname);
@@ -102,7 +102,7 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
 
     char *returnedValue = NULL;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -110,7 +110,7 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -125,7 +125,7 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+    *iErr = checkVarDimension(_pvCtx, piAddressVar, 1, 1);
 
     if (*iErr == 0 )
     {
@@ -134,7 +134,7 @@ char *csv_getArgumentAsString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    *iErr = getAllocatedSingleString(pvApiCtx, piAddressVar, &returnedValue);
+    *iErr = getAllocatedSingleString(_pvCtx, piAddressVar, &returnedValue);
     if (*iErr)
     {
         Scierror(999,_("%s: Memory allocation error.\n"), fname);
@@ -152,7 +152,7 @@ double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
     int m = 0, n = 0;
     int iType = 0;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -160,7 +160,7 @@ double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -175,7 +175,7 @@ double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+    *iErr = checkVarDimension(_pvCtx, piAddressVar, 1, 1);
 
     if (*iErr == 0 )
     {
@@ -184,7 +184,7 @@ double csv_getArgumentAsScalarDouble(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    *iErr = getScalarDouble(pvApiCtx, piAddressVar, &dValue);
+    *iErr = getScalarDouble(_pvCtx, piAddressVar, &dValue);
     return dValue;
 }
 /* ========================================================================== */
@@ -197,7 +197,7 @@ int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
     int m = 0, n = 0;
     int iType = 0;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -205,7 +205,7 @@ int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
@@ -220,7 +220,7 @@ int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    *iErr = checkVarDimension(pvApiCtx, piAddressVar, 1, 1);
+    *iErr = checkVarDimension(_pvCtx, piAddressVar, 1, 1);
 
     if (*iErr == 0 )
     {
@@ -229,7 +229,7 @@ int csv_getArgumentAsScalarBoolean(void* _pvCtx, int _iVar,
         return 0;
     }
 
-    *iErr = getScalarBoolean(pvApiCtx, piAddressVar, &bValue);
+    *iErr = getScalarBoolean(_pvCtx, piAddressVar, &bValue);
     return bValue;
 }
 /* ========================================================================== */
@@ -248,7 +248,7 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
     *m = 0;
     *n = 0;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -256,7 +256,7 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -271,7 +271,7 @@ char **csv_getArgumentAsMatrixOfString(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    *iErr = getAllocatedMatrixOfString(pvApiCtx, piAddressVar, &m_, &n_, &pStringValues);
+    *iErr = getAllocatedMatrixOfString(_pvCtx, piAddressVar, &m_, &n_, &pStringValues);
     if (*iErr != 0)
     {
         return NULL;
@@ -288,27 +288,27 @@ int csv_isRowVector(void* _pvCtx, int _iVar)
 {
     SciErr sciErr;
     int *piAddressVar = NULL;
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
-    return isRowVector(pvApiCtx, piAddressVar);
+    return isRowVector(_pvCtx, piAddressVar);
 }
 /* ========================================================================== */
 int csv_isColumnVector(void* _pvCtx, int _iVar)
 {
     SciErr sciErr;
     int *piAddressVar = NULL;
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
-    return isColumnVector(pvApiCtx, piAddressVar);
+    return isColumnVector(_pvCtx, piAddressVar);
 }
 /* ========================================================================== */
 int csv_isScalar(void* _pvCtx, int _iVar)
 {
     SciErr sciErr;
     int *piAddressVar = NULL;
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
-    return isScalar(pvApiCtx, piAddressVar);
+    return isScalar(_pvCtx, piAddressVar);
 }
 /* ========================================================================== */
 int csv_isDoubleScalar(void* _pvCtx, int _iVar)
@@ -316,16 +316,16 @@ int csv_isDoubleScalar(void* _pvCtx, int _iVar)
     SciErr sciErr;
     int *piAddressVar = NULL;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr) return 0;
 
     if (csv_isScalar(_pvCtx, _iVar))
     {
         int iType = 0;
-        sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+        sciErr = getVarType(_pvCtx, piAddressVar, &iType);
         if(sciErr.iErr) return 0;
 
-        if (isVarComplex(pvApiCtx, piAddressVar) == 0)
+        if (isVarComplex(_pvCtx, piAddressVar) == 0)
         {
             return (iType == sci_matrix);
         }
@@ -338,14 +338,14 @@ int csv_isEmpty(void* _pvCtx, int _iVar)
     SciErr sciErr;
     int *piAddressVar = NULL;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         printError(&sciErr, 0);
         if(sciErr.iErr) return 0;
     }
 
-    return isEmptyMatrix(pvApiCtx, piAddressVar);
+    return isEmptyMatrix(_pvCtx, piAddressVar);
 }
 /* ========================================================================== */
 int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
@@ -360,7 +360,7 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
     int m_ = 0; int n_ = 0;
     int i = 0;  int j = 0;
 
-    sciErr = getVarAddressFromPosition(pvApiCtx, _iVar, &piAddressVar);
+    sciErr = getVarAddressFromPosition(_pvCtx, _iVar, &piAddressVar);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -368,7 +368,7 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    sciErr = getVarType(pvApiCtx, piAddressVar, &iType);
+    sciErr = getVarType(_pvCtx, piAddressVar, &iType);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;
@@ -383,7 +383,7 @@ int *csv_getArgumentAsMatrixofIntFromDouble(void* _pvCtx, int _iVar,
         return NULL;
     }
 
-    sciErr = getMatrixOfDouble(pvApiCtx, piAddressVar, &m_, &n_, &dArray);
+    sciErr = getMatrixOfDouble(_pvCtx, piAddressVar, &m_, &n_, &dArray);
     if(sciErr.iErr)
     {
         *iErr = sciErr.iErr;

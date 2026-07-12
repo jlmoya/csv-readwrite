@@ -42,9 +42,9 @@
 /* ========================================================================== */
 #define NUMBER_FIELD 8
 /* ========================================================================== */
-static int sci_csv_default_no_rhs(char *fname);
-static int sci_csv_default_one_rhs(char *fname);
-static int sci_csv_default_two_rhs(char *fname);
+static int sci_csv_default_no_rhs(char *fname, void *pvApiCtx);
+static int sci_csv_default_one_rhs(char *fname, void *pvApiCtx);
+static int sci_csv_default_two_rhs(char *fname, void *pvApiCtx);
 /* ========================================================================== */
 int sci_csv_default(char *fname, void *pvApiCtx)
 {
@@ -55,16 +55,16 @@ int sci_csv_default(char *fname, void *pvApiCtx)
     switch(Rhs)
     {
     case 0:
-        return sci_csv_default_no_rhs(fname);
+        return sci_csv_default_no_rhs(fname, pvApiCtx);
     case 1:
-        return sci_csv_default_one_rhs(fname);
+        return sci_csv_default_one_rhs(fname, pvApiCtx);
     case 2:
-        return sci_csv_default_two_rhs(fname);
+        return sci_csv_default_two_rhs(fname, pvApiCtx);
     }
     return 0;
 }
 /* ========================================================================== */
-static int sci_csv_default_no_rhs(char *fname)
+static int sci_csv_default_no_rhs(char *fname, void *pvApiCtx)
 {
     int sizeArray = NUMBER_FIELD * 2;
     char **arrayOut = (char**)MALLOC(sizeof(char*) * sizeArray);
@@ -138,7 +138,7 @@ static int sci_csv_default_no_rhs(char *fname)
     return 0;
 }
 /* ========================================================================== */
-static int sci_csv_default_one_rhs(char *fname)
+static int sci_csv_default_one_rhs(char *fname, void *pvApiCtx)
 {
     int iErr = 0;
 
@@ -235,7 +235,7 @@ static int sci_csv_default_one_rhs(char *fname)
     return 0;
 }
 /* ========================================================================== */
-static int sci_csv_default_two_rhs(char *fname)
+static int sci_csv_default_two_rhs(char *fname, void *pvApiCtx)
 {
     int iErr = 0;
     int resultSet = 0;
