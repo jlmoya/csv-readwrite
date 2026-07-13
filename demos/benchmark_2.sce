@@ -9,7 +9,7 @@
 //
 // To compare speed (x100 faster) of csv_isnum:
 
-stacksize('max');
+// stacksize('max');  // stacksize() was removed in Scilab 6 (memory is dynamic now)
 
 function demo_bench_csv_2()
 

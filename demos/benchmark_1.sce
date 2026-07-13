@@ -10,7 +10,7 @@
 //
 // To compare speed:
 
-stacksize('max');
+// stacksize('max');  // stacksize() was removed in Scilab 6 (memory is dynamic now)
 
 function demo_bench_csv_1()
 

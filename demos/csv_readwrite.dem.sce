@@ -7,7 +7,7 @@
 // are also available at
 // http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
 // =============================================================================
-stacksize('max');
+// stacksize('max');  // stacksize() was removed in Scilab 6 (memory is dynamic now)
 
 function csv_demo_basic()
 
